@@ -1,12 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-    
+<<<<<<< HEAD
+    <<head>
+        <meta charset="UTF-8">
+        <title>Prescription Tracker</title>
+    </head>
+    <<body>
+        
+        <?php
+	#scripts go here
+        ?>
+        
+    </body>
+=======
 <head>
     <meta charset="UTF-8">
     <title>Prescription Tracker</title>
-    <link rel="stylesheet" href="css/main.css">
 </head>
-
 <body>
 
 <h2>Doctors List</h2>
@@ -51,4 +61,5 @@ $conn->close();
 ?>
 
 </body>
-
+>>>>>>> bf87705 (initial commit)
+</html>
