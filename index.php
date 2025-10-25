@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<<<<<<< HEAD
 <head>
     <meta charset="UTF-8">
     <title>Prescription Tracker</title>
@@ -51,4 +52,17 @@ $conn->close();
 
 </body>
 >>>>>>> bf87705 (initial commit)
+=======
+    <<head>
+        <meta charset="UTF-8">
+        <title>Prescription Tracker</title>
+    </head>
+    <<body>
+        
+        <?php
+	#scripts go here
+        ?>
+        
+    </body>
+>>>>>>> 6c42fe9 (added intrusction as comment in index.php)
 </html>
