@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Prescription Tracker</title>
+    <link rel="stylesheet" href="css/main.css">
 </head>
+
 <body>
 
 <h2>Doctors List</h2>
