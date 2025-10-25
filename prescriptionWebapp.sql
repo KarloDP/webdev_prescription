@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 25, 2025 at 05:50 AM
+-- Generation Time: Oct 25, 2025 at 06:09 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -54,6 +54,22 @@ CREATE TABLE `doctor` (
   `clinicAddress` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `doctor`
+--
+
+INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `specialization`, `licenseNumber`, `email`, `clinicAddress`) VALUES
+(1, 'Antonio', 'Santos', 'Cardiology', 12345, 'antonio.santos@medph.com', 'St. Luke\'s Medical Center, Quezon City'),
+(2, 'Maria', 'Reyes', 'Pediatrics', 23456, 'maria.reyes@childcareph.com', 'The Medical City, Pasig'),
+(3, 'Jose', 'Ramos', 'Dermatology', 34567, 'jose.ramos@skincareph.com', 'Makati Medical Center, Makati'),
+(4, 'Ana', 'Garcia', 'Neurology', 45678, 'ana.garcia@neuroph.com', 'Cardinal Santos Hospital, San Juan'),
+(5, 'Carlo', 'Lim', 'Orthopedics', 56789, 'carlo.lim@orthohealth.com', 'Asian Hospital and Medical Center, Alabang'),
+(6, 'Liza', 'Mendoza', 'Internal Medicine', 67890, 'liza.mendoza@medcenter.com', 'Perpetual Help Medical Center, Las Piñas'),
+(7, 'Mark', 'De Guzman', 'Ophthalmology', 78901, 'mark.deguzman@visioncare.com', 'Manila Doctors Hospital, Manila'),
+(8, 'Patricia', 'Lopez', 'Obstetrics', 89012, 'patricia.lopez@womenhealth.com', 'UERM Medical Center, Sta. Mesa'),
+(9, 'David', 'Chua', 'ENT', 90123, 'david.chua@earnoseph.com', 'Chinese General Hospital, Manila'),
+(10, 'Sophia', 'Del Rosario', 'Psychiatry', 10123, 'sophia.delrosario@mindhealth.com', 'National Center for Mental Health, Mandaluyong');
+
 -- --------------------------------------------------------
 
 --
@@ -68,6 +84,22 @@ CREATE TABLE `medication` (
   `strength` int(11) NOT NULL,
   `manufacturer` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `medication`
+--
+
+INSERT INTO `medication` (`medicationID`, `genericName`, `brandName`, `form`, `strength`, `manufacturer`) VALUES
+(1, 'Paracetamol', 'Biogesic', 'Tablet', 500, 'Unilab'),
+(2, 'Ibuprofen', 'Advil', 'Capsule', 200, 'Pfizer'),
+(3, 'Amoxicillin', 'Amoxil', 'Capsule', 500, 'GSK'),
+(4, 'Loratadine', 'Claritin', 'Tablet', 10, 'Bayer'),
+(5, 'Metformin', 'Glucophage', 'Tablet', 850, 'Merck'),
+(6, 'Simvastatin', 'Zocor', 'Tablet', 20, 'MSD'),
+(7, 'Omeprazole', 'Losec', 'Capsule', 40, 'AstraZeneca'),
+(8, 'Cetirizine', 'Virlix', 'Tablet', 10, 'Unilab'),
+(9, 'Amlodipine', 'Norvasc', 'Tablet', 5, 'Pfizer'),
+(10, 'Salbutamol', 'Ventolin', 'Syrup', 2, 'GSK');
 
 -- --------------------------------------------------------
 
@@ -85,6 +117,22 @@ CREATE TABLE `patient` (
   `address` text NOT NULL,
   `email` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `patient`
+--
+
+INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `birthDate`, `gender`, `contactNumber`, `address`, `email`) VALUES
+(1, 'Juan', 'Dela Cruz', '1990-05-12', 'Male', 912345678, 'Batangas City', 'juan.delacruz@example.com'),
+(2, 'Maria', 'Santos', '1988-09-23', 'Female', 923456789, 'Quezon City', 'maria.santos@example.com'),
+(3, 'Jose', 'Reyes', '1975-02-10', 'Male', 934567890, 'Cebu City', 'jose.reyes@example.com'),
+(4, 'Ana', 'Ramos', '1995-11-30', 'Female', 945678901, 'Davao City', 'ana.ramos@example.com'),
+(5, 'Carlos', 'Garcia', '1982-03-15', 'Male', 956789012, 'Pasig City', 'carlos.garcia@example.com'),
+(6, 'Liza', 'Torres', '2000-07-08', 'Female', 967890123, 'Iloilo City', 'liza.torres@example.com'),
+(7, 'Mark', 'Lim', '1998-04-25', 'Male', 978901234, 'Makati City', 'mark.lim@example.com'),
+(8, 'Patricia', 'Mendoza', '1993-06-18', 'Female', 989012345, 'Taguig City', 'patricia.mendoza@example.com'),
+(9, 'Andrew', 'Lopez', '1987-12-01', 'Male', 990123456, 'Manila', 'andrew.lopez@example.com'),
+(10, 'Sophia', 'De Guzman', '1999-10-05', 'Female', 901234567, 'Cavite', 'sophia.deguzman@example.com');
 
 -- --------------------------------------------------------
 
