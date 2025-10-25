@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+    
 <head>
     <meta charset="UTF-8">
     <title>Prescription Tracker</title>
@@ -50,4 +51,4 @@ $conn->close();
 ?>
 
 </body>
-</html>
+
