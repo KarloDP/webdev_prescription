@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 25, 2025 at 05:22 AM
+-- Generation Time: Oct 25, 2025 at 05:50 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -133,6 +133,83 @@ CREATE TABLE `prescriptionItem` (
   `duration` text NOT NULL,
   `instructions` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `dispenseRecord`
+--
+ALTER TABLE `dispenseRecord`
+  ADD PRIMARY KEY (`dispenseID`),
+  ADD KEY `PrescItemID` (`prescriptionItemID`),
+  ADD KEY `pharmacyID` (`pharmacyID`);
+
+--
+-- Indexes for table `doctor`
+--
+ALTER TABLE `doctor`
+  ADD PRIMARY KEY (`doctorID`);
+
+--
+-- Indexes for table `medication`
+--
+ALTER TABLE `medication`
+  ADD PRIMARY KEY (`medicationID`);
+
+--
+-- Indexes for table `patient`
+--
+ALTER TABLE `patient`
+  ADD PRIMARY KEY (`patientID`);
+
+--
+-- Indexes for table `pharmacy`
+--
+ALTER TABLE `pharmacy`
+  ADD PRIMARY KEY (`pharmacyID`);
+
+--
+-- Indexes for table `prescription`
+--
+ALTER TABLE `prescription`
+  ADD PRIMARY KEY (`prescriptionID`),
+  ADD KEY `patientID` (`patientID`),
+  ADD KEY `medID` (`medicationID`);
+
+--
+-- Indexes for table `prescriptionItem`
+--
+ALTER TABLE `prescriptionItem`
+  ADD PRIMARY KEY (`prescriptionItemID`),
+  ADD KEY `PrescID` (`prescriptionID`),
+  ADD KEY `medicationID` (`medicationID`);
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `dispenseRecord`
+--
+ALTER TABLE `dispenseRecord`
+  ADD CONSTRAINT `PrescItemID` FOREIGN KEY (`prescriptionItemID`) REFERENCES `prescriptionItem` (`prescriptionItemID`),
+  ADD CONSTRAINT `pharmacyID` FOREIGN KEY (`pharmacyID`) REFERENCES `pharmacy` (`pharmacyID`);
+
+--
+-- Constraints for table `prescription`
+--
+ALTER TABLE `prescription`
+  ADD CONSTRAINT `medID` FOREIGN KEY (`medicationID`) REFERENCES `medication` (`medicationID`),
+  ADD CONSTRAINT `patientID` FOREIGN KEY (`patientID`) REFERENCES `patient` (`patientID`);
+
+--
+-- Constraints for table `prescriptionItem`
+--
+ALTER TABLE `prescriptionItem`
+  ADD CONSTRAINT `PrescID` FOREIGN KEY (`prescriptionID`) REFERENCES `prescription` (`prescriptionID`),
+  ADD CONSTRAINT `medicationID` FOREIGN KEY (`medicationID`) REFERENCES `medication` (`medicationID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
