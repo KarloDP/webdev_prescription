@@ -7,7 +7,7 @@
     <<body>
         
         <?php
-
+	#scripts go here
         ?>
         
     </body>
