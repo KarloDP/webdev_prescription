@@ -1,10 +1,10 @@
 <?php
 include '../db.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $medicineName = $_POST['medicine_name'];
+if ($_SERVER["REQUEST_METHOD"] == "DELETE") {
+    $medicationID = $_POST['medicationID'];
 
-    $sql = "DELETE FROM stock WHERE medicine_name = '$medicineName'";
+    $sql = "DELETE FROM stock WHERE medicationID = '$medicationID'";
     if ($conn->query($sql) === TRUE) {
         echo "Stock deleted successfully.";
     } else {
