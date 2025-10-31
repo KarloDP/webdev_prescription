@@ -64,5 +64,8 @@ $conn->close();
         ?>
         
     </body>
+<<<<<<< HEAD
+=======
 >>>>>>> 6c42fe9 (added intrusction as comment in index.php)
+>>>>>>> main
 </html>

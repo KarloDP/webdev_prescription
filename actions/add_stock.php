@@ -1,17 +1,17 @@
 <?php
-include '../db.php';
+include 'includes/db_connect.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $medicineName = $_POST['medicine_name'];
-    $dosage = $_POST['dosage'];
-    $quantity = $_POST['quantity'];
+$medicationID = $_POST['medicine_name'];
+$genericName = $_POST['generic_name'];
+$form = $_POST['form'];
+$strength = $_POST['strength'];
+$manufacturer = $_POST['manufacturer'];
 
-    $sql = "INSERT INTO stock (medicine_name, dosage, quantity) VALUES ('$medicineName', '$dosage', $quantity)";
-    if ($conn->query($sql) === TRUE) {
-        echo "New stock added successfully.";
-    } else {
-        echo "Error: " . $conn->error;
-    }
+$sql = "INSERT INTO stock (medicine_name, generic_name, form, strength, manufacturer) VALUES ('$medicationID', '$genericName', '$form', '$strength', '$manufacturer')";
+if ($conn->query($sql) === TRUE) {
+    echo "New stock added successfully.";
+} else {
+    echo "Error: " . $conn->error;
 }
 
 $conn->close();

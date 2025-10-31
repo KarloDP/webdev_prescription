@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 25, 2025 at 06:09 AM
+-- Generation Time: Oct 31, 2025 at 09:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,29 @@ SET time_zone = "+00:00";
 --
 -- Database: `prescriptionWebapp`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admins`
+--
+
+CREATE TABLE `admins` (
+  `adminID` int(11) NOT NULL,
+  `firstName` text NOT NULL,
+  `lastName` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admins`
+--
+
+INSERT INTO `admins` (`adminID`, `firstName`, `lastName`) VALUES
+(1, 'Alice', 'Johnson'),
+(2, 'Benjamin', 'Lopez'),
+(3, 'Clara', 'Hughes'),
+(4, 'Daniel', 'Parker'),
+(5, 'Elena', 'Mitchell');
 
 -- --------------------------------------------------------
 
@@ -82,24 +105,25 @@ CREATE TABLE `medication` (
   `brandName` text NOT NULL,
   `form` text NOT NULL,
   `strength` int(11) NOT NULL,
-  `manufacturer` text NOT NULL
+  `manufacturer` text NOT NULL,
+  `stock` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `medication`
 --
 
-INSERT INTO `medication` (`medicationID`, `genericName`, `brandName`, `form`, `strength`, `manufacturer`) VALUES
-(1, 'Paracetamol', 'Biogesic', 'Tablet', 500, 'Unilab'),
-(2, 'Ibuprofen', 'Advil', 'Capsule', 200, 'Pfizer'),
-(3, 'Amoxicillin', 'Amoxil', 'Capsule', 500, 'GSK'),
-(4, 'Loratadine', 'Claritin', 'Tablet', 10, 'Bayer'),
-(5, 'Metformin', 'Glucophage', 'Tablet', 850, 'Merck'),
-(6, 'Simvastatin', 'Zocor', 'Tablet', 20, 'MSD'),
-(7, 'Omeprazole', 'Losec', 'Capsule', 40, 'AstraZeneca'),
-(8, 'Cetirizine', 'Virlix', 'Tablet', 10, 'Unilab'),
-(9, 'Amlodipine', 'Norvasc', 'Tablet', 5, 'Pfizer'),
-(10, 'Salbutamol', 'Ventolin', 'Syrup', 2, 'GSK');
+INSERT INTO `medication` (`medicationID`, `genericName`, `brandName`, `form`, `strength`, `manufacturer`, `stock`) VALUES
+(1, 'Paracetamol', 'Biogesic', 'Tablet', 500, 'Unilab', 100),
+(2, 'Ibuprofen', 'Advil', 'Capsule', 200, 'Pfizer', 100),
+(3, 'Amoxicillin', 'Amoxil', 'Capsule', 500, 'GSK', 100),
+(4, 'Loratadine', 'Claritin', 'Tablet', 10, 'Bayer', 100),
+(5, 'Metformin', 'Glucophage', 'Tablet', 850, 'Merck', 100),
+(6, 'Simvastatin', 'Zocor', 'Tablet', 20, 'MSD', 100),
+(7, 'Omeprazole', 'Losec', 'Capsule', 40, 'AstraZeneca', 100),
+(8, 'Cetirizine', 'Virlix', 'Tablet', 10, 'Unilab', 100),
+(9, 'Amlodipine', 'Norvasc', 'Tablet', 5, 'Pfizer', 100),
+(10, 'Salbutamol', 'Ventolin', 'Syrup', 2, 'GSK', 100);
 
 -- --------------------------------------------------------
 
