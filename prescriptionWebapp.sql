@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 31, 2025 at 08:19 AM
+-- Generation Time: Oct 31, 2025 at 09:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,29 @@ SET time_zone = "+00:00";
 --
 -- Database: `prescriptionWebapp`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admins`
+--
+
+CREATE TABLE `admins` (
+  `adminID` int(11) NOT NULL,
+  `firstName` text NOT NULL,
+  `lastName` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admins`
+--
+
+INSERT INTO `admins` (`adminID`, `firstName`, `lastName`) VALUES
+(1, 'Alice', 'Johnson'),
+(2, 'Benjamin', 'Lopez'),
+(3, 'Clara', 'Hughes'),
+(4, 'Daniel', 'Parker'),
+(5, 'Elena', 'Mitchell');
 
 -- --------------------------------------------------------
 
