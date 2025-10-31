@@ -36,7 +36,7 @@ body {
 }
 
 /* BUTTONS */
-.btn {
+.left-panel .btn {
     width: 60%;
     padding: 16px;
     margin-bottom: 20px;
@@ -49,10 +49,9 @@ body {
     transition: 0.2s ease;
 }
 
-.btn:hover {
+.left-panel .btn:hover {
     opacity: 0.85;
 }
-
 /* RIGHT SIDE IMAGE */
 .right-panel {
     width: 55%;

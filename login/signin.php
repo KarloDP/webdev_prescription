@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Sign In - MediSync</title>
-        <link rel="stylesheet" href="../assets/css/signin.css">
+        <link rel="stylesheet" href="/WebDev_Prescription/assets/css/signin.css">
     </head>
     <body>
 
@@ -42,8 +42,7 @@
                     <button type="submit" class="btn">Sign in</button>
                 </form>
 
-                <p class="signup-text">Don’t have an account? <a href="#">Sign up now</a></p>
-
+                <p class="signup-text">Don’t have an account? <a href="create.php">Sign up now</a></p>
                 <footer>
                     <p>@bytebusters</p>
                     <p>©webdevteam</p>
