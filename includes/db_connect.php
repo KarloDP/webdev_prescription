@@ -2,13 +2,14 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$database = "prescriptionWebapp"; // must match what you created in phpMyAdmin
+$database = "webdev_prescription"; // ✅ Make sure this matches your actual DB name in phpMyAdmin
 
+// Create connection
 $conn = new mysqli($servername, $username, $password, $database);
 
+// Check connection
 if ($conn->connect_error) {
-    die("Database connection failed: " . $conn->connect_error);
-} else { 
-    echo "Connected successfully!";
+    die("Connection failed: " . $conn->connect_error);
 }
+echo "Connected successfully!";
 ?>
