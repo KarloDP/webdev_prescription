@@ -11,8 +11,7 @@
 
 <h2>Doctors List</h2>
 
-<?php
-include 'db.php';
+<?php include 'includes/db_connect.php';
 
 // Use the correct table name and columns
 $sql = "SELECT * FROM doctor";
@@ -64,8 +63,4 @@ $conn->close();
         ?>
         
     </body>
-<<<<<<< HEAD
-=======
->>>>>>> 6c42fe9 (added intrusction as comment in index.php)
->>>>>>> main
 </html>

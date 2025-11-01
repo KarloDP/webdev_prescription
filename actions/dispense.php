@@ -1,5 +1,5 @@
 <?php
-include '../db.php';
+include 'includes/db_connect.php';
 
 $prescriptionID = $_POST['prescriptionID'];
 $pharmacyID = $_POST['pharmacyID'];
