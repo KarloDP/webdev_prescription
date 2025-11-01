@@ -96,3 +96,25 @@ body {
     width: auto;
     object-fit: contain;
 }
+.left-panel .special-admission {
+    margin-top: 20px; /* adjust up/down */
+    margin-left: 5px; /* adjust left/right */
+    font-size: 14px;
+    color: #666;
+}
+
+.left-panel .special-admission p {
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.left-panel .special-admission .special-link {
+    color: #1E90FF;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.left-panel .special-admission .special-link:hover {
+    text-decoration: underline;
+}
