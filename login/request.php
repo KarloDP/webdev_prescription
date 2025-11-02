@@ -29,10 +29,13 @@
             <form action="#" method="POST">
 
                 <label>Username</label>
-                <input type="text" name="username" placeholder="Name" required>
+                <input type="text" name="username" placeholder="Enter your username" required>
 
                 <label>Email</label>
-                <input type="email" name="email" placeholder="Enter email" required>
+                <div class="input-icon">
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                    <span class="email-icon">📧</span>
+                </div>
 
                 <label>Password</label>
                 <div class="password-field">
@@ -52,16 +55,20 @@
                     <span class="toggle-password">👁️</span>
                 </div>
 
-                <hr class="divider">
-
                 <button type="submit" class="btn">Create</button>
             </form>
 
-            <p class="signup-text">Already have an account? <a href="/WebDev_Prescription/login/login.php">Login now</a></p>
+            <p class="signup-text">Already have an account? 
+                <a href="/WebDev_Prescription/login/admission.php">Login now</a>
+            </p>
+
+            <footer>
+                <p>@bytebusters</p>
+                <p>©webdevteam</p>
+            </footer>
 
         </div>
     </div>
-
 </div>
 
 </body>

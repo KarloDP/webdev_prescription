@@ -52,6 +52,7 @@ body {
   text-align: center;
 }
 
+/* BRAND */
 .brand {
   display: flex;
   align-items: center;
@@ -90,15 +91,30 @@ label {
 }
 
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="email"] {
   width: 100%;
-  padding: 12px;
+  padding: 12px 40px 12px 12px;
   margin-bottom: 15px;
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 14px;
 }
 
+/* ICON INPUT FIELD (EMAIL) */
+.input-icon {
+  position: relative;
+}
+
+.email-icon {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  font-size: 16px;
+  color: #666;
+}
+
+/* PASSWORD FIELD */
 .password-field {
   position: relative;
 }

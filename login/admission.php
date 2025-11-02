@@ -45,7 +45,7 @@
                 <button type="submit" class="btn">Create</button>
             </form>
 
-            <p class="signup-text">Already have an account? <a href="login.php">Login now</a></p>
+            <p class="signup-text">Don’t have an account? <a href="request.php">Request Here</a></p>
 
             <footer>
                 <p>@bytebusters</p>
