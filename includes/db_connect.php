@@ -1,5 +1,5 @@
 <?php
-$servername = "localhost";
+$servername = "127.0.0.1";
 $username = "root";
 $password = "";
 $database = "webdev_prescription"; // ✅ Make sure this matches your actual DB name in phpMyAdmin
