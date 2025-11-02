@@ -1,5 +1,4 @@
 <?php
-// show errors while developing
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -7,59 +6,50 @@ include('../includes/db_connect.php');
 include('../includes/header.php');
 include('../includes/sidebar.php');
 
-// Fetch patients and medications for dropdowns (used for the form)
+// Fetch dropdowns
 $patients = mysqli_query($conn, "SELECT patientID, firstName, lastName FROM patient ORDER BY firstName");
 $medications = mysqli_query($conn, "SELECT medicationID, genericName, brandName FROM medication ORDER BY brandName");
 
-// Helper: safe POST get
 function post($key) {
-    return isset($_POST[$key]) ? trim($_POST[$key]) : null;
+  return isset($_POST[$key]) ? trim($_POST[$key]) : null;
 }
 
 $errors = [];
 $success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // gather and validate
+    $prescriptionID = post('prescriptionID'); // manual ID field
     $patientID = post('patientID');
     $medicationID = post('medicationID');
-    $issueDate = post('issueDate');            // e.g. 2025-10-31
-    $expirationDate = post('expirationDate');  // must be a date or can be calculated
+    $issueDate = post('issueDate');
+    $expirationDate = post('expirationDate');
     $refillCount = post('refillCount');
     $refillInterval = post('refillInterval');
     $status = post('status');
 
-    // Basic validation
+    if (empty($prescriptionID)) $errors[] = "Please enter a Prescription ID.";
     if (empty($patientID)) $errors[] = "Please select a patient.";
     if (empty($medicationID)) $errors[] = "Please select a medication.";
-    if (empty($issueDate)) $errors[] = "Please select an issue date.";
-    if (empty($expirationDate)) $errors[] = "Please select an expiration date.";
-    if ($refillCount === null || $refillCount === '') $errors[] = "Please enter refill count (0 if none).";
-    if ($refillInterval === null || $refillInterval === '') $errors[] = "Please enter refill interval (days).";
-    if (empty($status)) $errors[] = "Please select a status.";
 
-    // Validate numeric fields
-    if ($refillCount !== null && $refillCount !== '' && !ctype_digit($refillCount)) $errors[] = "Refill count must be an integer.";
-    if ($refillInterval !== null && $refillInterval !== '' && !ctype_digit($refillInterval)) $errors[] = "Refill interval must be an integer.";
-
-    // Validate medication exists (prevent FK error)
     if (empty($errors)) {
-        $med_check = mysqli_query($conn, "SELECT medicationID FROM medication WHERE medicationID = '".mysqli_real_escape_string($conn, $medicationID)."' LIMIT 1");
-        if (!$med_check || mysqli_num_rows($med_check) === 0) {
-            $errors[] = "Selected medication does not exist. Please choose a valid medication.";
-        }
-    }
-
-    // If valid, insert using prepared statement
-    if (empty($errors)) {
-        $stmt = $conn->prepare("INSERT INTO prescription (patientID, medicationID, issueDate, expirationDate, refillCount, refillInterval, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        // Prepare insert
+        $stmt = $conn->prepare("INSERT INTO prescription (prescriptionID, patientID, medicationID, issueDate, expirationDate, refillCount, refillInterval, status)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         if ($stmt) {
-            $stmt->bind_param("iissiis", $patientID, $medicationID, $issueDate, $expirationDate, $refillCount, $refillInterval, $status);
-            if ($stmt->execute()) {
+            $stmt->bind_param("iiissiis", $prescriptionID, $patientID, $medicationID, $issueDate, $expirationDate, $refillCount, $refillInterval, $status);
+
+            try {
+                $stmt->execute();
                 $success = true;
-            } else {
-                $errors[] = "Database error: " . $stmt->error;
+            } catch (mysqli_sql_exception $e) {
+                // Duplicate key error code = 1062
+                if ($e->getCode() == 1062) {
+                    $errors[] = "❌ Prescription ID already exists. Please use a different ID.";
+                } else {
+                    $errors[] = "Database error: " . $e->getMessage();
+                }
             }
+
             $stmt->close();
         } else {
             $errors[] = "Prepare failed: " . $conn->error;
@@ -86,16 +76,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   <?php endif; ?>
 
-  <form method="POST" action="" style="display:flex; flex-direction:column; width:450px; gap:8px;">
+  <form method="POST" style="display:flex; flex-direction:column; width:450px; gap:8px;">
+    <label>Prescription ID:</label>
+    <input type="number" name="prescriptionID" value="<?php echo isset($prescriptionID) ? htmlspecialchars($prescriptionID) : ''; ?>" required>
+
     <label>Patient:</label>
     <select name="patientID" required>
       <option value="">Select Patient</option>
       <?php
-      // rewind result pointer if needed
-      if ($patients) { mysqli_data_seek($patients, 0); }
-      while ($p = mysqli_fetch_assoc($patients)) {
-        $sel = (isset($patientID) && $patientID == $p['patientID']) ? 'selected' : '';
-        echo "<option value='{$p['patientID']}' $sel>" . htmlspecialchars($p['firstName'] . " " . $p['lastName']) . "</option>";
+      if ($patients) {
+        while ($p = mysqli_fetch_assoc($patients)) {
+          $sel = (isset($patientID) && $patientID == $p['patientID']) ? 'selected' : '';
+          echo "<option value='{$p['patientID']}' $sel>" . htmlspecialchars($p['firstName'] . " " . $p['lastName']) . "</option>";
+        }
       }
       ?>
     </select>
@@ -104,32 +97,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <select name="medicationID" required>
       <option value="">Select Medication</option>
       <?php
-      if ($medications) { mysqli_data_seek($medications, 0); }
-      while ($m = mysqli_fetch_assoc($medications)) {
-        $label = htmlspecialchars($m['genericName'] . " — " . $m['brandName']);
-        $sel = (isset($medicationID) && $medicationID == $m['medicationID']) ? 'selected' : '';
-        echo "<option value='{$m['medicationID']}' $sel>{$label}</option>";
+      if ($medications) {
+        while ($m = mysqli_fetch_assoc($medications)) {
+          $sel = (isset($medicationID) && $medicationID == $m['medicationID']) ? 'selected' : '';
+          echo "<option value='{$m['medicationID']}' $sel>" . htmlspecialchars($m['genericName'] . " — " . $m['brandName']) . "</option>";
+        }
       }
       ?>
     </select>
 
     <label>Issue Date:</label>
-    <input type="date" name="issueDate" value="<?php echo isset($issueDate) ? htmlspecialchars($issueDate) : ''; ?>" required>
+    <input type="date" name="issueDate" required>
 
     <label>Expiration Date:</label>
-    <input type="date" name="expirationDate" value="<?php echo isset($expirationDate) ? htmlspecialchars($expirationDate) : ''; ?>" required>
+    <input type="date" name="expirationDate" required>
 
     <label>Refill Count:</label>
-    <input type="number" name="refillCount" min="0" value="<?php echo isset($refillCount) ? htmlspecialchars($refillCount) : '1'; ?>" required>
+    <input type="number" name="refillCount" min="0" value="1" required>
 
     <label>Refill Interval (days):</label>
-    <input type="number" name="refillInterval" min="1" value="<?php echo isset($refillInterval) ? htmlspecialchars($refillInterval) : '30'; ?>" required>
+    <input type="number" name="refillInterval" min="1" value="30" required>
 
     <label>Status:</label>
     <select name="status" required>
-      <option value="Active" <?php echo (isset($status) && $status == 'Active') ? 'selected' : ''; ?>>Active</option>
-      <option value="Expired" <?php echo (isset($status) && $status == 'Expired') ? 'selected' : ''; ?>>Expired</option>
-      <option value="Cancelled" <?php echo (isset($status) && $status == 'Cancelled') ? 'selected' : ''; ?>>Cancelled</option>
+      <option value="Active">Active</option>
+      <option value="Expired">Expired</option>
+      <option value="Cancelled">Cancelled</option>
     </select>
 
     <button type="submit" style="padding:10px; background-color:#4CAF50; color:white; border:none; border-radius:5px;">
