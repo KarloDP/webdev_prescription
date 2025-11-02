@@ -1,5 +1,5 @@
 <?php
-include 'includes/db_connect.php';
+include '../includes/db_connect.php';
 
 $medicationID = $_POST['medicationID'];
 $amountGiven = $_POST['amountGiven'];
@@ -7,11 +7,11 @@ $amountGiven = $_POST['amountGiven'];
 $sql = "SELECT stock FROM stock WHERE medicationID = '$medicationID'";
 $result = mysqli_query($conn, $sql);
 
-if (mysqli_num_rows($result) > 0) { // checks if medication exists
+if (mysqli_num_rows($result) > 0) {
     $row = mysqli_fetch_assoc($result);
     $currentStock = $row['stock'];
 
-    if($amountGiven > $currentStock) { // checks if enough stock is available
+    if($amountGiven > $currentStock) {
         echo "Error: Not enough stock available.";
         exit();
     } else {

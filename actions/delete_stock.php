@@ -1,14 +1,27 @@
 <?php
-include 'includes/db_connect.php';
+include '../includes/db_connect.php';
 
-$medicationID = $_POST['medicationID'];
-
-$sql = "DELETE FROM stock WHERE medicationID = '$medicationID'";
-if ($conn->query($sql) === TRUE) {
-    echo "Stock deleted successfully.";
-} else {
-    echo "Error: " . $conn->error;
+if (!isset($_POST['medicationID']) || trim($_POST['medicationID']) === '') {
+    http_response_code(400);
+    echo "Error: medicationID is required.";
+    exit;
 }
 
+$medicationID = (int)$_POST['medicationID'];
+
+$stmt = $conn->prepare("DELETE FROM medication WHERE medicationID = ?");
+$stmt->bind_param("i", $medicationID);
+
+if ($stmt->execute()) {
+    if ($stmt->affected_rows > 0) {
+        echo "Medication ID $medicationID deleted successfully.";
+    } else {
+        echo "No row found with medicationID $medicationID.";
+    }
+} else {
+    echo "Error: " . $stmt->error;
+}
+
+$stmt->close();
 $conn->close();
 ?>

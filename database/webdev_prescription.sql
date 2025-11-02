@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 31, 2025 at 09:34 AM
+-- Generation Time: Nov 02, 2025 at 10:56 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `prescriptionWebapp`
+-- Database: `webdev_prescription`
 --
 
 -- --------------------------------------------------------
@@ -60,6 +60,23 @@ CREATE TABLE `dispenseRecord` (
   `status` text NOT NULL,
   `nextAvailableDates` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `dispenseRecord`
+--
+
+INSERT INTO `dispenseRecord` (`prescriptionItemID`, `pharmacyID`, `dispenseID`, `quantityDispensed`, `dateDispensed`, `pharmacistName`, `status`, `nextAvailableDates`) VALUES
+(1, 1, 1, 7, '2025-01-01', 'Maria Reyes', 'Dispensed', '2025-01-31'),
+(2, 2, 2, 5, '2025-01-06', 'John Cruz', 'Dispensed', '2025-02-05'),
+(3, 3, 3, 30, '2025-01-12', 'Anna Santos', 'Dispensed', '2025-02-11'),
+(4, 4, 4, 14, '2025-01-14', 'Mark Dela Cruz', 'Dispensed', '2025-02-13'),
+(5, 5, 5, 3, '2025-01-18', 'Paula Ramos', 'Dispensed', '2025-02-17'),
+(6, 6, 6, 14, '2025-01-20', 'Liza Garcia', 'Dispensed', '2025-02-19'),
+(7, 7, 7, 10, '2025-01-23', 'Rafael Lopez', 'Dispensed', '2025-02-22'),
+(8, 8, 8, 30, '2025-01-25', 'Carla Mendoza', 'Dispensed', '2025-02-24'),
+(9, 9, 9, 14, '2025-01-28', 'Simon Cruz', 'Dispensed', '2025-02-27'),
+(1, 1, 10, 1, '2002-01-01', 'dan', 'dispensed', '2002-01-02'),
+(1, 1, 11, 1, '2002-01-01', 'john', 'Dispensed', '2002-01-02');
 
 -- --------------------------------------------------------
 
@@ -168,10 +185,23 @@ CREATE TABLE `pharmacy` (
   `pharmacyID` int(11) NOT NULL,
   `name` text NOT NULL,
   `address` text NOT NULL,
-  `contactNumber` int(11) NOT NULL,
+  `contactNumber` varchar(20) NOT NULL,
   `email` text NOT NULL,
   `clinicAddress` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pharmacy`
+--
+
+INSERT INTO `pharmacy` (`pharmacyID`, `name`, `address`, `contactNumber`, `email`, `clinicAddress`) VALUES
+(1, 'HealthPlus Pharmacy', '123 Rizal St', '09171234567', 'healthplus@example.com', 'Unit 5 Medical Plaza Baguio'),
+(2, 'CareWell Pharmacy', '45 Session Road', '09182345678', 'carewell@example.com', 'Room 204 Saint Louis Hospital'),
+(3, 'MediServe Pharmacy', '88 Aurora Hill', '09273456789', 'mediserve@example.com', '2F Pines Doctors Clinic'),
+(4, 'WellLife Pharmacy', '21 Legarda Road', '09384567890', 'welllife@example.com', 'G5 University Clinic Center'),
+(5, 'GreenCare Pharmacy', '67 Marcos Highway', '09495678901', 'greencare@example.com', 'Health Wing - Baguio General Hospital'),
+(6, 'CityMeds Pharmacy', '34 Bonifacio St', '09771234098', 'citymeds@example.com', 'Room 12 Baguio Medical Center'),
+(7, 'Starlight Pharmacy', '10 Navy Base St', '09982340987', 'starlight@example.com', 'Suite 6 SLU Family Clinic');
 
 -- --------------------------------------------------------
 
@@ -190,6 +220,22 @@ CREATE TABLE `prescription` (
   `status` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `prescription`
+--
+
+INSERT INTO `prescription` (`prescriptionID`, `medicationID`, `patientID`, `issueDate`, `expirationDate`, `refillCount`, `refillInterval`, `status`) VALUES
+(1, 1, 1, '2025-01-02', '2025-04-02', 2, '2025-02-01', 'Active'),
+(2, 2, 2, '2025-01-05', '2025-04-05', 1, '2025-02-04', 'Active'),
+(3, 3, 3, '2025-01-10', '2025-04-10', 0, '2025-02-09', 'Expired'),
+(4, 4, 4, '2025-02-01', '2025-05-01', 3, '2025-03-01', 'Active'),
+(5, 5, 5, '2025-02-10', '2025-05-10', 1, '2025-03-12', 'Active'),
+(6, 6, 6, '2025-02-15', '2025-05-15', 0, '2025-03-17', 'Active'),
+(7, 7, 7, '2025-02-20', '2025-05-20', 2, '2025-03-22', 'Active'),
+(8, 8, 8, '2025-03-01', '2025-06-01', 1, '2025-04-01', 'Active'),
+(9, 9, 9, '2025-03-05', '2025-06-05', 0, '2025-04-04', 'Active'),
+(10, 10, 10, '2025-03-10', '2025-06-10', 2, '2025-04-09', 'Active');
+
 -- --------------------------------------------------------
 
 --
@@ -205,6 +251,22 @@ CREATE TABLE `prescriptionItem` (
   `duration` text NOT NULL,
   `instructions` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `prescriptionItem`
+--
+
+INSERT INTO `prescriptionItem` (`prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `instructions`) VALUES
+(1, 1, 1, '1 tablet', 'Once daily', '7 days', 'Take after meals'),
+(2, 2, 2, '1 tablet', 'Twice daily', '5 days', 'Take with water'),
+(3, 3, 3, '5 ml', 'Three times daily', '10 days', 'Shake well before use'),
+(4, 4, 4, '1 tablet', 'Once daily', '14 days', 'Avoid alcohol'),
+(5, 5, 5, '2 tablets', 'Once daily', '3 days', 'Take before breakfast'),
+(6, 6, 6, '1 capsule', 'Twice daily', '7 days', 'Swallow whole'),
+(7, 7, 7, '10 ml', 'Two times daily', '5 days', 'Store in fridge'),
+(8, 8, 8, '1 tablet', 'Three times daily', '10 days', 'With food'),
+(9, 9, 9, '5 ml', 'Once daily', '14 days', 'Use measuring cup'),
+(10, 10, 10, '1 capsule', 'Once daily', '7 days', 'Drink plenty of water');
 
 --
 -- Indexes for dumped tables
