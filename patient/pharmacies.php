@@ -51,7 +51,7 @@ if ($result && $result->num_rows > 0) {
 
 <!-- Sidebar -->
 <div class="sidebar">
-  <h3>Integrative Medicine</h3>
+  <h3>Welcome To MediSync</h3>
   <div class="profile-section">
     <img src="../assets/img/profile.png" alt="Profile" class="profile-icon" />
     <p><?= strtoupper($patientName) ?> <span class="role-label">Guest</span></p>
