@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Nov 02, 2025 at 10:56 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: 127.0.0.1:3307
+-- Generation Time: Nov 03, 2025 at 01:50 PM
+-- Server version: 11.5.2-MariaDB
+-- PHP Version: 8.3.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -27,7 +27,8 @@ SET time_zone = "+00:00";
 -- Table structure for table `admins`
 --
 
-CREATE TABLE `admins` (
+DROP TABLE IF EXISTS `admins`;
+CREATE TABLE IF NOT EXISTS `admins` (
   `adminID` int(11) NOT NULL,
   `firstName` text NOT NULL,
   `lastName` text NOT NULL
@@ -47,10 +48,11 @@ INSERT INTO `admins` (`adminID`, `firstName`, `lastName`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `dispenseRecord`
+-- Table structure for table `dispenserecord`
 --
 
-CREATE TABLE `dispenseRecord` (
+DROP TABLE IF EXISTS `dispenserecord`;
+CREATE TABLE IF NOT EXISTS `dispenserecord` (
   `prescriptionItemID` int(11) NOT NULL,
   `pharmacyID` int(11) NOT NULL,
   `dispenseID` int(11) NOT NULL,
@@ -58,14 +60,17 @@ CREATE TABLE `dispenseRecord` (
   `dateDispensed` date NOT NULL,
   `pharmacistName` text NOT NULL,
   `status` text NOT NULL,
-  `nextAvailableDates` date NOT NULL
+  `nextAvailableDates` date NOT NULL,
+  PRIMARY KEY (`dispenseID`),
+  KEY `PrescItemID` (`prescriptionItemID`),
+  KEY `pharmacyID` (`pharmacyID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `dispenseRecord`
+-- Dumping data for table `dispenserecord`
 --
 
-INSERT INTO `dispenseRecord` (`prescriptionItemID`, `pharmacyID`, `dispenseID`, `quantityDispensed`, `dateDispensed`, `pharmacistName`, `status`, `nextAvailableDates`) VALUES
+INSERT INTO `dispenserecord` (`prescriptionItemID`, `pharmacyID`, `dispenseID`, `quantityDispensed`, `dateDispensed`, `pharmacistName`, `status`, `nextAvailableDates`) VALUES
 (1, 1, 1, 7, '2025-01-01', 'Maria Reyes', 'Dispensed', '2025-01-31'),
 (2, 2, 2, 5, '2025-01-06', 'John Cruz', 'Dispensed', '2025-02-05'),
 (3, 3, 3, 30, '2025-01-12', 'Anna Santos', 'Dispensed', '2025-02-11'),
@@ -84,14 +89,16 @@ INSERT INTO `dispenseRecord` (`prescriptionItemID`, `pharmacyID`, `dispenseID`, 
 -- Table structure for table `doctor`
 --
 
-CREATE TABLE `doctor` (
+DROP TABLE IF EXISTS `doctor`;
+CREATE TABLE IF NOT EXISTS `doctor` (
   `doctorID` int(11) NOT NULL,
   `firstName` text NOT NULL,
   `lastName` text NOT NULL,
   `specialization` text NOT NULL,
   `licenseNumber` int(11) NOT NULL,
   `email` text NOT NULL,
-  `clinicAddress` text NOT NULL
+  `clinicAddress` text NOT NULL,
+  PRIMARY KEY (`doctorID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -116,14 +123,16 @@ INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `specialization`, `li
 -- Table structure for table `medication`
 --
 
-CREATE TABLE `medication` (
+DROP TABLE IF EXISTS `medication`;
+CREATE TABLE IF NOT EXISTS `medication` (
   `medicationID` int(11) NOT NULL,
   `genericName` text NOT NULL,
   `brandName` text NOT NULL,
   `form` text NOT NULL,
   `strength` int(11) NOT NULL,
   `manufacturer` text NOT NULL,
-  `stock` int(11) DEFAULT NULL
+  `stock` int(11) DEFAULT NULL,
+  PRIMARY KEY (`medicationID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -148,7 +157,8 @@ INSERT INTO `medication` (`medicationID`, `genericName`, `brandName`, `form`, `s
 -- Table structure for table `patient`
 --
 
-CREATE TABLE `patient` (
+DROP TABLE IF EXISTS `patient`;
+CREATE TABLE IF NOT EXISTS `patient` (
   `patientID` int(11) NOT NULL,
   `firstName` text NOT NULL,
   `lastName` text NOT NULL,
@@ -156,7 +166,8 @@ CREATE TABLE `patient` (
   `gender` text NOT NULL,
   `contactNumber` int(11) NOT NULL,
   `address` text NOT NULL,
-  `email` text NOT NULL
+  `email` text NOT NULL,
+  PRIMARY KEY (`patientID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -181,13 +192,15 @@ INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `birthDate`, `gende
 -- Table structure for table `pharmacy`
 --
 
-CREATE TABLE `pharmacy` (
+DROP TABLE IF EXISTS `pharmacy`;
+CREATE TABLE IF NOT EXISTS `pharmacy` (
   `pharmacyID` int(11) NOT NULL,
   `name` text NOT NULL,
   `address` text NOT NULL,
   `contactNumber` varchar(20) NOT NULL,
   `email` text NOT NULL,
-  `clinicAddress` text NOT NULL
+  `clinicAddress` text NOT NULL,
+  PRIMARY KEY (`pharmacyID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -209,7 +222,8 @@ INSERT INTO `pharmacy` (`pharmacyID`, `name`, `address`, `contactNumber`, `email
 -- Table structure for table `prescription`
 --
 
-CREATE TABLE `prescription` (
+DROP TABLE IF EXISTS `prescription`;
+CREATE TABLE IF NOT EXISTS `prescription` (
   `prescriptionID` int(11) NOT NULL,
   `medicationID` int(11) NOT NULL,
   `patientID` int(11) NOT NULL,
@@ -217,46 +231,55 @@ CREATE TABLE `prescription` (
   `expirationDate` date NOT NULL,
   `refillCount` int(11) NOT NULL,
   `refillInterval` date NOT NULL,
-  `status` text NOT NULL
+  `status` text NOT NULL,
+  `doctorID` int(11) NOT NULL,
+  PRIMARY KEY (`prescriptionID`),
+  KEY `patientID` (`patientID`),
+  KEY `medID` (`medicationID`),
+  KEY `fk_prescription_doctor` (`doctorID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `prescription`
 --
 
-INSERT INTO `prescription` (`prescriptionID`, `medicationID`, `patientID`, `issueDate`, `expirationDate`, `refillCount`, `refillInterval`, `status`) VALUES
-(1, 1, 1, '2025-01-02', '2025-04-02', 2, '2025-02-01', 'Active'),
-(2, 2, 2, '2025-01-05', '2025-04-05', 1, '2025-02-04', 'Active'),
-(3, 3, 3, '2025-01-10', '2025-04-10', 0, '2025-02-09', 'Expired'),
-(4, 4, 4, '2025-02-01', '2025-05-01', 3, '2025-03-01', 'Active'),
-(5, 5, 5, '2025-02-10', '2025-05-10', 1, '2025-03-12', 'Active'),
-(6, 6, 6, '2025-02-15', '2025-05-15', 0, '2025-03-17', 'Active'),
-(7, 7, 7, '2025-02-20', '2025-05-20', 2, '2025-03-22', 'Active'),
-(8, 8, 8, '2025-03-01', '2025-06-01', 1, '2025-04-01', 'Active'),
-(9, 9, 9, '2025-03-05', '2025-06-05', 0, '2025-04-04', 'Active'),
-(10, 10, 10, '2025-03-10', '2025-06-10', 2, '2025-04-09', 'Active');
+INSERT INTO `prescription` (`prescriptionID`, `medicationID`, `patientID`, `issueDate`, `expirationDate`, `refillCount`, `refillInterval`, `status`, `doctorID`) VALUES
+(1, 1, 1, '2025-01-02', '2025-04-02', 2, '2025-02-01', 'Active', 1),
+(2, 2, 2, '2025-01-05', '2025-04-05', 1, '2025-02-04', 'Active', 2),
+(3, 3, 3, '2025-01-10', '2025-04-10', 0, '2025-02-09', 'Expired', 3),
+(4, 4, 4, '2025-02-01', '2025-05-01', 3, '2025-03-01', 'Active', 4),
+(5, 5, 5, '2025-02-10', '2025-05-10', 1, '2025-03-12', 'Active', 5),
+(6, 6, 6, '2025-02-15', '2025-05-15', 0, '2025-03-17', 'Active', 6),
+(7, 7, 7, '2025-02-20', '2025-05-20', 2, '2025-03-22', 'Active', 7),
+(8, 8, 8, '2025-03-01', '2025-06-01', 1, '2025-04-01', 'Active', 8),
+(9, 9, 9, '2025-03-05', '2025-06-05', 0, '2025-04-04', 'Active', 9),
+(10, 10, 10, '2025-03-10', '2025-06-10', 2, '2025-04-09', 'Active', 10);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `prescriptionItem`
+-- Table structure for table `prescriptionitem`
 --
 
-CREATE TABLE `prescriptionItem` (
+DROP TABLE IF EXISTS `prescriptionitem`;
+CREATE TABLE IF NOT EXISTS `prescriptionitem` (
   `prescriptionItemID` int(11) NOT NULL,
   `prescriptionID` int(11) NOT NULL,
   `medicationID` int(11) NOT NULL,
   `dosage` text NOT NULL,
   `frequency` text NOT NULL,
   `duration` text NOT NULL,
-  `instructions` text NOT NULL
+  `instructions` text NOT NULL,
+  PRIMARY KEY (`prescriptionItemID`),
+  KEY `PrescID` (`prescriptionID`),
+  KEY `medicationID` (`medicationID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `prescriptionItem`
+-- Dumping data for table `prescriptionitem`
 --
 
-INSERT INTO `prescriptionItem` (`prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `instructions`) VALUES
+INSERT INTO `prescriptionitem` (`prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `instructions`) VALUES
 (1, 1, 1, '1 tablet', 'Once daily', '7 days', 'Take after meals'),
 (2, 2, 2, '1 tablet', 'Twice daily', '5 days', 'Take with water'),
 (3, 3, 3, '5 ml', 'Three times daily', '10 days', 'Shake well before use'),
@@ -269,79 +292,28 @@ INSERT INTO `prescriptionItem` (`prescriptionItemID`, `prescriptionID`, `medicat
 (10, 10, 10, '1 capsule', 'Once daily', '7 days', 'Drink plenty of water');
 
 --
--- Indexes for dumped tables
---
-
---
--- Indexes for table `dispenseRecord`
---
-ALTER TABLE `dispenseRecord`
-  ADD PRIMARY KEY (`dispenseID`),
-  ADD KEY `PrescItemID` (`prescriptionItemID`),
-  ADD KEY `pharmacyID` (`pharmacyID`);
-
---
--- Indexes for table `doctor`
---
-ALTER TABLE `doctor`
-  ADD PRIMARY KEY (`doctorID`);
-
---
--- Indexes for table `medication`
---
-ALTER TABLE `medication`
-  ADD PRIMARY KEY (`medicationID`);
-
---
--- Indexes for table `patient`
---
-ALTER TABLE `patient`
-  ADD PRIMARY KEY (`patientID`);
-
---
--- Indexes for table `pharmacy`
---
-ALTER TABLE `pharmacy`
-  ADD PRIMARY KEY (`pharmacyID`);
-
---
--- Indexes for table `prescription`
---
-ALTER TABLE `prescription`
-  ADD PRIMARY KEY (`prescriptionID`),
-  ADD KEY `patientID` (`patientID`),
-  ADD KEY `medID` (`medicationID`);
-
---
--- Indexes for table `prescriptionItem`
---
-ALTER TABLE `prescriptionItem`
-  ADD PRIMARY KEY (`prescriptionItemID`),
-  ADD KEY `PrescID` (`prescriptionID`),
-  ADD KEY `medicationID` (`medicationID`);
-
---
 -- Constraints for dumped tables
 --
 
 --
--- Constraints for table `dispenseRecord`
+-- Constraints for table `dispenserecord`
 --
-ALTER TABLE `dispenseRecord`
-  ADD CONSTRAINT `PrescItemID` FOREIGN KEY (`prescriptionItemID`) REFERENCES `prescriptionItem` (`prescriptionItemID`),
+ALTER TABLE `dispenserecord`
+  ADD CONSTRAINT `PrescItemID` FOREIGN KEY (`prescriptionItemID`) REFERENCES `prescriptionitem` (`prescriptionItemID`),
   ADD CONSTRAINT `pharmacyID` FOREIGN KEY (`pharmacyID`) REFERENCES `pharmacy` (`pharmacyID`);
 
 --
 -- Constraints for table `prescription`
 --
 ALTER TABLE `prescription`
+  ADD CONSTRAINT `fk_prescription_doctor` FOREIGN KEY (`doctorID`) REFERENCES `doctor` (`doctorID`),
   ADD CONSTRAINT `medID` FOREIGN KEY (`medicationID`) REFERENCES `medication` (`medicationID`),
   ADD CONSTRAINT `patientID` FOREIGN KEY (`patientID`) REFERENCES `patient` (`patientID`);
 
 --
--- Constraints for table `prescriptionItem`
+-- Constraints for table `prescriptionitem`
 --
-ALTER TABLE `prescriptionItem`
+ALTER TABLE `prescriptionitem`
   ADD CONSTRAINT `PrescID` FOREIGN KEY (`prescriptionID`) REFERENCES `prescription` (`prescriptionID`),
   ADD CONSTRAINT `medicationID` FOREIGN KEY (`medicationID`) REFERENCES `medication` (`medicationID`);
 COMMIT;
