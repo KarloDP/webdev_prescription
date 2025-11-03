@@ -64,8 +64,8 @@ if ($result && $result->num_rows > 0) {
   <ul>
     <li><a href="dashboard.php">Dashboard</a></li>
     <li><a href="patient.php">History </a></li>
-    <li><a href="medication.php" class="active">Prescriptions</a></li>
-    <li><a href="prescriptions.php">Pharmacies</a></li>
+    <li><a href="medication.php" class="active">Medications</a></li>
+    <li><a href="pharmacies.php">Pharmacies</a></li>
   </ul>
 </div>
 

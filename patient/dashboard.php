@@ -71,7 +71,7 @@ if ($result) {
     <li><a href="dashboard.php" class="active">Dashboard</a></li>
     <li><a href="patient.php">History</a></li>
     <li><a href="medication.php">Medications</a></li>
-    <li><a href="prescriptions.php">Pharmacies</a></li>
+    <li><a href="pharmacies.php">Pharmacies</a></li>
   </ul>
 </div>
 
