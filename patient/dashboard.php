@@ -69,7 +69,7 @@ if ($result) {
   </div>
   <ul>
     <li><a href="dashboard.php" class="active">Dashboard</a></li>
-    <li><a href="history.php">History</a></li>
+    <li><a href="patient.php">History</a></li>
     <li><a href="medications.php">Medications</a></li>
     <li><a href="pharmacies.php">Pharmacies</a></li>
   </ul>
