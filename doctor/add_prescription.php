@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $conn->prepare("INSERT INTO prescription (prescriptionID, patientID, medicationID, issueDate, expirationDate, refillCount, refillInterval, status)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         if ($stmt) {
-            $stmt->bind_param("iiissiis", $prescriptionID, $patientID, $medicationID, $issueDate, $expirationDate, $refillCount, $refillInterval, $status);
+            $stmt->bind_param("iiississ", $prescriptionID, $patientID, $medicationID, $issueDate, $expirationDate, $refillCount, $refillInterval, $status);
 
             try {
                 $stmt->execute();
@@ -115,8 +115,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <label>Refill Count:</label>
     <input type="number" name="refillCount" min="0" value="1" required>
 
+    <!-- <label>Refill Interval (days):</label>
+    <input type="number" name="refillInterval" min="1" value="30" required> -->
     <label>Refill Interval (days):</label>
-    <input type="number" name="refillInterval" min="1" value="30" required>
+    <input type="date" name="refillInterval" required>
 
     <label>Status:</label>
     <select name="status" required>
