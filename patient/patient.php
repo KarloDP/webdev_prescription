@@ -62,7 +62,7 @@ if ($result && $result->num_rows > 0) {
   </div>
   <ul>
     <li><a href="dashboard.php">Dashboard</a></li>
-    <li><a href="history.php" class="active">History</a></li>
+    <li><a href="patient.php" class="active">History</a></li>
     <li><a href="medications.php">Medications</a></li>
     <li><a href="pharmacies.php">Pharmacies</a></li>
   </ul>
