@@ -1,0 +1,146 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    display: flex;
+    background: #f5f5f5;
+}
+
+/* TOP NAVBAR */
+.top-navbar {
+    width: 100%;
+    height: 80px;
+    background: #1e3d2f;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.top-navbar .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.top-navbar .logo img {
+    width: 50px;
+    height: auto;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.profile .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.menu-icon {
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background: #244f3a;
+    position: fixed;
+    top: 80px;
+    left: 0;
+    padding-top: 0; 
+}
+
+.sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Sidebar Items */
+.sidebar li {
+    padding: 16px 30px;
+    transition: background 0.25s ease-in-out;
+}
+
+.sidebar li a {
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+    display: block;
+}
+
+/* Hover and Active States */
+.sidebar li.active,
+.sidebar li:hover {
+    background: #2f6f50;
+}
+
+/* MAIN CONTENT */
+.content {
+    margin-left: 260px;
+    margin-top: 80px;
+    padding: 30px;
+    width: calc(100% - 260px);
+    min-height: 100vh;
+}
+
+/* HEADERS INSIDE CONTENT */
+.content h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.content p {
+    font-size: 16px;
+    color: #444;
+}
+
+/* DASHBOARD STATS */
+.stats-container {
+    margin-top: 20px;
+    display: flex;
+    gap: 25px;
+}
+
+.stat-box {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    width: 240px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-4px);
+}
+
+.stat-box h2 {
+    font-size: 32px;
+    color: #1e3d2f;
+}
+
+.stat-box p {
+    font-size: 15px;
+    margin-top: 8px;
+    color: #555;
+}

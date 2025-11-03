@@ -57,8 +57,5 @@
     </div>
 </div>
 
-<!-- EXTERNAL JS FILE -->
-<script src="../assets/js/password-toggle.js"></script>
-
 </body>
 </html>
