@@ -3,7 +3,6 @@ require_once "../includes/db_connect.php";
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Delete actions
 if (isset($_GET['delete_id']) && isset($_GET['view'])) {
     $id = intval($_GET['delete_id']);
     $view = $_GET['view'];
@@ -20,12 +19,10 @@ if (isset($_GET['delete_id']) && isset($_GET['view'])) {
     exit;
 }
 
-// Update / Insert actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_record'])) {
     $view = $_POST['view'] ?? '';
 
     if ($view === 'medicines') {
-        // Insert if id empty, else update
         $id      = isset($_POST['id']) && $_POST['id'] !== '' ? intval($_POST['id']) : null;
         $generic = $conn->real_escape_string($_POST['genericName'] ?? '');
         $brand   = $conn->real_escape_string($_POST['brandName'] ?? '');
@@ -44,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_record'])) {
                           VALUES ('$generic', '$brand', '$form', '$strength', '$manuf', $stock)");
         }
     } elseif ($view === 'prescriptions') {
-        // Prescriptions only update existing rows
         $id        = intval($_POST['id'] ?? 0);
         $med       = intval($_POST['medicationID'] ?? 0);
         $patient   = intval($_POST['patientID'] ?? 0);
@@ -57,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_record'])) {
                           expirationDate='$expDate', status='$status'
                       WHERE prescriptionID=$id");
     } elseif ($view === 'pharmacys') {
-        // Insert if id empty, else update
         $id      = isset($_POST['id']) && $_POST['id'] !== '' ? intval($_POST['id']) : null;
         $name    = $conn->real_escape_string($_POST['name'] ?? '');
         $address = $conn->real_escape_string($_POST['address'] ?? '');
@@ -80,13 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_record'])) {
     exit;
 }
 
-// View & state
 $view = $_GET['view'] ?? 'medicines';
 $search = $_GET['search'] ?? '';
 $edit_id = isset($_GET['edit_id']) ? intval($_GET['edit_id']) : null;
 $add_mode = isset($_GET['add']) ? true : false;
 
-// Query builder
 switch ($view) {
     case 'prescriptions':
         $title = "Prescriptions";
@@ -170,7 +163,6 @@ $result = $conn->query($query);
       </tr>
 
       <?php if ($add_mode && $view === 'medicines'): ?>
-        <!-- Inline add new medicine row -->
         <form method="POST" action="database.php?view=medicines" id="form-add-medicine">
           <input type="hidden" name="view" value="medicines">
           <input type="hidden" name="id" value="">
@@ -193,7 +185,6 @@ $result = $conn->query($query);
       <?php endif; ?>
 
       <?php while($row = $result->fetch_assoc()): $id = $row['medicationID']; ?>
-        <!-- Read-only medicine row -->
         <tr>
           <td><?= $id ?></td>
           <td><?= htmlspecialchars($row['genericName']) ?></td>
@@ -221,7 +212,6 @@ $result = $conn->query($query);
 
       <?php while($row = $result->fetch_assoc()): $id = $row['prescriptionID']; ?>
         <?php if ($edit_id === (int)$id): ?>
-          <!-- Edit-mode prescription row -->
           <form method="POST" action="database.php?view=prescriptions" id="form-<?= $id ?>">
             <input type="hidden" name="view" value="prescriptions">
             <input type="hidden" name="id" value="<?= $id ?>">
@@ -241,7 +231,6 @@ $result = $conn->query($query);
             </tr>
           </form>
         <?php else: ?>
-          <!-- Read-only prescription row -->
           <tr>
             <td><?= $id ?></td>
             <td><?= htmlspecialchars($row['medicationID']) ?></td>
@@ -269,7 +258,6 @@ $result = $conn->query($query);
       </tr>
 
       <?php if ($add_mode && $view === 'pharmacys'): ?>
-        <!-- Inline add new pharmacy row -->
         <form method="POST" action="database.php?view=pharmacys" id="form-add-pharmacy">
           <input type="hidden" name="view" value="pharmacys">
           <input type="hidden" name="id" value="">
@@ -292,7 +280,6 @@ $result = $conn->query($query);
 
       <?php while($row = $result->fetch_assoc()): $id = $row['pharmacyID']; ?>
         <?php if ($edit_id === (int)$id): ?>
-          <!-- Edit-mode pharmacy row -->
           <form method="POST" action="database.php?view=pharmacys" id="form-<?= $id ?>">
             <input type="hidden" name="view" value="pharmacys">
             <input type="hidden" name="id" value="<?= $id ?>">
@@ -312,7 +299,6 @@ $result = $conn->query($query);
             </tr>
           </form>
         <?php else: ?>
-          <!-- Read-only pharmacy row -->
           <tr>
             <td><?= $id ?></td>
             <td><?= htmlspecialchars($row['name']) ?></td>
@@ -331,7 +317,6 @@ $result = $conn->query($query);
     <?php endif; ?>
   </table>
 
-  <!-- Confirmation Modal -->
   <div id="confirmModal" class="modal">
     <div class="modal-content">
       <div id="confirmText">Are you sure?</div>
