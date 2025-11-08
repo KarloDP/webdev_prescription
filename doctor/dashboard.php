@@ -7,27 +7,26 @@ $activePage = 'dashboard';
 // Capture dashboard content
 ob_start();
 ?>
-<h1>Hello There User</h1>
-<p>Welcome to MediSync Dashboard</p>
+<h1>Hello Doctor</h1>
+<p>Welcome to MediSync Doctor Dashboard</p>
 
 <div class="stats-container">
     <div class="stat-box">
         <h2>0</h2>
-        <p>Upcoming Appointments</p>
+        <p>Patients Assigned</p>
     </div>
     <div class="stat-box">
         <h2>0</h2>
-        <p>Prescriptions</p>
+        <p>Prescriptions Created</p>
     </div>
     <div class="stat-box">
         <h2>0</h2>
-        <p>Notifications</p>
+        <p>Profile Updates</p>
     </div>
 </div>
 <?php
 $content = ob_get_clean();
 
 // Include the layout
-include 'patient_standard.php';
+include 'doctor_standard.php';
 ?>
-

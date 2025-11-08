@@ -68,13 +68,12 @@ body {
 
 .sidebar ul {
     list-style: none;
-    margin: 0;
-    padding: 0;
 }
 
+/* Sidebar Items */
 .sidebar li {
     padding: 16px 30px;
-    transition: background 0.25s ease-in-out;
+    transition: background 0.25s ease;
 }
 
 .sidebar li a {
@@ -84,7 +83,7 @@ body {
     display: block;
 }
 
-/* Hover and Active States */
+/* Hover + Active */
 .sidebar li.active,
 .sidebar li:hover {
     background: #2f6f50;
@@ -99,7 +98,6 @@ body {
     min-height: 100vh;
 }
 
-/* HEADERS INSIDE CONTENT */
 .content h1 {
     font-size: 28px;
     margin-bottom: 20px;
@@ -110,35 +108,38 @@ body {
     font-size: 16px;
     color: #444;
 }
-
-/* DASHBOARD STATS */
-.stats-container {
-    margin-top: 20px;
-    display: flex;
-    gap: 25px;
-}
-
-.stat-box {
+/* Scrollable table container */
+.table-scroll {
+    max-height: 320px;
+    overflow-y: auto;
+    margin-top: 10px;
     background: white;
     border-radius: 10px;
-    padding: 25px;
-    width: 240px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-    text-align: center;
-    transition: transform 0.2s ease;
 }
 
-.stat-box:hover {
-    transform: translateY(-4px);
+/* Table base styling */
+.doctor-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 650px;
 }
 
-.stat-box h2 {
-    font-size: 32px;
-    color: #1e3d2f;
+.doctor-table thead {
+    background: #1e3d2f;
+    color: white;
+    position: sticky;
+    top: 0;
 }
 
-.stat-box p {
+.doctor-table th,
+.doctor-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #ddd;
     font-size: 15px;
-    margin-top: 8px;
-    color: #555;
 }
+
+.doctor-table tr:hover td {
+    background: #f3f7f5;
+}
+

@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-$patient_name = $_SESSION['patient_name'] ?? "Patient Name";
+$pharmacist_name = $_SESSION['pharmacist_name'] ?? "Pharmacist Name";
 $activePage = $activePage ?? 'dashboard';
 ?>
 <!DOCTYPE html>
@@ -10,8 +10,8 @@ $activePage = $activePage ?? 'dashboard';
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Patient Dashboard</title>
-    <link rel="stylesheet" href="../assets/css/patient_standard.css" />
+    <title>Pharmacy Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/layout_standard.css" />
 </head>
 <body>
     <!-- TOP NAVBAR -->
@@ -21,7 +21,7 @@ $activePage = $activePage ?? 'dashboard';
             <span>MediSync Wellness</span>
         </div>
         <div class="profile">
-            <span><?php echo htmlspecialchars($patient_name); ?></span>
+            <span><?php echo htmlspecialchars($pharmacist_name); ?></span>
             <img src="../assets/images/user.png" class="avatar" alt="Profile">
             <div class="menu-icon">⋮</div>
         </div>
@@ -33,14 +33,17 @@ $activePage = $activePage ?? 'dashboard';
             <li class="<?php echo ($activePage == 'dashboard') ? 'active' : ''; ?>">
                 <a href="dashboard.php">Dashboard</a>
             </li>
-            <li class="<?php echo ($activePage == 'history') ? 'active' : ''; ?>">
-                <a href="history.php">History</a>
+            <li class="<?php echo ($activePage == 'patients') ? 'active' : ''; ?>">
+                <a href="patients.php">Patients</a>
             </li>
-            <li class="<?php echo ($activePage == 'medications') ? 'active' : ''; ?>">
-                <a href="medications.php">Medications</a>
+            <li class="<?php echo ($activePage == 'prescription') ? 'active' : ''; ?>">
+                <a href="prescription.php">Prescription</a>
             </li>
-            <li class="<?php echo ($activePage == 'pharmacies') ? 'active' : ''; ?>">
-                <a href="pharmacies.php">Pharmacies</a>
+            <li class="<?php echo ($activePage == 'dispense') ? 'active' : ''; ?>">
+                <a href="dispense.php">Dispense Medication</a>
+            </li>
+            <li class="<?php echo ($activePage == 'audit') ? 'active' : ''; ?>">
+                <a href="audit.php">Audit Logs</a>
             </li>
             <li>
                 <a href="../logout.php">Logout</a>
@@ -54,4 +57,3 @@ $activePage = $activePage ?? 'dashboard';
     </main>
 </body>
 </html>
-
