@@ -104,8 +104,6 @@ if ($result) {
         echo "<div class='prescription-card'>
                 <h4>{$row['genericName']}</h4>
                 <p>" . date("F j", strtotime($row['issueDate'])) . "<br>First time use</p>
-                <p>Prescribing doctor unavailable</p>
-                <a href='prescription_view.php?id={$row['prescriptionID']}'>Medicine Details</a>
               </div>";
       }
     } else {
@@ -114,7 +112,7 @@ if ($result) {
     ?>
   </div>
 
-  <a href="download_prescriptions.php" class="btn-download">Download Prescription</a>
+
 </div>
 
 </body>
