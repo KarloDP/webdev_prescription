@@ -2,12 +2,11 @@
 $servername = "127.0.0.1";
 $username = "root";
 $password = "";
-$database = "webdev_prescription"; // ✅ Make sure this matches your actual DB name in phpMyAdmin
+$database = "webdev_prescription";
+$port = 3307; // ✅ Confirmed active from netstat
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $database);
+$conn = new mysqli($servername, $username, $password, $database, $port);
 
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
