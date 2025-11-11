@@ -57,7 +57,7 @@ if ($result && $result->num_rows > 0) {
     <p><?= strtoupper($patientName) ?> <span class="role-label">Guest</span></p>
     <div id="dropdown-menu" class="dropdown-content">
       <a href="dashboard.php">Dashboard</a>
-      <a href="../logout.php">Logout</a>
+     <a href="http://localhost/WebDev_Prescription/testlogout.php">Logout</a>
     </div>
   </div>
   <ul>

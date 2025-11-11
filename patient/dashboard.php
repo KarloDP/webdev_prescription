@@ -63,7 +63,7 @@ if ($result) {
     <img src="../assets/img/profile.png" alt="Profile" class="profile-icon" onclick="toggleDropdown()" />
     <div id="dropdown-menu" class="dropdown-content">
       <a href="patient.php">My Profile</a>
-      <a href="../logout.php">Logout</a>
+      <a href="http://localhost/WebDev_Prescription/testlogout.php">Logout</a>
     </div>
     <p><?= strtoupper($patientName) ?> <span class="role-label">Patient</span></p>
   </div>
