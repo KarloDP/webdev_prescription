@@ -82,7 +82,7 @@ if ($result) {
 
   <div class="summary-box">
     <h3><?= $active_count ?> Active Prescriptions</h3>
-    <a href="prescriptions.php" class="btn-view">View Details</a>
+    <a href="medication.php" class="btn-view">View Details</a>
   </div>
 
   <div class="prescription-grid">
