@@ -2,7 +2,7 @@
 session_start();
 include('../includes/auth.php');
 include('../includes/db_connect.php');
-
+include 'patient_standard.php';
 // Check if user is logged in
 if (!isset($_SESSION['patientID'])) {
   header("Location: ../login.php");
