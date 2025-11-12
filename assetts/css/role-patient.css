@@ -1,0 +1,62 @@
+/* ================================
+   Styles for edit_profile.php page
+   ================================ */
+
+.profile-form {
+  max-width: 400px;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-form label {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.profile-form input {
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.btn-save {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-save:hover {
+  background-color: #2980b9;
+}
+
+.btn-cancel {
+  margin-top: 10px;
+  text-align: center;
+  display: inline-block;
+  padding: 10px;
+  background-color: #aaa;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+
+.btn-back:hover {
+  background-color: #333;
+}
+
+.success {
+  color: green;
+  font-weight: bold;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}

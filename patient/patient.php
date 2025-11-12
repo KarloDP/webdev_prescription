@@ -54,10 +54,8 @@ if ($result && $result->num_rows > 0) {
   <h3>Welcome To MediSync </h3>
   <div class="profile-section">
     <img src="../assets/img/profile.png" alt="Profile" class="profile-icon" />
-    <p><?= strtoupper($patientName) ?> <span class="role-label">Patient History</span></p>
+    <p><?= strtoupper($patientName) ?> <span class="role-label"></span></p>
     <div id="dropdown-menu" class="dropdown-content">
-      <a href="patient.php">My Profile</a>
-      <a href="http://localhost/WebDev_Prescription/testlogout.php">Logout</a>
     </div>
   </div>
   <ul>

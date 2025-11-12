@@ -38,7 +38,7 @@ if ($result) {
 <head>
   <meta charset="UTF-8">
   <title>Patient Dashboard</title>
-  <link rel="stylesheet" href="../admin/assets/css/role-patient.css">
+  <link rel="stylesheet" href="../assets/css/role-patient.css">
   <script>
     function toggleDropdown() {
       const menu = document.getElementById("dropdown-menu");
@@ -62,7 +62,8 @@ if ($result) {
   <div class="profile-section">
     <img src="../assets/img/profile.png" alt="Profile" class="profile-icon" onclick="toggleDropdown()" />
     <div id="dropdown-menu" class="dropdown-content">
-      <a href="patient.php">My Profile</a>
+      <!-- Profile button now points to edit_profile.php -->
+      <a href="edit_profile.php">Profile</a>
       <a href="http://localhost/WebDev_Prescription/testlogout.php">Logout</a>
     </div>
     <p><?= strtoupper($patientName) ?> <span class="role-label">Patient</span></p>
@@ -111,8 +112,6 @@ if ($result) {
     }
     ?>
   </div>
-
-
 </div>
 
 </body>

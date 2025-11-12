@@ -57,8 +57,6 @@ if ($result && $result->num_rows > 0) {
     <img src="../assets/img/profile.png" alt="Profile" class="profile-icon" />
     <p><?= strtoupper($patientName) ?> <span class="role-label"></span></p>
     <div id="dropdown-menu" class="dropdown-content">
-      <a href="dashboard.php">Dashboard</a>
-      <a href="http://localhost/WebDev_Prescription/testlogout.php">Logout</a>
     </div>
   </div>
   <ul>
