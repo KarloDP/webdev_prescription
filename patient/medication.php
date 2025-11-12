@@ -1,7 +1,7 @@
 <?php
 session_start();
-include 'includes/auth.php';
-include 'includes/db_connect.php';
+include('../includes/auth.php');
+include('../includes/db_connect.php');
 
 // Check if user is logged in
 if (!isset($_SESSION['patientID'])) {
@@ -28,7 +28,7 @@ if ($result && $result->num_rows > 0) {
 <head>
   <meta charset="UTF-8">
   <title>View Prescriptions</title>
-  <link rel="stylesheet" href="../admin/assets/css/role-patient.css">
+   <link rel="stylesheet" href="../assets/css/role-patient.css">
   <style>
     .prescription-table {
       border-collapse: collapse;
