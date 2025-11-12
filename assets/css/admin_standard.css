@@ -1,0 +1,47 @@
+.stats-container {
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+
+.stat-box {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    width: 240px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-4px);
+}
+
+.stat-box h2 {
+    font-size: 32px;
+    color: #1e3d2f;
+}
+
+.stat-box p {
+    font-size: 15px;
+    margin-top: 8px;
+    color: #555;
+}
+
+.details-btn {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 8px 14px;
+    background-color: #1e3d2f;
+    color: white;
+    font-size: 13px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.details-btn:hover {
+    background-color: #2f6f50;
+}
