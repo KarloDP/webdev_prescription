@@ -1,7 +1,7 @@
 <?php
 session_start();
-include('../includes/auth.php');
-include('../includes/db_connect.php');
+include 'includes/auth.php';
+include 'includes/db_connect.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['patientID'])) {
