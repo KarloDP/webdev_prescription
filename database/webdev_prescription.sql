@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Nov 11, 2025 at 11:12 AM
+-- Generation Time: Nov 12, 2025 at 02:32 PM
 -- Server version: 11.5.2-MariaDB
 -- PHP Version: 8.3.14
 
@@ -165,7 +165,7 @@ CREATE TABLE IF NOT EXISTS `patient` (
   `lastName` text NOT NULL,
   `birthDate` date NOT NULL,
   `gender` text NOT NULL,
-  `contactNumber` int(11) NOT NULL,
+  `contactNumber` varchar(15) DEFAULT NULL,
   `address` text NOT NULL,
   `email` text NOT NULL,
   `doctorID` int(11) NOT NULL,
@@ -178,16 +178,16 @@ CREATE TABLE IF NOT EXISTS `patient` (
 --
 
 INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `birthDate`, `gender`, `contactNumber`, `address`, `email`, `doctorID`) VALUES
-(1, 'Juan', 'Dela Cruz', '1990-05-12', 'Male', 912345678, 'Batangas City', 'juan.delacruz@example.com', 1),
-(2, 'Maria', 'Santos', '1988-09-23', 'Female', 923456789, 'Quezon City', 'maria.santos@example.com', 2),
-(3, 'Jose', 'Reyes', '1975-02-10', 'Male', 934567890, 'Cebu City', 'jose.reyes@example.com', 3),
-(4, 'Ana', 'Ramos', '1995-11-30', 'Female', 945678901, 'Davao City', 'ana.ramos@example.com', 4),
-(5, 'Carlos', 'Garcia', '1982-03-15', 'Male', 956789012, 'Pasig City', 'carlos.garcia@example.com', 5),
-(6, 'Liza', 'Torres', '2000-07-08', 'Female', 967890123, 'Iloilo City', 'liza.torres@example.com', 6),
-(7, 'Mark', 'Lim', '1998-04-25', 'Male', 978901234, 'Makati City', 'mark.lim@example.com', 7),
-(8, 'Patricia', 'Mendoza', '1993-06-18', 'Female', 989012345, 'Taguig City', 'patricia.mendoza@example.com', 8),
-(9, 'Andrew', 'Lopez', '1987-12-01', 'Male', 990123456, 'Manila', 'andrew.lopez@example.com', 9),
-(10, 'Sophia', 'De Guzman', '1999-10-05', 'Female', 901234567, 'Cavite', 'sophia.deguzman@example.com', 10);
+(1, 'Juan', 'Dela Cruz', '1990-05-12', 'Male', '912345678', 'Batangas City', 'juan.delacruz@example.com', 1),
+(2, 'Maria', 'Santos', '1988-09-23', 'Female', '09056649812', 'Quezon City', 'maria.santos@example.com', 2),
+(3, 'Jose', 'Reyes', '1975-02-10', 'Male', '934567890', 'Cebu City', 'jose.reyes@example.com', 3),
+(4, 'Ana', 'Ramos', '1995-11-30', 'Female', '945678901', 'Davao City', 'ana.ramos@example.com', 4),
+(5, 'Carlos', 'Garcia', '1982-03-15', 'Male', '956789012', 'Pasig City', 'carlos.garcia@example.com', 5),
+(6, 'Liza', 'Torres', '2000-07-08', 'Female', '967890123', 'Iloilo City', 'liza.torres@example.com', 6),
+(7, 'Mark', 'Lim', '1998-04-25', 'Male', '978901234', 'Makati City', 'mark.lim@example.com', 7),
+(8, 'Patricia', 'Mendoza', '1993-06-18', 'Female', '989012345', 'Taguig City', 'patricia.mendoza@example.com', 8),
+(9, 'Andrew', 'Lopez', '1987-12-01', 'Male', '990123456', 'Manila', 'andrew.lopez@example.com', 9),
+(10, 'Sophia', 'De Guzman', '1999-10-05', 'Female', '901234567', 'Cavite', 'sophia.deguzman@example.com', 10);
 
 -- --------------------------------------------------------
 
