@@ -26,7 +26,5 @@ ob_start();
 </div>
 <?php
 $content = ob_get_clean();
-
-// Include the layout
 include 'admin_standard.php';
 ?>
