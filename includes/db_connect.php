@@ -2,7 +2,8 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$database = "prescriptionWebapp"; // must match what you created in phpMyAdmin
+$database = "webdev_prescription";
+$port = 3306; // ✅ Confirmed active from netstat
 
 $conn = new mysqli($servername, $username, $password, $database);
 
