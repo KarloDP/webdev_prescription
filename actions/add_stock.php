@@ -1,18 +1,27 @@
 <?php
-include 'includes/db_connect.php';
+include '../includes/db_connect.php';
 
-$medicationID = $_POST['medicine_name'];
+$medicationID = $_POST['medicationID'];
 $genericName = $_POST['generic_name'];
+$brandName = $_POST['brand_name'];
 $form = $_POST['form'];
 $strength = $_POST['strength'];
 $manufacturer = $_POST['manufacturer'];
+$stock = $_POST['stock'];
 
-$sql = "INSERT INTO stock (medicine_name, generic_name, form, strength, manufacturer) VALUES ('$medicationID', '$genericName', '$form', '$strength', '$manufacturer')";
-if ($conn->query($sql) === TRUE) {
-    echo "New stock added successfully.";
+$stmt = $conn->prepare("
+    INSERT INTO medication (medicationID, genericName, brandName, form, strength, manufacturer, stock)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+");
+
+$stmt->bind_param("isssssi", $medicationID, $genericName, $brandName, $form, $strength, $manufacturer, $stock);
+
+if ($stmt->execute()) {
+    echo "Medication stock added successfully!";
 } else {
-    echo "Error: " . $conn->error;
+    echo "Error: " . $stmt->error;
 }
 
+$stmt->close();
 $conn->close();
 ?>

@@ -1,16 +1,25 @@
 <?php
 include('../includes/db_connect.php');
 
-$id = $_GET['id'] ?? 0;
+// Get and sanitize the ID from the URL
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id = (int) $_GET['id'];
 
-if ($id) {
-  $query = "DELETE FROM prescription WHERE prescriptionID = '$id'";
-  if (mysqli_query($conn, $query)) {
-    echo "<script>alert('Prescription deleted successfully!'); window.location='view_prescription.php';</script>";
-  } else {
-    echo "<p style='color:red;'>Error deleting record: " . mysqli_error($conn) . "</p>";
-  }
+    // Use prepared statements to be safe
+    $stmt = $conn->prepare("DELETE FROM prescription WHERE prescriptionID = ?");
+    $stmt->bind_param("i", $id);
+
+    if ($stmt->execute()) {
+        echo "<script>
+                alert('Prescription deleted successfully!');
+                window.location='view_prescription.php';
+              </script>";
+    } else {
+        echo "<p style='color:red;'>Error deleting record: " . $stmt->error . "</p>";
+    }
+
+    $stmt->close();
 } else {
-  echo "<p style='color:red;'>No ID provided.</p>";
+    echo "<p style='color:red;'>No ID provided or invalid ID.</p>";
 }
 ?>
