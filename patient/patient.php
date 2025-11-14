@@ -2,9 +2,9 @@
 session_start();
 include('../includes/auth.php');
 include('../includes/db_connect.php');
-include 'patient_standard.php';
+//include 'patient_standard.php';
 if (!isset($_SESSION['patientID'])) {
-  header("Location: ../login.php");
+  header("Location: ../TestLoginPatient.php");
   exit;
 }
 
