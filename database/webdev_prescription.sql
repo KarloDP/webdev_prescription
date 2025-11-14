@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3307
--- Generation Time: Nov 12, 2025 at 02:32 PM
--- Server version: 11.5.2-MariaDB
--- PHP Version: 8.3.14
+-- Host: localhost
+-- Generation Time: Nov 14, 2025 at 07:50 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -27,8 +27,7 @@ SET time_zone = "+00:00";
 -- Table structure for table `admins`
 --
 
-DROP TABLE IF EXISTS `admins`;
-CREATE TABLE IF NOT EXISTS `admins` (
+CREATE TABLE `admins` (
   `adminID` int(11) NOT NULL,
   `firstName` text NOT NULL,
   `lastName` text NOT NULL
@@ -51,8 +50,7 @@ INSERT INTO `admins` (`adminID`, `firstName`, `lastName`) VALUES
 -- Table structure for table `dispenserecord`
 --
 
-DROP TABLE IF EXISTS `dispenserecord`;
-CREATE TABLE IF NOT EXISTS `dispenserecord` (
+CREATE TABLE `dispenserecord` (
   `prescriptionItemID` int(11) NOT NULL,
   `pharmacyID` int(11) NOT NULL,
   `dispenseID` int(11) NOT NULL,
@@ -60,10 +58,7 @@ CREATE TABLE IF NOT EXISTS `dispenserecord` (
   `dateDispensed` date NOT NULL,
   `pharmacistName` text NOT NULL,
   `status` text NOT NULL,
-  `nextAvailableDates` date NOT NULL,
-  PRIMARY KEY (`dispenseID`),
-  KEY `PrescItemID` (`prescriptionItemID`),
-  KEY `pharmacyID` (`pharmacyID`)
+  `nextAvailableDates` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -89,8 +84,7 @@ INSERT INTO `dispenserecord` (`prescriptionItemID`, `pharmacyID`, `dispenseID`, 
 -- Table structure for table `doctor`
 --
 
-DROP TABLE IF EXISTS `doctor`;
-CREATE TABLE IF NOT EXISTS `doctor` (
+CREATE TABLE `doctor` (
   `doctorID` int(11) NOT NULL,
   `firstName` text NOT NULL,
   `lastName` text NOT NULL,
@@ -98,8 +92,7 @@ CREATE TABLE IF NOT EXISTS `doctor` (
   `licenseNumber` int(11) NOT NULL,
   `email` text NOT NULL,
   `clinicAddress` text NOT NULL,
-  `status` enum('active','pending') NOT NULL DEFAULT 'pending',
-  PRIMARY KEY (`doctorID`)
+  `status` enum('active','pending') NOT NULL DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -116,7 +109,7 @@ INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `specialization`, `li
 (7, 'Mark', 'De Guzman', 'Ophthalmology', 78901, 'mark.deguzman@visioncare.com', 'Manila Doctors Hospital, Manila', 'active'),
 (8, 'Patricia', 'Lopez', 'Obstetrics', 89012, 'patricia.lopez@womenhealth.com', 'UERM Medical Center, Sta. Mesa', 'active'),
 (9, 'David', 'Chua', 'ENT', 90123, 'david.chua@earnoseph.com', 'Chinese General Hospital, Manila', 'active'),
-(10, 'Sophia', 'Del Rosario', 'Psychiatry', 10123, 'sophia.delrosario@mindhealth.com', 'National Center for Mental Health, Mandaluyong', 'pending');
+(10, 'Sophia', 'Del Rosario', 'Psychiatry', 10123, 'sophia.delrosario@mindhealth.com', 'National Center for Mental Health, Mandaluyong', 'active');
 
 -- --------------------------------------------------------
 
@@ -124,16 +117,14 @@ INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `specialization`, `li
 -- Table structure for table `medication`
 --
 
-DROP TABLE IF EXISTS `medication`;
-CREATE TABLE IF NOT EXISTS `medication` (
+CREATE TABLE `medication` (
   `medicationID` int(11) NOT NULL,
   `genericName` text NOT NULL,
   `brandName` text NOT NULL,
   `form` text NOT NULL,
   `strength` int(11) NOT NULL,
   `manufacturer` text NOT NULL,
-  `stock` int(11) DEFAULT NULL,
-  PRIMARY KEY (`medicationID`)
+  `stock` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -149,8 +140,7 @@ INSERT INTO `medication` (`medicationID`, `genericName`, `brandName`, `form`, `s
 (6, 'Simvastatin', 'Zocor', 'Tablet', 20, 'MSD', 100),
 (7, 'Omeprazole', 'Losec', 'Capsule', 40, 'AstraZeneca', 100),
 (8, 'Cetirizine', 'Virlix', 'Tablet', 10, 'Unilab', 100),
-(9, 'Amlodipine', 'Norvasc', 'Tablet', 5, 'Pfizer', 100),
-(10, 'Salbutamol', 'Ventolin', 'Syrup', 2, 'GSK', 100);
+(9, 'Amlodipine', 'Norvasc', 'Tablet', 5, 'Pfizer', 100);
 
 -- --------------------------------------------------------
 
@@ -158,19 +148,16 @@ INSERT INTO `medication` (`medicationID`, `genericName`, `brandName`, `form`, `s
 -- Table structure for table `patient`
 --
 
-DROP TABLE IF EXISTS `patient`;
-CREATE TABLE IF NOT EXISTS `patient` (
+CREATE TABLE `patient` (
   `patientID` int(11) NOT NULL,
   `firstName` text NOT NULL,
   `lastName` text NOT NULL,
   `birthDate` date NOT NULL,
   `gender` text NOT NULL,
-  `contactNumber` varchar(15) DEFAULT NULL,
+  `contactNumber` int(11) NOT NULL,
   `address` text NOT NULL,
   `email` text NOT NULL,
-  `doctorID` int(11) NOT NULL,
-  PRIMARY KEY (`patientID`),
-  KEY `fk_patient_doctor` (`doctorID`)
+  `doctorID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -178,16 +165,16 @@ CREATE TABLE IF NOT EXISTS `patient` (
 --
 
 INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `birthDate`, `gender`, `contactNumber`, `address`, `email`, `doctorID`) VALUES
-(1, 'Juan', 'Dela Cruz', '1990-05-12', 'Male', '912345678', 'Batangas City', 'juan.delacruz@example.com', 1),
-(2, 'Maria', 'Santos', '1988-09-23', 'Female', '09056649812', 'Quezon City', 'maria.santos@example.com', 2),
-(3, 'Jose', 'Reyes', '1975-02-10', 'Male', '934567890', 'Cebu City', 'jose.reyes@example.com', 3),
-(4, 'Ana', 'Ramos', '1995-11-30', 'Female', '945678901', 'Davao City', 'ana.ramos@example.com', 4),
-(5, 'Carlos', 'Garcia', '1982-03-15', 'Male', '956789012', 'Pasig City', 'carlos.garcia@example.com', 5),
-(6, 'Liza', 'Torres', '2000-07-08', 'Female', '967890123', 'Iloilo City', 'liza.torres@example.com', 6),
-(7, 'Mark', 'Lim', '1998-04-25', 'Male', '978901234', 'Makati City', 'mark.lim@example.com', 7),
-(8, 'Patricia', 'Mendoza', '1993-06-18', 'Female', '989012345', 'Taguig City', 'patricia.mendoza@example.com', 8),
-(9, 'Andrew', 'Lopez', '1987-12-01', 'Male', '990123456', 'Manila', 'andrew.lopez@example.com', 9),
-(10, 'Sophia', 'De Guzman', '1999-10-05', 'Female', '901234567', 'Cavite', 'sophia.deguzman@example.com', 10);
+(1, 'Juan', 'Dela Cruz', '1990-05-12', 'Male', 912345678, 'Batangas City', 'juan.delacruz@example.com', 1),
+(2, 'Maria', 'Santos', '1988-09-23', 'Female', 923456789, 'Quezon City', 'maria.santos@example.com', 2),
+(3, 'Jose', 'Reyes', '1975-02-10', 'Male', 934567890, 'Cebu City', 'jose.reyes@example.com', 3),
+(4, 'Ana', 'Ramos', '1995-11-30', 'Female', 945678901, 'Davao City', 'ana.ramos@example.com', 4),
+(5, 'Carlos', 'Garcia', '1982-03-15', 'Male', 956789012, 'Pasig City', 'carlos.garcia@example.com', 5),
+(6, 'Liza', 'Torres', '2000-07-08', 'Female', 967890123, 'Iloilo City', 'liza.torres@example.com', 6),
+(7, 'Mark', 'Lim', '1998-04-25', 'Male', 978901234, 'Makati City', 'mark.lim@example.com', 7),
+(8, 'Patricia', 'Mendoza', '1993-06-18', 'Female', 989012345, 'Taguig City', 'patricia.mendoza@example.com', 8),
+(9, 'Andrew', 'Lopez', '1987-12-01', 'Male', 990123456, 'Manila', 'andrew.lopez@example.com', 9),
+(10, 'Sophia', 'De Guzman', '1999-10-05', 'Female', 901234567, 'Cavite', 'sophia.deguzman@example.com', 10);
 
 -- --------------------------------------------------------
 
@@ -195,15 +182,13 @@ INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `birthDate`, `gende
 -- Table structure for table `pharmacy`
 --
 
-DROP TABLE IF EXISTS `pharmacy`;
-CREATE TABLE IF NOT EXISTS `pharmacy` (
+CREATE TABLE `pharmacy` (
   `pharmacyID` int(11) NOT NULL,
   `name` text NOT NULL,
   `address` text NOT NULL,
   `contactNumber` varchar(20) NOT NULL,
   `email` text NOT NULL,
-  `clinicAddress` text NOT NULL,
-  PRIMARY KEY (`pharmacyID`)
+  `clinicAddress` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -216,8 +201,7 @@ INSERT INTO `pharmacy` (`pharmacyID`, `name`, `address`, `contactNumber`, `email
 (3, 'MediServe Pharmacy', '88 Aurora Hill', '09273456789', 'mediserve@example.com', '2F Pines Doctors Clinic'),
 (4, 'WellLife Pharmacy', '21 Legarda Road', '09384567890', 'welllife@example.com', 'G5 University Clinic Center'),
 (5, 'GreenCare Pharmacy', '67 Marcos Highway', '09495678901', 'greencare@example.com', 'Health Wing - Baguio General Hospital'),
-(6, 'CityMeds Pharmacy', '34 Bonifacio St', '09771234098', 'citymeds@example.com', 'Room 12 Baguio Medical Center'),
-(7, 'Starlight Pharmacy', '10 Navy Base St', '09982340987', 'starlight@example.com', 'Suite 6 SLU Family Clinic');
+(6, 'CityMeds Pharmacy', '34 Bonifacio St', '09771234098', 'citymeds@example.com', 'Room 12 Baguio Medical Center');
 
 -- --------------------------------------------------------
 
@@ -225,8 +209,7 @@ INSERT INTO `pharmacy` (`pharmacyID`, `name`, `address`, `contactNumber`, `email
 -- Table structure for table `prescription`
 --
 
-DROP TABLE IF EXISTS `prescription`;
-CREATE TABLE IF NOT EXISTS `prescription` (
+CREATE TABLE `prescription` (
   `prescriptionID` int(11) NOT NULL,
   `medicationID` int(11) NOT NULL,
   `patientID` int(11) NOT NULL,
@@ -235,11 +218,7 @@ CREATE TABLE IF NOT EXISTS `prescription` (
   `refillCount` int(11) NOT NULL,
   `refillInterval` date NOT NULL,
   `status` text NOT NULL,
-  `doctorID` int(11) NOT NULL,
-  PRIMARY KEY (`prescriptionID`),
-  KEY `patientID` (`patientID`),
-  KEY `medID` (`medicationID`),
-  KEY `fk_prescription_doctor` (`doctorID`)
+  `doctorID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -247,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `prescription` (
 --
 
 INSERT INTO `prescription` (`prescriptionID`, `medicationID`, `patientID`, `issueDate`, `expirationDate`, `refillCount`, `refillInterval`, `status`, `doctorID`) VALUES
-(1, 1, 1, '2025-01-02', '2025-04-02', 2, '2025-02-01', 'Active', 1),
+(1, 2, 2, '2025-02-02', '2025-04-03', 2, '2025-02-01', 'Expired', 1),
 (2, 2, 2, '2025-01-05', '2025-04-05', 1, '2025-02-04', 'Active', 2),
 (3, 3, 3, '2025-01-10', '2025-04-10', 0, '2025-02-09', 'Expired', 3),
 (4, 4, 4, '2025-02-01', '2025-05-01', 3, '2025-03-01', 'Active', 4),
@@ -255,8 +234,7 @@ INSERT INTO `prescription` (`prescriptionID`, `medicationID`, `patientID`, `issu
 (6, 6, 6, '2025-02-15', '2025-05-15', 0, '2025-03-17', 'Active', 6),
 (7, 7, 7, '2025-02-20', '2025-05-20', 2, '2025-03-22', 'Active', 7),
 (8, 8, 8, '2025-03-01', '2025-06-01', 1, '2025-04-01', 'Active', 8),
-(9, 9, 9, '2025-03-05', '2025-06-05', 0, '2025-04-04', 'Active', 9),
-(10, 10, 10, '2025-03-10', '2025-06-10', 2, '2025-04-09', 'Active', 10);
+(9, 9, 9, '2025-03-05', '2025-06-05', 0, '2025-04-04', 'Active', 9);
 
 -- --------------------------------------------------------
 
@@ -264,35 +242,78 @@ INSERT INTO `prescription` (`prescriptionID`, `medicationID`, `patientID`, `issu
 -- Table structure for table `prescriptionitem`
 --
 
-DROP TABLE IF EXISTS `prescriptionitem`;
-CREATE TABLE IF NOT EXISTS `prescriptionitem` (
+CREATE TABLE `prescriptionitem` (
+  `doctorID` int(11) NOT NULL,
   `prescriptionItemID` int(11) NOT NULL,
   `prescriptionID` int(11) NOT NULL,
   `medicationID` int(11) NOT NULL,
   `dosage` text NOT NULL,
   `frequency` text NOT NULL,
   `duration` text NOT NULL,
-  `instructions` text NOT NULL,
-  PRIMARY KEY (`prescriptionItemID`),
-  KEY `PrescID` (`prescriptionID`),
-  KEY `medicationID` (`medicationID`)
+  `instructions` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `prescriptionitem`
 --
 
-INSERT INTO `prescriptionitem` (`prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `instructions`) VALUES
-(1, 1, 1, '1 tablet', 'Once daily', '7 days', 'Take after meals'),
-(2, 2, 2, '1 tablet', 'Twice daily', '5 days', 'Take with water'),
-(3, 3, 3, '5 ml', 'Three times daily', '10 days', 'Shake well before use'),
-(4, 4, 4, '1 tablet', 'Once daily', '14 days', 'Avoid alcohol'),
-(5, 5, 5, '2 tablets', 'Once daily', '3 days', 'Take before breakfast'),
-(6, 6, 6, '1 capsule', 'Twice daily', '7 days', 'Swallow whole'),
-(7, 7, 7, '10 ml', 'Two times daily', '5 days', 'Store in fridge'),
-(8, 8, 8, '1 tablet', 'Three times daily', '10 days', 'With food'),
-(9, 9, 9, '5 ml', 'Once daily', '14 days', 'Use measuring cup'),
-(10, 10, 10, '1 capsule', 'Once daily', '7 days', 'Drink plenty of water');
+INSERT INTO `prescriptionitem` (`doctorID`, `prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `instructions`) VALUES
+(1, 1, 1, 1, '1 tablet', 'Once daily', '7 days', 'Take after meals'),
+(1, 1, 2, 2, '1 tablet', 'Twice daily', '5 days', 'Take with water'),
+(1, 2, 3, 3, '5 ml', 'Three times daily', '10 days', 'Shake well before use'),
+(2, 2, 4, 4, '1 tablet', 'Once daily', '14 days', 'Avoid alcohol'),
+(2, 3, 5, 5, '2 tablets', 'Once daily', '3 days', 'Take before breakfast'),
+(2, 3, 6, 6, '1 capsule', 'Twice daily', '7 days', 'Swallow whole'),
+(3, 4, 7, 7, '10 ml', 'Two times daily', '5 days', 'Store in fridge'),
+(3, 4, 8, 8, '1 tablet', 'Three times daily', '10 days', 'With food'),
+(3, 5, 9, 9, '5 ml', 'Once daily', '14 days', 'Use measuring cup'),
+(4, 5, 10, 10, '1 capsule', 'Once daily', '7 days', 'Drink plenty of water');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `dispenserecord`
+--
+ALTER TABLE `dispenserecord`
+  ADD PRIMARY KEY (`dispenseID`),
+  ADD KEY `PrescItemID` (`prescriptionItemID`),
+  ADD KEY `pharmacyID` (`pharmacyID`);
+
+--
+-- Indexes for table `doctor`
+--
+ALTER TABLE `doctor`
+  ADD PRIMARY KEY (`doctorID`);
+
+--
+-- Indexes for table `medication`
+--
+ALTER TABLE `medication`
+  ADD PRIMARY KEY (`medicationID`);
+
+--
+-- Indexes for table `patient`
+--
+ALTER TABLE `patient`
+  ADD PRIMARY KEY (`patientID`),
+  ADD KEY `fk_patient_doctor` (`doctorID`);
+
+--
+-- Indexes for table `pharmacy`
+--
+ALTER TABLE `pharmacy`
+  ADD PRIMARY KEY (`pharmacyID`);
+
+--
+-- Indexes for table `prescription`
+--
+ALTER TABLE `prescription`
+  ADD PRIMARY KEY (`prescriptionID`),
+  ADD KEY `patientID` (`patientID`),
+  ADD KEY `medID` (`medicationID`),
+  ADD KEY `fk_prescription_doctor` (`doctorID`);
 
 --
 -- Constraints for dumped tables
