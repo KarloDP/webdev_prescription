@@ -3,7 +3,7 @@ $servername = "127.0.0.1";
 $username = "root";
 $password = "";
 $database = "webdev_prescription";
-$port = 3307; // ✅ Confirmed active from netstat
+$port = 3306; // ✅ Confirmed active from netstat
 
 $conn = new mysqli($servername, $username, $password, $database, $port);
 
