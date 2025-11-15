@@ -3,8 +3,9 @@ session_start();
 include('../includes/auth.php');
 include('../includes/db_connect.php');
 
+// REMINDER: Your db_connect.php uses temporary MAMP config (root/root, port 8889).
+// DO NOT COMMIT that version to your main branch.
 
-// Check if patient is logged in
 if (!isset($_SESSION['patientID'])) {
     header("Location: ../TestLoginPatient.php");
     exit;
@@ -19,39 +20,40 @@ $stmt->bind_param("i", $patientID);
 $stmt->execute();
 $result = $stmt->get_result();
 if ($result && $result->num_rows > 0) {
-    $p = $result->fetch_assoc();
-    $patientName = $p['firstName'] . ' ' . $p['lastName'];
+    $row = $result->fetch_assoc();
+    $patientName = $row['firstName'] . ' ' . $row['lastName'];
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>View Prescriptions</title>
+    <title>Prescriptions & Medication Details</title>
     <link rel="stylesheet" href="../assets/css/role-patient.css">
+
     <style>
         .prescription-table {
             border-collapse: collapse;
             width: 100%;
-            margin-bottom: 30px;
+            margin: 20px 0;
         }
         .prescription-table th, .prescription-table td {
-            border: 1px solid #ccc;
             padding: 8px;
-            text-align: left;
+            border: 1px solid #ccc;
         }
         .prescription-table th {
-            background-color: #f4f4f4;
+            background: #f4f4f4;
         }
     </style>
 </head>
+
 <body>
 
 <!-- Sidebar -->
 <div class="sidebar">
     <h3>Welcome To MediSync</h3>
     <div class="profile-section">
-        <img src="../assets/img/profile.png" alt="Profile" class="profile-icon" />
+        <img src="../assets/img/profile.png" class="profile-icon">
         <p><?= strtoupper($patientName) ?></p>
     </div>
     <ul>
@@ -68,57 +70,61 @@ if ($result && $result->num_rows > 0) {
     <p>Below are all medications prescribed to <?= $patientName ?>.</p>
 
     <?php
-    // FIXED QUERY:
-    // - Correct table names: prescriptionitem, dispenserecord
-    // - Correct JOIN flow: prescription -> prescriptionitem -> medication -> doctor -> dispenserecord
-    // - One row per medication prescribed
-    // - Includes dosage, frequency, duration, instructions, status, refill info, dispense totals
-
+    // ---- FIXED QUERY ----
+    // Subquery aggregates dispense records per prescriptionItemID (avoids GROUP BY errors)
     $query = "
+    SELECT 
+        p.prescriptionID,
+        p.issueDate,
+        p.expirationDate,
+        p.refillInterval,
+        p.status AS prescriptionStatus,
+
+        m.genericName,
+        m.brandName,
+        m.form,
+        m.strength,
+
+        d.firstName AS doctorFirst,
+        d.lastName AS doctorLast,
+
+        pi.dosage,
+        pi.frequency,
+        pi.duration,
+        pi.instructions,
+        pi.refill_count,
+
+        COALESCE(dr.totalDispensed, 0) AS totalDispensed,
+        dr.nextRefillDate
+
+    FROM prescription p
+    INNER JOIN prescriptionitem pi ON p.prescriptionID = pi.prescriptionID
+    INNER JOIN medication m ON pi.medicationID = m.medicationID
+    INNER JOIN doctor d ON p.doctorID = d.doctorID
+
+    LEFT JOIN (
         SELECT 
-            p.prescriptionID,
-            p.issueDate,
-            p.expirationDate,
-            p.refillInterval,
-            p.status AS prescriptionStatus,
+            prescriptionItemID,
+            SUM(quantityDispensed) AS totalDispensed,
+            MAX(nextAvailableDates) AS nextRefillDate
+        FROM dispenserecord
+        GROUP BY prescriptionItemID
+    ) dr ON pi.prescriptionItemID = dr.prescriptionItemID
 
-            m.genericName,
-            m.brandName,
-            m.form,
-            m.strength,
-
-            d.firstName AS doctorFirst,
-            d.lastName AS doctorLast,
-
-            pi.dosage,
-            pi.frequency,
-            pi.duration,
-            pi.instructions,
-            pi.refill_count,
-
-            COALESCE(SUM(dr.quantityDispensed), 0) AS totalDispensed,
-            MAX(dr.nextAvailableDates) AS nextRefillDate
-        FROM prescription p
-        INNER JOIN prescriptionitem pi ON p.prescriptionID = pi.prescriptionID
-        INNER JOIN medication m ON pi.medicationID = m.medicationID
-        INNER JOIN doctor d ON p.doctorID = d.doctorID
-        LEFT JOIN dispenserecord dr ON pi.prescriptionItemID = dr.prescriptionItemID
-        WHERE p.patientID = ?
-        GROUP BY pi.prescriptionItemID
-        ORDER BY p.issueDate DESC
-    ";
+    WHERE p.patientID = ?
+    ORDER BY p.issueDate DESC, p.prescriptionID DESC
+";
 
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $patientID);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result && $result->num_rows > 0) {
+    if ($result->num_rows > 0) {
 
-        echo "<table class='prescription-table'>";
-        echo "
+        echo "<table class='prescription-table'>
             <tr>
-                <th>Prescription ID</th>
+                <th>Prescription #</th>
                 <th>Medicine</th>
                 <th>Brand</th>
                 <th>Form</th>
@@ -128,41 +134,47 @@ if ($result && $result->num_rows > 0) {
                 <th>Frequency</th>
                 <th>Duration</th>
                 <th>Instructions</th>
-                <th>Prescription Status</th>
+                <th>Status</th>
                 <th>Total Dispensed</th>
-                <th>Next Refill Date</th>
+                <th>Next Refill</th>
                 <th>Issued</th>
                 <th>Expires</th>
-            </tr>
-        ";
+            </tr>";
 
         while ($row = $result->fetch_assoc()) {
+
             echo "<tr>
-                    <td>{$row['prescriptionID']}</td>
-                    <td>{$row['genericName']}</td>
-                    <td>{$row['brandName']}</td>
-                    <td>{$row['form']}</td>
-                    <td>{$row['strength']}</td>
-                    <td>Dr. {$row['doctorFirst']} {$row['doctorLast']}</td>
-                    <td>{$row['dosage']}</td>
-                    <td>{$row['frequency']}</td>
-                    <td>{$row['duration']}</td>
-                    <td>{$row['instructions']}</td>
-                    <td>{$row['prescriptionStatus']}</td>
-                    <td>{$row['totalDispensed']} units</td>
-                    <td>" . ($row['nextRefillDate'] ? date("F j, Y", strtotime($row['nextRefillDate'])) : "N/A") . "</td>
-                    <td>" . date("F j, Y", strtotime($row['issueDate'])) . "</td>
-                    <td>" . date("F j, Y", strtotime($row['expirationDate'])) . "</td>
-                </tr>";
+                <td>{$row['prescriptionID']}</td>
+                <td>{$row['genericName']}</td>
+                <td>{$row['brandName']}</td>
+                <td>{$row['form']}</td>
+                <td>{$row['strength']}</td>
+
+                <td>Dr. {$row['doctorFirst']} {$row['doctorLast']}</td>
+
+                <td>{$row['dosage']}</td>
+                <td>{$row['frequency']}</td>
+                <td>{$row['duration']}</td>
+                <td>{$row['instructions']}</td>
+
+                <td>{$row['prescriptionStatus']}</td>
+                <td>{$row['totalDispensed']} unit(s)</td>
+
+                <td>" . ($row['nextRefillDate'] ? date("F j, Y", strtotime($row['nextRefillDate'])) : "N/A") . "</td>
+
+                <td>" . date("F j, Y", strtotime($row['issueDate'])) . "</td>
+                <td>" . date("F j, Y", strtotime($row['expirationDate'])) . "</td>
+            </tr>";
         }
 
         echo "</table>";
+
     } else {
-        echo "<p>No medications found.</p>";
+        echo "<p>No medication records found.</p>";
     }
     ?>
 
 </div>
-
 </body>
 </html>
+
