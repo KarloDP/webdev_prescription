@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Nov 14, 2025 at 08:40 AM
+-- Host: 127.0.0.1
+-- Generation Time: Nov 15, 2025 at 03:51 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -215,7 +215,6 @@ CREATE TABLE `prescription` (
   `patientID` int(11) NOT NULL,
   `issueDate` date NOT NULL,
   `expirationDate` date NOT NULL,
-  `refillCount` int(11) NOT NULL,
   `refillInterval` date NOT NULL,
   `status` text NOT NULL,
   `doctorID` int(11) NOT NULL
@@ -225,16 +224,16 @@ CREATE TABLE `prescription` (
 -- Dumping data for table `prescription`
 --
 
-INSERT INTO `prescription` (`prescriptionID`, `medicationID`, `patientID`, `issueDate`, `expirationDate`, `refillCount`, `refillInterval`, `status`, `doctorID`) VALUES
-(1, 2, 2, '2025-02-02', '2025-04-03', 2, '2025-02-01', 'Expired', 1),
-(2, 2, 2, '2025-01-05', '2025-04-05', 1, '2025-02-04', 'Active', 2),
-(3, 3, 3, '2025-01-10', '2025-04-10', 0, '2025-02-09', 'Expired', 3),
-(4, 4, 4, '2025-02-01', '2025-05-01', 3, '2025-03-01', 'Active', 4),
-(5, 5, 5, '2025-02-10', '2025-05-10', 1, '2025-03-12', 'Active', 5),
-(6, 6, 6, '2025-02-15', '2025-05-15', 0, '2025-03-17', 'Active', 6),
-(7, 7, 7, '2025-02-20', '2025-05-20', 2, '2025-03-22', 'Active', 7),
-(8, 8, 8, '2025-03-01', '2025-06-01', 1, '2025-04-01', 'Active', 8),
-(9, 9, 9, '2025-03-05', '2025-06-05', 0, '2025-04-04', 'Active', 9);
+INSERT INTO `prescription` (`prescriptionID`, `medicationID`, `patientID`, `issueDate`, `expirationDate`, `refillInterval`, `status`, `doctorID`) VALUES
+(1, 2, 2, '2025-02-02', '2025-04-03', '2025-02-01', 'Expired', 1),
+(2, 2, 2, '2025-01-05', '2025-04-05', '2025-02-04', 'Active', 2),
+(3, 3, 3, '2025-01-10', '2025-04-10', '2025-02-09', 'Expired', 3),
+(4, 4, 4, '2025-02-01', '2025-05-01', '2025-03-01', 'Active', 4),
+(5, 5, 5, '2025-02-10', '2025-05-10', '2025-03-12', 'Active', 5),
+(6, 6, 6, '2025-02-15', '2025-05-15', '2025-03-17', 'Active', 6),
+(7, 7, 7, '2025-02-20', '2025-05-20', '2025-03-22', 'Active', 7),
+(8, 8, 8, '2025-03-01', '2025-06-01', '2025-04-01', 'Active', 8),
+(9, 9, 9, '2025-03-05', '2025-06-05', '2025-04-04', 'Active', 9);
 
 -- --------------------------------------------------------
 
@@ -250,6 +249,7 @@ CREATE TABLE `prescriptionitem` (
   `dosage` text NOT NULL,
   `frequency` text NOT NULL,
   `duration` text NOT NULL,
+  `refill_count` int(11) NOT NULL,
   `instructions` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -257,32 +257,32 @@ CREATE TABLE `prescriptionitem` (
 -- Dumping data for table `prescriptionitem`
 --
 
-INSERT INTO `prescriptionitem` (`doctorID`, `prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `instructions`) VALUES
-(1, 1, 1, 1, '1 tablet', 'Once daily', '7 days', 'Take after meals'),
-(1, 2, 2, 2, '1 tablet', 'Twice daily', '5 days', 'Take with water'),
-(1, 3, 3, 3, '5 ml', 'Three times daily', '10 days', 'Shake well before use'),
-(2, 4, 4, 4, '1 tablet', 'Once daily', '14 days', 'Avoid alcohol'),
-(2, 5, 5, 5, '2 tablets', 'Once daily', '3 days', 'Take before breakfast'),
-(2, 6, 6, 6, '1 capsule', 'Twice daily', '7 days', 'Swallow whole'),
-(3, 7, 7, 7, '10 ml', 'Two times daily', '5 days', 'Store in fridge'),
-(3, 8, 8, 8, '1 tablet', 'Three times daily', '10 days', 'With food'),
-(3, 9, 9, 9, '5 ml', 'Once daily', '14 days', 'Use measuring cup'),
-(4, 10, 10, 10, '1 capsule', 'Once daily', '7 days', 'Drink plenty of water'),
-(11, 11, 101, 21, '1 tablet', 'Once daily', '7', 'Take with meals'),
-(11, 12, 101, 22, '5 ml', 'Twice daily', '5', 'Shake well before use'),
-(11, 13, 101, 23, '1 capsule', 'Once daily', '10', 'Avoid alcohol'),
-(12, 14, 102, 24, '2 tablets', 'Three times daily', '7', 'Take after breakfast'),
-(12, 15, 102, 25, '10 ml', 'Once daily', '3', 'Refrigerate after opening'),
-(12, 16, 102, 26, '1 tablet', 'Twice daily', '14', 'Take with water'),
-(13, 17, 103, 27, '1 capsule', 'Once daily', '30', 'Swallow whole'),
-(13, 18, 103, 28, '5 ml', 'Twice daily', '10', 'Use measuring cup'),
-(13, 19, 103, 29, '1 tablet', 'Once daily', '5', 'Take before sleeping'),
-(14, 20, 104, 30, '20 ml', 'Three times daily', '7', 'Shake before using'),
-(14, 21, 104, 31, '1 tablet', 'Twice daily', '10', 'Take with food'),
-(14, 22, 104, 32, '1 capsule', 'Once weekly', '21', 'Drink plenty of water'),
-(15, 23, 105, 33, '1 tablet', 'Four times daily', '5', 'Avoid sunlight exposure'),
-(15, 24, 105, 34, '15 ml', 'Once daily', '7', 'Store in a cool place'),
-(15, 25, 105, 35, '2 capsules', 'Twice daily', '14', 'Take before meals');
+INSERT INTO `prescriptionitem` (`doctorID`, `prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `refill_count`, `instructions`) VALUES
+(1, 1, 1, 1, '1 tablet', 'Once daily', '7 days', 0, 'Take after meals'),
+(1, 2, 2, 2, '1 tablet', 'Twice daily', '5 days', 0, 'Take with water'),
+(1, 3, 3, 3, '5 ml', 'Three times daily', '10 days', 0, 'Shake well before use'),
+(2, 4, 4, 4, '1 tablet', 'Once daily', '14 days', 0, 'Avoid alcohol'),
+(2, 5, 5, 5, '2 tablets', 'Once daily', '3 days', 0, 'Take before breakfast'),
+(2, 6, 6, 6, '1 capsule', 'Twice daily', '7 days', 0, 'Swallow whole'),
+(3, 7, 7, 7, '10 ml', 'Two times daily', '5 days', 0, 'Store in fridge'),
+(3, 8, 8, 8, '1 tablet', 'Three times daily', '10 days', 0, 'With food'),
+(3, 9, 9, 9, '5 ml', 'Once daily', '14 days', 0, 'Use measuring cup'),
+(4, 10, 10, 10, '1 capsule', 'Once daily', '7 days', 0, 'Drink plenty of water'),
+(11, 11, 101, 21, '1 tablet', 'Once daily', '7', 0, 'Take with meals'),
+(11, 12, 101, 22, '5 ml', 'Twice daily', '5', 0, 'Shake well before use'),
+(11, 13, 101, 23, '1 capsule', 'Once daily', '10', 0, 'Avoid alcohol'),
+(12, 14, 102, 24, '2 tablets', 'Three times daily', '7', 0, 'Take after breakfast'),
+(12, 15, 102, 25, '10 ml', 'Once daily', '3', 0, 'Refrigerate after opening'),
+(12, 16, 102, 26, '1 tablet', 'Twice daily', '14', 0, 'Take with water'),
+(13, 17, 103, 27, '1 capsule', 'Once daily', '30', 0, 'Swallow whole'),
+(13, 18, 103, 28, '5 ml', 'Twice daily', '10', 0, 'Use measuring cup'),
+(13, 19, 103, 29, '1 tablet', 'Once daily', '5', 0, 'Take before sleeping'),
+(14, 20, 104, 30, '20 ml', 'Three times daily', '7', 0, 'Shake before using'),
+(14, 21, 104, 31, '1 tablet', 'Twice daily', '10', 0, 'Take with food'),
+(14, 22, 104, 32, '1 capsule', 'Once weekly', '21', 0, 'Drink plenty of water'),
+(15, 23, 105, 33, '1 tablet', 'Four times daily', '5', 0, 'Avoid sunlight exposure'),
+(15, 24, 105, 34, '15 ml', 'Once daily', '7', 0, 'Store in a cool place'),
+(15, 25, 105, 35, '2 capsules', 'Twice daily', '14', 0, 'Take before meals');
 
 --
 -- Indexes for dumped tables
