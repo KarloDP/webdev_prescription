@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 15, 2025 at 03:51 AM
+-- Generation Time: Nov 15, 2025 at 04:15 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -249,6 +249,7 @@ CREATE TABLE `prescriptionitem` (
   `dosage` text NOT NULL,
   `frequency` text NOT NULL,
   `duration` text NOT NULL,
+  `prescribed_amount` int(11) NOT NULL,
   `refill_count` int(11) NOT NULL,
   `instructions` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -257,32 +258,32 @@ CREATE TABLE `prescriptionitem` (
 -- Dumping data for table `prescriptionitem`
 --
 
-INSERT INTO `prescriptionitem` (`doctorID`, `prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `refill_count`, `instructions`) VALUES
-(1, 1, 1, 1, '1 tablet', 'Once daily', '7 days', 0, 'Take after meals'),
-(1, 2, 2, 2, '1 tablet', 'Twice daily', '5 days', 0, 'Take with water'),
-(1, 3, 3, 3, '5 ml', 'Three times daily', '10 days', 0, 'Shake well before use'),
-(2, 4, 4, 4, '1 tablet', 'Once daily', '14 days', 0, 'Avoid alcohol'),
-(2, 5, 5, 5, '2 tablets', 'Once daily', '3 days', 0, 'Take before breakfast'),
-(2, 6, 6, 6, '1 capsule', 'Twice daily', '7 days', 0, 'Swallow whole'),
-(3, 7, 7, 7, '10 ml', 'Two times daily', '5 days', 0, 'Store in fridge'),
-(3, 8, 8, 8, '1 tablet', 'Three times daily', '10 days', 0, 'With food'),
-(3, 9, 9, 9, '5 ml', 'Once daily', '14 days', 0, 'Use measuring cup'),
-(4, 10, 10, 10, '1 capsule', 'Once daily', '7 days', 0, 'Drink plenty of water'),
-(11, 11, 101, 21, '1 tablet', 'Once daily', '7', 0, 'Take with meals'),
-(11, 12, 101, 22, '5 ml', 'Twice daily', '5', 0, 'Shake well before use'),
-(11, 13, 101, 23, '1 capsule', 'Once daily', '10', 0, 'Avoid alcohol'),
-(12, 14, 102, 24, '2 tablets', 'Three times daily', '7', 0, 'Take after breakfast'),
-(12, 15, 102, 25, '10 ml', 'Once daily', '3', 0, 'Refrigerate after opening'),
-(12, 16, 102, 26, '1 tablet', 'Twice daily', '14', 0, 'Take with water'),
-(13, 17, 103, 27, '1 capsule', 'Once daily', '30', 0, 'Swallow whole'),
-(13, 18, 103, 28, '5 ml', 'Twice daily', '10', 0, 'Use measuring cup'),
-(13, 19, 103, 29, '1 tablet', 'Once daily', '5', 0, 'Take before sleeping'),
-(14, 20, 104, 30, '20 ml', 'Three times daily', '7', 0, 'Shake before using'),
-(14, 21, 104, 31, '1 tablet', 'Twice daily', '10', 0, 'Take with food'),
-(14, 22, 104, 32, '1 capsule', 'Once weekly', '21', 0, 'Drink plenty of water'),
-(15, 23, 105, 33, '1 tablet', 'Four times daily', '5', 0, 'Avoid sunlight exposure'),
-(15, 24, 105, 34, '15 ml', 'Once daily', '7', 0, 'Store in a cool place'),
-(15, 25, 105, 35, '2 capsules', 'Twice daily', '14', 0, 'Take before meals');
+INSERT INTO `prescriptionitem` (`doctorID`, `prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `prescribed_amount`, `refill_count`, `instructions`) VALUES
+(1, 1, 1, 1, '1 tablet', 'Once daily', '7 days', 0, 0, 'Take after meals'),
+(1, 2, 2, 2, '1 tablet', 'Twice daily', '5 days', 0, 0, 'Take with water'),
+(1, 3, 3, 3, '5 ml', 'Three times daily', '10 days', 0, 0, 'Shake well before use'),
+(2, 4, 4, 4, '1 tablet', 'Once daily', '14 days', 0, 0, 'Avoid alcohol'),
+(2, 5, 5, 5, '2 tablets', 'Once daily', '3 days', 0, 0, 'Take before breakfast'),
+(2, 6, 6, 6, '1 capsule', 'Twice daily', '7 days', 0, 0, 'Swallow whole'),
+(3, 7, 7, 7, '10 ml', 'Two times daily', '5 days', 0, 0, 'Store in fridge'),
+(3, 8, 8, 8, '1 tablet', 'Three times daily', '10 days', 0, 0, 'With food'),
+(3, 9, 9, 9, '5 ml', 'Once daily', '14 days', 0, 0, 'Use measuring cup'),
+(4, 10, 10, 10, '1 capsule', 'Once daily', '7 days', 0, 0, 'Drink plenty of water'),
+(11, 11, 101, 21, '1 tablet', 'Once daily', '7', 0, 0, 'Take with meals'),
+(11, 12, 101, 22, '5 ml', 'Twice daily', '5', 0, 0, 'Shake well before use'),
+(11, 13, 101, 23, '1 capsule', 'Once daily', '10', 0, 0, 'Avoid alcohol'),
+(12, 14, 102, 24, '2 tablets', 'Three times daily', '7', 0, 0, 'Take after breakfast'),
+(12, 15, 102, 25, '10 ml', 'Once daily', '3', 0, 0, 'Refrigerate after opening'),
+(12, 16, 102, 26, '1 tablet', 'Twice daily', '14', 0, 0, 'Take with water'),
+(13, 17, 103, 27, '1 capsule', 'Once daily', '30', 0, 0, 'Swallow whole'),
+(13, 18, 103, 28, '5 ml', 'Twice daily', '10', 0, 0, 'Use measuring cup'),
+(13, 19, 103, 29, '1 tablet', 'Once daily', '5', 0, 0, 'Take before sleeping'),
+(14, 20, 104, 30, '20 ml', 'Three times daily', '7', 0, 0, 'Shake before using'),
+(14, 21, 104, 31, '1 tablet', 'Twice daily', '10', 0, 0, 'Take with food'),
+(14, 22, 104, 32, '1 capsule', 'Once weekly', '21', 0, 0, 'Drink plenty of water'),
+(15, 23, 105, 33, '1 tablet', 'Four times daily', '5', 0, 0, 'Avoid sunlight exposure'),
+(15, 24, 105, 34, '15 ml', 'Once daily', '7', 0, 0, 'Store in a cool place'),
+(15, 25, 105, 35, '2 capsules', 'Twice daily', '14', 0, 0, 'Take before meals');
 
 --
 -- Indexes for dumped tables

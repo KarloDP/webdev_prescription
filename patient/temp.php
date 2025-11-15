@@ -13,7 +13,8 @@ $searchable = [
     'duration'     => 'Duration',
     'instructions' => 'Instructions',
     'doctorID'     => 'Doctor ID',
-    'refill_count' => 'Refill_Count'
+    'refill_count' => 'Refill_Count',
+    'prescribed_amount' => 'Prescribed_Amount'
 ];
 
 // Read input
@@ -34,7 +35,7 @@ if ($attr !== 'all' && !array_key_exists($attr, $searchable)) {
 }
 
 // Build SELECT and WHERE parts
-$select = "doctorID, prescriptionItemID, prescriptionID, medicationID, dosage, frequency, duration, refill_count, instructions";
+$select = "doctorID, prescriptionItemID, prescriptionID, medicationID, dosage, frequency, duration, prescribed_amount, refill_count, instructions";
 $sql = "SELECT $select FROM prescriptionitem";
 
 $where = [];
@@ -107,7 +108,7 @@ if ($attr !== 'all') {
     // safe column name from whitelist
     $orderByColumn = $attr;
     // For text columns use COLLATE to have consistent ordering; numeric columns are fine
-    if (in_array($orderByColumn, ['dosage', 'frequency', 'duration', 'refill_count', 'instructions'])) {
+    if (in_array($orderByColumn, ['dosage', 'frequency', 'duration', 'prescribed_amount', 'refill_count', 'instructions'])) {
         $orderClause = "ORDER BY prescriptionID ASC, $orderByColumn COLLATE utf8mb4_general_ci ASC, prescriptionItemID ASC";
     } else {
         // numeric columns
@@ -214,6 +215,7 @@ while ($row = $result->fetch_assoc()) {
     $dosage = $row['dosage'];
     $frequency = $row['frequency'];
     $duration = $row['duration'];
+    $prescribed_amount = $row['prescribed_amount'];
     $refill_count = $row['refill_count'];
     $instructions = $row['instructions'];
 
@@ -230,6 +232,7 @@ while ($row = $result->fetch_assoc()) {
                 <th>Dosage</th>
                 <th>Frequency</th>
                 <th>Duration</th>
+                <th>Prescribed Amount</th>
                 <th>Refill Count</th>
                 <th>Instructions</th>
               </tr></thead><tbody>';
@@ -241,6 +244,7 @@ while ($row = $result->fetch_assoc()) {
     echo '<td>' . htmlspecialchars($dosage) . '</td>';
     echo '<td>' . htmlspecialchars($frequency) . '</td>';
     echo '<td>' . htmlspecialchars($duration) . '</td>';
+    echo '<td>'. htmlspecialchars($prescribed_amount) . '</td>';
     echo '<td>' . htmlspecialchars($refill_count) . '</td>';
     echo '<td>' . nl2br(htmlspecialchars($instructions)) . '</td>';
     echo '</tr>';
