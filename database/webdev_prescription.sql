@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 15, 2025 at 04:15 AM
+-- Generation Time: Nov 15, 2025 at 04:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -330,6 +330,22 @@ ALTER TABLE `prescription`
   ADD KEY `patientID` (`patientID`),
   ADD KEY `medID` (`medicationID`),
   ADD KEY `fk_prescription_doctor` (`doctorID`);
+
+--
+-- Indexes for table `prescriptionitem`
+--
+ALTER TABLE `prescriptionitem`
+  ADD PRIMARY KEY (`prescriptionItemID`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `prescriptionitem`
+--
+ALTER TABLE `prescriptionitem`
+  MODIFY `prescriptionItemID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- Constraints for dumped tables
