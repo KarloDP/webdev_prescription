@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 16, 2025 at 07:48 AM
+-- Generation Time: Nov 16, 2025 at 08:58 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -259,7 +259,7 @@ CREATE TABLE `prescriptionitem` (
 --
 
 INSERT INTO `prescriptionitem` (`doctorID`, `prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `prescribed_amount`, `refill_count`, `instructions`) VALUES
-(1, 81, 1, 2, '500 mg', '3 times a day', '5 days', 15, 0, 'Take after meals'),
+(1, 1, 1, 2, '500 mg', '3 times a day', '5 days', 15, 0, 'Take after meals'),
 (1, 82, 1, 3, '500 mg', '2 times a day', '7 days', 14, 0, 'Complete the full course'),
 (2, 83, 2, 4, '10 mg', 'Once daily', '10 days', 10, 1, 'Take at night'),
 (2, 84, 2, 2, '200 mg', 'Every 6 hours', '3 days', 12, 0, 'Take with water'),
