@@ -12,7 +12,6 @@ $prescriptions = mysqli_query($conn, "
         pat.lastName,
         p.issueDate,
         p.expirationDate,
-        p.refillCount,
         p.refillInterval,
         p.status
     FROM prescription p
@@ -32,8 +31,7 @@ $prescriptions = mysqli_query($conn, "
                 <th>Medications</th>
                 <th>Issue Date</th>
                 <th>Expiration Date</th>
-                <th>Refills</th>
-                <th>Interval</th>
+                <th>Refill Interval</th>
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
@@ -60,42 +58,37 @@ $prescriptions = mysqli_query($conn, "
                     <td><?= $pres['prescriptionID'] ?></td>
 
                     <td>
-                        <?= htmlspecialchars($pres['firstName'] . " " . $pres['lastName']) ?><br>
-
-                        <!-- BACK TO PATIENT PRESCRIPTIONS BUTTON -->
-                        <a href="view_patient_prescription.php?id=<?= $pres['patientID'] ?>"
-                           style="display:inline-block; margin-top:5px;
-                                  background:#444; color:white; padding:4px 10px;
-                                  font-size:12px; border-radius:5px;">
-                            View Patient
+                        <a href="view_patient_prescription.php?id=<?= $pres['patientID'] ?>">
+                            <?= htmlspecialchars($pres['firstName'] . " " . $pres['lastName']) ?>
                         </a>
                     </td>
 
                     <td>
-                        <ul style="padding-left: 18px; margin:0;">
-                            <?php while ($item = mysqli_fetch_assoc($items)): ?>
-                                <li style="margin-bottom:6px;">
-                                    <strong><?= htmlspecialchars($item['genericName'] . " — " . $item['brandName']) ?></strong><br>
-                                    Dosage: <?= htmlspecialchars($item['dosage']) ?>,
-                                    Frequency: <?= htmlspecialchars($item['frequency']) ?>,
-                                    Duration: <?= htmlspecialchars($item['duration']) ?>,
-                                    Instructions: <?= htmlspecialchars($item['instructions']) ?>
-                                </li>
-                            <?php endwhile; ?>
-                        </ul>
+                        <?php
+                        // List medication brand names
+                        if (mysqli_num_rows($items) > 0) {
+                            $medNames = [];
+                            while ($item = mysqli_fetch_assoc($items)) {
+                                $medNames[] = htmlspecialchars($item['brandName']);
+                            }
+                            echo implode(', ', $medNames);
+                        } else {
+                            echo "N/A";
+                        }
+                        ?>
                     </td>
 
                     <td><?= $pres['issueDate'] ?></td>
                     <td><?= $pres['expirationDate'] ?></td>
-                    <td><?= $pres['refillCount'] ?></td>
                     <td><?= $pres['refillInterval'] ?></td>
                     <td><?= $pres['status'] ?></td>
 
                     <td>
-                        <a href="edit_prescription.php?id=<?= $pres['prescriptionID'] ?>" style="color:blue;">Edit</a><br>
+                        <a href="prescription_history.php?id=<?= $pres['prescriptionID'] ?>" style="color:green;">History</a> |
+                        <a href="edit_prescription.php?id=<?= $pres['prescriptionID'] ?>" style="color:blue;">Edit</a> |
                         <a href="delete_prescription.php?id=<?= $pres['prescriptionID'] ?>"
-                           style="color:red;"
-                           onclick="return confirm('Are you sure you want to delete this prescription?');">
+                           onclick="return confirm('Delete this prescription?')"
+                           style="color:red;">
                            Delete
                         </a>
                     </td>
