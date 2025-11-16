@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 16, 2025 at 07:48 AM
+-- Generation Time: Nov 15, 2025 at 04:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -118,7 +118,7 @@ INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `specialization`, `li
 --
 
 CREATE TABLE `medication` (
-  `medicationID` int(11) UNSIGNED NOT NULL,
+  `medicationID` int(11) NOT NULL,
   `genericName` text NOT NULL,
   `brandName` text NOT NULL,
   `form` text NOT NULL,
@@ -245,7 +245,7 @@ CREATE TABLE `prescriptionitem` (
   `doctorID` int(11) NOT NULL,
   `prescriptionItemID` int(11) NOT NULL,
   `prescriptionID` int(11) NOT NULL,
-  `medicationID` int(11) UNSIGNED NOT NULL,
+  `medicationID` int(11) NOT NULL,
   `dosage` text NOT NULL,
   `frequency` text NOT NULL,
   `duration` text NOT NULL,
@@ -259,35 +259,31 @@ CREATE TABLE `prescriptionitem` (
 --
 
 INSERT INTO `prescriptionitem` (`doctorID`, `prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `prescribed_amount`, `refill_count`, `instructions`) VALUES
-(1, 81, 1, 2, '500 mg', '3 times a day', '5 days', 15, 0, 'Take after meals'),
-(1, 82, 1, 3, '500 mg', '2 times a day', '7 days', 14, 0, 'Complete the full course'),
-(2, 83, 2, 4, '10 mg', 'Once daily', '10 days', 10, 1, 'Take at night'),
-(2, 84, 2, 2, '200 mg', 'Every 6 hours', '3 days', 12, 0, 'Take with water'),
-(3, 85, 3, 1, '500 mg', 'As needed', '7 days', 20, 0, 'For fever or pain'),
-(3, 86, 3, 3, '500 mg', 'Three times a day', '10 days', 30, 0, 'Finish full course'),
-(4, 87, 4, 5, '850 mg', 'Twice a day', '30 days', 60, 2, 'Take with breakfast and dinner'),
-(5, 88, 5, 6, '20 mg', 'Once daily', '30 days', 30, 2, 'Take at the same time daily'),
-(5, 89, 5, 1, '500 mg', 'Every 6 hours', '6 days', 24, 0, 'Pain management'),
-(6, 90, 6, 7, '40 mg', 'Once daily', '14 days', 14, 1, 'Take before breakfast'),
-(6, 91, 6, 2, '200 mg', 'Every 8 hours', '5 days', 15, 0, 'Hydrate well'),
-(7, 92, 7, 9, '5 mg', 'Once daily', '30 days', 30, 1, 'Monitor blood pressure'),
-(7, 93, 7, 3, '500 mg', 'Twice daily', '7 days', 14, 0, 'Complete regimen'),
-(8, 94, 8, 8, '10 mg', 'Once daily', '10 days', 10, 1, 'Take before bed'),
-(8, 95, 8, 5, '850 mg', 'Twice a day', '60 days', 120, 3, 'Long-term maintenance'),
-(9, 96, 9, 4, '10 mg', 'Once daily', '14 days', 14, 1, 'Non-drowsy formula'),
-(9, 97, 9, 6, '20 mg', 'Once daily', '30 days', 30, 2, 'Take regularly'),
-(1, 98, 1, 8, '10 mg', 'Once daily', '7 days', 7, 0, 'For allergies'),
-(2, 99, 2, 9, '5 mg', 'Once daily', '90 days', 90, 3, 'Long-term therapy'),
-(3, 100, 3, 5, '850 mg', 'Twice daily', '90 days', 180, 3, 'Maintain diet'),
-(4, 101, 4, 1, '500 mg', 'As needed', '10 days', 30, 0, 'Do not exceed 4 doses/day'),
-(5, 102, 5, 2, '200 mg', 'Every 4 hours', '2 days', 12, 0, 'Do not exceed recommended dose'),
-(6, 103, 6, 3, '500 mg', 'Every 12 hours', '10 days', 20, 0, 'Take until symptoms improve'),
-(7, 104, 7, 1, '500 mg', 'Every 8 hours', '7 days', 21, 0, 'Take with food'),
-(8, 105, 8, 2, '200 mg', 'Every 6 hours', '5 days', 20, 0, 'Pain or fever relief'),
-(9, 106, 9, 7, '40 mg', 'Once daily', '30 days', 30, 1, 'Avoid spicy food'),
-(1, 107, 1, 9, '5 mg', 'Once daily', '30 days', 30, 1, 'Check BP weekly'),
-(2, 108, 2, 6, '20 mg', 'Once daily', '14 days', 14, 0, 'Morning dose recommended'),
-(3, 109, 3, 4, '10 mg', 'Once daily', '14 days', 14, 1, 'Avoid alcohol');
+(1, 1, 1, 1, '1 tablet', 'Once daily', '7 days', 0, 0, 'Take after meals'),
+(1, 2, 2, 2, '1 tablet', 'Twice daily', '5 days', 0, 0, 'Take with water'),
+(1, 3, 3, 3, '5 ml', 'Three times daily', '10 days', 0, 0, 'Shake well before use'),
+(2, 4, 4, 4, '1 tablet', 'Once daily', '14 days', 0, 0, 'Avoid alcohol'),
+(2, 5, 5, 5, '2 tablets', 'Once daily', '3 days', 0, 0, 'Take before breakfast'),
+(2, 6, 6, 6, '1 capsule', 'Twice daily', '7 days', 0, 0, 'Swallow whole'),
+(3, 7, 7, 7, '10 ml', 'Two times daily', '5 days', 0, 0, 'Store in fridge'),
+(3, 8, 8, 8, '1 tablet', 'Three times daily', '10 days', 0, 0, 'With food'),
+(3, 9, 9, 9, '5 ml', 'Once daily', '14 days', 0, 0, 'Use measuring cup'),
+(4, 10, 10, 10, '1 capsule', 'Once daily', '7 days', 0, 0, 'Drink plenty of water'),
+(11, 11, 101, 21, '1 tablet', 'Once daily', '7', 0, 0, 'Take with meals'),
+(11, 12, 101, 22, '5 ml', 'Twice daily', '5', 0, 0, 'Shake well before use'),
+(11, 13, 101, 23, '1 capsule', 'Once daily', '10', 0, 0, 'Avoid alcohol'),
+(12, 14, 102, 24, '2 tablets', 'Three times daily', '7', 0, 0, 'Take after breakfast'),
+(12, 15, 102, 25, '10 ml', 'Once daily', '3', 0, 0, 'Refrigerate after opening'),
+(12, 16, 102, 26, '1 tablet', 'Twice daily', '14', 0, 0, 'Take with water'),
+(13, 17, 103, 27, '1 capsule', 'Once daily', '30', 0, 0, 'Swallow whole'),
+(13, 18, 103, 28, '5 ml', 'Twice daily', '10', 0, 0, 'Use measuring cup'),
+(13, 19, 103, 29, '1 tablet', 'Once daily', '5', 0, 0, 'Take before sleeping'),
+(14, 20, 104, 30, '20 ml', 'Three times daily', '7', 0, 0, 'Shake before using'),
+(14, 21, 104, 31, '1 tablet', 'Twice daily', '10', 0, 0, 'Take with food'),
+(14, 22, 104, 32, '1 capsule', 'Once weekly', '21', 0, 0, 'Drink plenty of water'),
+(15, 23, 105, 33, '1 tablet', 'Four times daily', '5', 0, 0, 'Avoid sunlight exposure'),
+(15, 24, 105, 34, '15 ml', 'Once daily', '7', 0, 0, 'Store in a cool place'),
+(15, 25, 105, 35, '2 capsules', 'Twice daily', '14', 0, 0, 'Take before meals');
 
 --
 -- Indexes for dumped tables
@@ -339,25 +335,17 @@ ALTER TABLE `prescription`
 -- Indexes for table `prescriptionitem`
 --
 ALTER TABLE `prescriptionitem`
-  ADD PRIMARY KEY (`prescriptionItemID`),
-  ADD KEY `fk_medicationID` (`medicationID`),
-  ADD KEY `fk_prescriptionID` (`prescriptionID`);
+  ADD PRIMARY KEY (`prescriptionItemID`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT for table `prescription`
---
-ALTER TABLE `prescription`
-  MODIFY `prescriptionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
---
 -- AUTO_INCREMENT for table `prescriptionitem`
 --
 ALTER TABLE `prescriptionitem`
-  MODIFY `prescriptionItemID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+  MODIFY `prescriptionItemID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- Constraints for dumped tables
@@ -374,13 +362,6 @@ ALTER TABLE `patient`
 --
 ALTER TABLE `prescription`
   ADD CONSTRAINT `fk_prescription_doctor` FOREIGN KEY (`doctorID`) REFERENCES `doctor` (`doctorID`);
-
---
--- Constraints for table `prescriptionitem`
---
-ALTER TABLE `prescriptionitem`
-  ADD CONSTRAINT `fk_medicationID` FOREIGN KEY (`medicationID`) REFERENCES `medication` (`medicationID`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_prescriptionID` FOREIGN KEY (`prescriptionID`) REFERENCES `prescription` (`prescriptionID`) ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
