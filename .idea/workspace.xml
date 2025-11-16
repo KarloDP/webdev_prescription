@@ -4,27 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5e480325-aaa8-4eb3-ae15-400c2f6bfa35" name="Changes" comment="Updated database SQL file">
-      <change afterPath="$PROJECT_DIR$/.idea/IntelliLang.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/webdev_prescription.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/webdev_prescription.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doctor/add_patient.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/add_patient.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doctor/add_prescription.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/add_prescription.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doctor/dashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/dashboard.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doctor/delete_patient.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/delete_patient.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doctor/delete_prescription.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/delete_prescription.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doctor/doctor_standard.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/doctor_standard.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doctor/edit_prescription.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/edit_prescription.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doctor/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/index.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doctor/patients.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/patients.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doctor/profile.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/profile.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doctor/view_patient_prescription.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/view_patient_prescription.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doctor/view_prescription.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/view_prescription.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/includes/db_connect.php" beforeDir="false" afterPath="$PROJECT_DIR$/includes/db_connect.php" afterDir="false" />
-    </list>
+    <list default="true" id="5e480325-aaa8-4eb3-ae15-400c2f6bfa35" name="Changes" comment="updated doctor backend" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -61,6 +41,7 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
@@ -95,7 +76,7 @@
       <option name="presentableId" value="Default" />
       <updated>1763283344951</updated>
       <workItem from="1763283641862" duration="10000" />
-      <workItem from="1763283662973" duration="7415000" />
+      <workItem from="1763283662973" duration="7938000" />
     </task>
     <task id="LOCAL-00001" summary="Updated database SQL file">
       <option name="closed" value="true" />
@@ -105,7 +86,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763285170718</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="updated doctor backend">
+      <option name="closed" value="true" />
+      <created>1763291867883</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1763291867883</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -113,6 +102,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Updated database SQL file" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated database SQL file" />
+    <MESSAGE value="updated doctor backend" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated doctor backend" />
   </component>
 </project>
