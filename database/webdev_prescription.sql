@@ -28,9 +28,9 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `admins` (
-  `adminID` int(11) NOT NULL,
-  `firstName` text NOT NULL,
-  `lastName` text NOT NULL
+                          `adminID` int(11) NOT NULL,
+                          `firstName` text NOT NULL,
+                          `lastName` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -38,11 +38,11 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`adminID`, `firstName`, `lastName`) VALUES
-(1, 'Alice', 'Johnson'),
-(2, 'Benjamin', 'Lopez'),
-(3, 'Clara', 'Hughes'),
-(4, 'Daniel', 'Parker'),
-(5, 'Elena', 'Mitchell');
+                                                              (1, 'Alice', 'Johnson'),
+                                                              (2, 'Benjamin', 'Lopez'),
+                                                              (3, 'Clara', 'Hughes'),
+                                                              (4, 'Daniel', 'Parker'),
+                                                              (5, 'Elena', 'Mitchell');
 
 -- --------------------------------------------------------
 
@@ -51,14 +51,14 @@ INSERT INTO `admins` (`adminID`, `firstName`, `lastName`) VALUES
 --
 
 CREATE TABLE `dispenserecord` (
-  `prescriptionItemID` int(11) NOT NULL,
-  `pharmacyID` int(11) NOT NULL,
-  `dispenseID` int(11) NOT NULL,
-  `quantityDispensed` int(11) NOT NULL,
-  `dateDispensed` date NOT NULL,
-  `pharmacistName` text NOT NULL,
-  `status` text NOT NULL,
-  `nextAvailableDates` date NOT NULL
+                                  `prescriptionItemID` int(11) NOT NULL,
+                                  `pharmacyID` int(11) NOT NULL,
+                                  `dispenseID` int(11) NOT NULL,
+                                  `quantityDispensed` int(11) NOT NULL,
+                                  `dateDispensed` date NOT NULL,
+                                  `pharmacistName` text NOT NULL,
+                                  `status` text NOT NULL,
+                                  `nextAvailableDates` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -66,17 +66,17 @@ CREATE TABLE `dispenserecord` (
 --
 
 INSERT INTO `dispenserecord` (`prescriptionItemID`, `pharmacyID`, `dispenseID`, `quantityDispensed`, `dateDispensed`, `pharmacistName`, `status`, `nextAvailableDates`) VALUES
-(1, 1, 1, 7, '2025-01-01', 'Maria Reyes', 'Dispensed', '2025-01-31'),
-(2, 2, 2, 5, '2025-01-06', 'John Cruz', 'Dispensed', '2025-02-05'),
-(3, 3, 3, 30, '2025-01-12', 'Anna Santos', 'Dispensed', '2025-02-11'),
-(4, 4, 4, 14, '2025-01-14', 'Mark Dela Cruz', 'Dispensed', '2025-02-13'),
-(5, 5, 5, 3, '2025-01-18', 'Paula Ramos', 'Dispensed', '2025-02-17'),
-(6, 6, 6, 14, '2025-01-20', 'Liza Garcia', 'Dispensed', '2025-02-19'),
-(7, 7, 7, 10, '2025-01-23', 'Rafael Lopez', 'Dispensed', '2025-02-22'),
-(8, 8, 8, 30, '2025-01-25', 'Carla Mendoza', 'Dispensed', '2025-02-24'),
-(9, 9, 9, 14, '2025-01-28', 'Simon Cruz', 'Dispensed', '2025-02-27'),
-(1, 1, 10, 1, '2002-01-01', 'dan', 'dispensed', '2002-01-02'),
-(1, 1, 11, 1, '2002-01-01', 'john', 'Dispensed', '2002-01-02');
+                                                                                                                                                                            (1, 1, 1, 7, '2025-01-01', 'Maria Reyes', 'Dispensed', '2025-01-31'),
+                                                                                                                                                                            (2, 2, 2, 5, '2025-01-06', 'John Cruz', 'Dispensed', '2025-02-05'),
+                                                                                                                                                                            (3, 3, 3, 30, '2025-01-12', 'Anna Santos', 'Dispensed', '2025-02-11'),
+                                                                                                                                                                            (4, 4, 4, 14, '2025-01-14', 'Mark Dela Cruz', 'Dispensed', '2025-02-13'),
+                                                                                                                                                                            (5, 5, 5, 3, '2025-01-18', 'Paula Ramos', 'Dispensed', '2025-02-17'),
+                                                                                                                                                                            (6, 6, 6, 14, '2025-01-20', 'Liza Garcia', 'Dispensed', '2025-02-19'),
+                                                                                                                                                                            (7, 7, 7, 10, '2025-01-23', 'Rafael Lopez', 'Dispensed', '2025-02-22'),
+                                                                                                                                                                            (8, 8, 8, 30, '2025-01-25', 'Carla Mendoza', 'Dispensed', '2025-02-24'),
+                                                                                                                                                                            (9, 9, 9, 14, '2025-01-28', 'Simon Cruz', 'Dispensed', '2025-02-27'),
+                                                                                                                                                                            (1, 1, 10, 1, '2002-01-01', 'dan', 'dispensed', '2002-01-02'),
+                                                                                                                                                                            (1, 1, 11, 1, '2002-01-01', 'john', 'Dispensed', '2002-01-02');
 
 -- --------------------------------------------------------
 
@@ -85,14 +85,14 @@ INSERT INTO `dispenserecord` (`prescriptionItemID`, `pharmacyID`, `dispenseID`, 
 --
 
 CREATE TABLE `doctor` (
-  `doctorID` int(11) NOT NULL,
-  `firstName` text NOT NULL,
-  `lastName` text NOT NULL,
-  `specialization` text NOT NULL,
-  `licenseNumber` int(11) NOT NULL,
-  `email` text NOT NULL,
-  `clinicAddress` text NOT NULL,
-  `status` enum('active','pending') NOT NULL DEFAULT 'pending'
+                          `doctorID` int(11) NOT NULL,
+                          `firstName` text NOT NULL,
+                          `lastName` text NOT NULL,
+                          `specialization` text NOT NULL,
+                          `licenseNumber` int(11) NOT NULL,
+                          `email` text NOT NULL,
+                          `clinicAddress` text NOT NULL,
+                          `status` enum('active','pending') NOT NULL DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -100,7 +100,7 @@ CREATE TABLE `doctor` (
 --
 
 INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `specialization`, `licenseNumber`, `email`, `clinicAddress`, `status`) VALUES
-(1, 'Antonio', 'Santos', 'Cardiology', 12345, 'antonio.santos@medph.com', 'St. Luke\'s Medical Center, Quezon City', 'active'),
+    (1, 'Antonio', 'Santos', 'Cardiology', 12345, 'antonio.santos@medph.com', 'St. Luke\'s Medical Center, Quezon City', 'active'),
 (2, 'Maria', 'Reyes', 'Pediatrics', 23456, 'maria.reyes@childcareph.com', 'The Medical City, Pasig', 'active'),
 (3, 'Jose', 'Ramos', 'Dermatology', 34567, 'jose.ramos@skincareph.com', 'Makati Medical Center, Makati', 'active'),
 (4, 'Ana', 'Garcia', 'Neurology', 45678, 'ana.garcia@neuroph.com', 'Cardinal Santos Hospital, San Juan', 'active'),

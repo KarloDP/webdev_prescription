@@ -1,72 +1,42 @@
 <?php
 include('../includes/db_connect.php');
 
-// Validate prescription ID
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    echo "<script>alert('Invalid prescription ID'); window.location='view_prescription.php';</script>";
+    header("Location: view_prescription.php");
     exit;
 }
+$prescriptionID = intval($_GET['id']);
 
-$prescriptionID = (int)$_GET['id'];
+// get patient for redirect if needed
+$stmt = $conn->prepare("SELECT patientID FROM prescription WHERE prescriptionID = ?");
+$stmt->bind_param("i", $prescriptionID);
+$stmt->execute();
+$res = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
-// STEP 1 — Get patientID before deleting anything
-$getPatient = $conn->prepare("SELECT patientID FROM prescription WHERE prescriptionID = ?");
-$getPatient->bind_param("i", $prescriptionID);
-$getPatient->execute();
-$result = $getPatient->get_result();
-$presData = $result->fetch_assoc();
-$getPatient->close();
+$patientID = $res['patientID'] ?? null;
 
-if (!$presData) {
-    echo "<script>alert('Prescription not found'); window.location='view_prescription.php';</script>";
-    exit;
-}
-
-$patientID = $presData['patientID'];
-
-// Begin transaction
 mysqli_begin_transaction($conn);
-
 try {
+    $delItems = $conn->prepare("DELETE FROM prescriptionitem WHERE prescriptionID = ?");
+    $delItems->bind_param("i", $prescriptionID);
+    $delItems->execute();
+    $delItems->close();
 
-    // STEP 2 — Delete prescription items
-    $deleteItems = $conn->prepare("DELETE FROM prescriptionitem WHERE prescriptionID = ?");
-    $deleteItems->bind_param("i", $prescriptionID);
-    if (!$deleteItems->execute()) {
-        throw new Exception("Error deleting prescription items");
-    }
-    $deleteItems->close();
-
-    // STEP 3 — Delete prescription
-    $deletePres = $conn->prepare("DELETE FROM prescription WHERE prescriptionID = ?");
-    $deletePres->bind_param("i", $prescriptionID);
-    if (!$deletePres->execute()) {
-        throw new Exception("Error deleting prescription");
-    }
-    $deletePres->close();
+    $delPres = $conn->prepare("DELETE FROM prescription WHERE prescriptionID = ?");
+    $delPres->bind_param("i", $prescriptionID);
+    $delPres->execute();
+    $delPres->close();
 
     mysqli_commit($conn);
 
-    // STEP 4 — Correct redirect depending where delete was pressed
-    if (isset($_GET['from']) && $_GET['from'] === "patient") {
-        echo "<script>
-                alert('Prescription deleted successfully!');
-                window.location='view_patient_prescription.php?id=$patientID';
-              </script>";
+    if (isset($_GET['from']) && $_GET['from'] === 'patient' && $patientID) {
+        header("Location: view_patient_prescription.php?id=".$patientID);
     } else {
-        echo "<script>
-                alert('Prescription deleted successfully!');
-                window.location='view_prescription.php';
-              </script>";
+        header("Location: view_prescription.php");
     }
-
+    exit;
 } catch (Exception $e) {
-
     mysqli_rollback($conn);
-
-    echo "<script>
-            alert('Delete failed: {$e->getMessage()}');
-            window.history.back();
-          </script>";
+    echo "Delete failed: " . $e->getMessage();
 }
-?>

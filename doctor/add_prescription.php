@@ -1,174 +1,154 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 include('../includes/db_connect.php');
-include('../includes/header.php');
-include('../includes/sidebar.php');
+$activePage = 'prescriptions';
 
-// Fetch dropdowns
-$patients = mysqli_query($conn, "SELECT patientID, firstName, lastName FROM patient ORDER BY firstName");
-$medications = mysqli_query($conn, "SELECT medicationID, genericName, brandName FROM medication ORDER BY brandName");
+$patients = $conn->query("SELECT patientID, firstName, lastName FROM patient ORDER BY firstName");
+$medications = $conn->query("SELECT medicationID, genericName, brandName FROM medication ORDER BY brandName");
 
+$message = '';
 $errors = [];
-$success = false;
-
-function post($key) {
-    return isset($_POST[$key]) ? trim($_POST[$key]) : null;
-}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $prescriptionID = post('prescriptionID');
-    $patientID = post('patientID');
-    $issueDate = post('issueDate');
-    $expirationDate = post('expirationDate');
-    $refillCount = post('refillCount');
-    $refillInterval = post('refillInterval');
-    $status = post('status');
+    $prescriptionID = intval($_POST['prescriptionID'] ?? 0);
+    $patientID = intval($_POST['patientID'] ?? 0);
+    $issueDate = $_POST['issueDate'] ?? null;
+    $expirationDate = $_POST['expirationDate'] ?? null;
+    // We'll store refillInterval as a date (to keep compatibility). User can input days or date; keep as provided.
+    $refillInterval = $_POST['refillInterval'] ?? null;
+    $status = $_POST['status'] ?? 'Active';
 
-    $medicationIDs = $_POST['medicationID'] ?? [];
+    $medIDs = $_POST['medicationID'] ?? [];
     $dosages = $_POST['dosage'] ?? [];
     $frequencies = $_POST['frequency'] ?? [];
     $durations = $_POST['duration'] ?? [];
     $instructions = $_POST['instructions'] ?? [];
 
-    if (empty($prescriptionID)) $errors[] = "Please enter a Prescription ID.";
-    if (empty($patientID)) $errors[] = "Please select a patient.";
-    if (empty($medicationIDs)) $errors[] = "Please select at least one medication.";
+    if ($prescriptionID <= 0) $errors[] = "Enter a valid Prescription ID.";
+    if ($patientID <= 0) $errors[] = "Select a patient.";
+    if (empty($medIDs)) $errors[] = "Add at least one medication.";
 
     if (empty($errors)) {
-        // Start transaction
         mysqli_begin_transaction($conn);
-
         try {
-            // Insert into prescription
-            $stmt = $conn->prepare("INSERT INTO prescription (prescriptionID, patientID, issueDate, expirationDate, refillCount, refillInterval, status, doctorID)
-                                    VALUES (?, ?, ?, ?, ?, ?, ?, 1)"); // assuming doctorID=1 for now
-            $stmt->bind_param("iississ", $prescriptionID, $patientID, $issueDate, $expirationDate, $refillCount, $refillInterval, $status);
+            // use first medication as prescription.medicationID for compatibility
+            $firstMed = intval($medIDs[0]);
+
+            $stmt = $conn->prepare("INSERT INTO prescription (prescriptionID, medicationID, patientID, issueDate, expirationDate, refillInterval, status, doctorID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $doctorID = 1;
+            $stmt->bind_param("iiisssii", $prescriptionID, $firstMed, $patientID, $issueDate, $expirationDate, $refillInterval, $status, $doctorID);
             $stmt->execute();
             $stmt->close();
 
-            // Insert multiple prescription items
-            $stmtItem = $conn->prepare("INSERT INTO prescriptionitem (prescriptionItemID, prescriptionID, medicationID, dosage, frequency, duration, instructions, doctorID)
-                                        VALUES (?, ?, ?, ?, ?, ?, ?, 1)");
+            // Insert items (prescriptionitem)
+            $itemStmt = $conn->prepare("INSERT INTO prescriptionitem (doctorID, prescriptionItemID, prescriptionID, medicationID, dosage, frequency, duration, prescribed_amount, refill_count, instructions) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $nextItemId = null;
+            // attempt to use AUTO_INCREMENT value: because your prescriptionitem has PK as prescriptionItemID with auto_increment when altered in DB; if it's auto-inc we should pass NULL to use AI. But earlier dump sets AUTO_INCREMENT. To be safe, pass 0 and let DB set; but prepared statement requires an int: use NULL via binding as string 'NULL' can't. Simpler approach: set prescriptionItemID to 0 and let DB auto increment by using INSERT ... VALUES (NULL,...). We'll instead use dynamic query per item simpler below.
+            $pdoUsePrepared = false;
 
-            $itemID = 1;
-            foreach ($medicationIDs as $index => $medID) {
-                $dosage = $dosages[$index] ?? '';
-                $frequency = $frequencies[$index] ?? '';
-                $duration = $durations[$index] ?? '';
-                $instr = $instructions[$index] ?? '';
-
-                $stmtItem->bind_param("iiissss", $itemID, $prescriptionID, $medID, $dosage, $frequency, $duration, $instr);
-                $stmtItem->execute();
-                $itemID++;
+            // Insert items individually (safer if auto_increment)
+            foreach ($medIDs as $i => $m) {
+                $m = intval($m);
+                $dos = $conn->real_escape_string($dosages[$i] ?? '');
+                $freq = $conn->real_escape_string($frequencies[$i] ?? '');
+                $dur = $conn->real_escape_string($durations[$i] ?? '');
+                $instr = $conn->real_escape_string($instructions[$i] ?? '');
+                // prescribed_amount and refill_count default 0
+                $sql = "INSERT INTO prescriptionitem (doctorID, prescriptionID, medicationID, dosage, frequency, duration, prescribed_amount, refill_count, instructions)
+                        VALUES (1, $prescriptionID, $m, '$dos', '$freq', '$dur', 0, 0, '$instr')";
+                if (!$conn->query($sql)) throw new Exception($conn->error);
             }
-            $stmtItem->close();
 
             mysqli_commit($conn);
-            $success = true;
-
-        } catch (mysqli_sql_exception $e) {
+            $message = "<div style='color:green;'>Prescription added successfully.</div>";
+        } catch (Exception $e) {
             mysqli_rollback($conn);
-            $errors[] = "Database error: " . $e->getMessage();
+            $errors[] = "DB error: " . $e->getMessage();
         }
     }
 }
+
+ob_start();
 ?>
 
-<div class="main-content">
-    <h2>Add Prescription</h2>
+    <div class="card">
+        <h2>Add Prescription</h2>
+        <?= $message ?>
+        <?php if (!empty($errors)): ?>
+            <div style="color:red;"><ul><?php foreach($errors as $er) echo "<li>".htmlspecialchars($er)."</li>"; ?></ul></div>
+        <?php endif; ?>
 
-    <?php if ($success): ?>
-        <div style="padding:10px;background:#e6ffed;border:1px solid #1f8a3f;margin-bottom:12px;">
-            ✅ Prescription added successfully.
-        </div>
-    <?php endif; ?>
+        <form method="post" style="max-width:900px;">
+            <label>Prescription ID</label><br>
+            <input type="number" name="prescriptionID" required><br><br>
 
-    <?php if (!empty($errors)): ?>
-        <div style="padding:10px;background:#ffe6e6;border:1px solid #d62b2b;margin-bottom:12px;">
-            <strong>Errors:</strong>
-            <ul>
-                <?php foreach ($errors as $e) echo "<li>" . htmlspecialchars($e) . "</li>"; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
+            <label>Patient</label><br>
+            <select name="patientID" required>
+                <option value="">Select Patient</option>
+                <?php mysqli_data_seek($patients,0); while ($p = $patients->fetch_assoc()): ?>
+                    <option value="<?= $p['patientID'] ?>"><?= htmlspecialchars($p['firstName'].' '.$p['lastName']) ?></option>
+                <?php endwhile; ?>
+            </select><br><br>
 
-    <form method="POST" style="display:flex; flex-direction:column; width:600px; gap:8px;">
-        <label>Prescription ID:</label>
-        <input type="number" name="prescriptionID" required>
+            <label>Issue Date</label><br>
+            <input type="date" name="issueDate" required><br><br>
 
-        <label>Patient:</label>
-        <select name="patientID" required>
-            <option value="">Select Patient</option>
-            <?php while ($p = mysqli_fetch_assoc($patients)): ?>
-                <option value="<?= $p['patientID'] ?>"><?= htmlspecialchars($p['firstName'].' '.$p['lastName']) ?></option>
-            <?php endwhile; ?>
-        </select>
+            <label>Expiration Date</label><br>
+            <input type="date" name="expirationDate" required><br><br>
 
-        <label>Issue Date:</label>
-        <input type="date" name="issueDate" required>
+            <label>Refill Interval (date or days)</label><br>
+            <input type="text" name="refillInterval" value="30"><br><br>
 
-        <label>Expiration Date:</label>
-        <input type="date" name="expirationDate" required>
+            <label>Status</label><br>
+            <select name="status"><option>Active</option><option>Expired</option><option>Cancelled</option></select><br><br>
 
-        <label>Refill Count:</label>
-        <input type="number" name="refillCount" min="0" value="1" required>
-
-        <label>Refill Interval (days):</label>
-        <input type="number" name="refillInterval" min="1" value="30" required>
-
-        <label>Status:</label>
-        <select name="status" required>
-            <option value="Active">Active</option>
-            <option value="Expired">Expired</option>
-            <option value="Cancelled">Cancelled</option>
-        </select>
-
-        <hr>
-        <h3>Medications</h3>
-        <div id="medications-container">
-            <div class="medication-item" style="margin-bottom:8px; border-bottom:1px dashed #ccc; padding-bottom:4px;">
-                <select name="medicationID[]" required>
-                    <option value="">Select Medication</option>
-                    <?php mysqli_data_seek($medications, 0); while ($m = mysqli_fetch_assoc($medications)): ?>
-                        <option value="<?= $m['medicationID'] ?>"><?= htmlspecialchars($m['genericName'].' — '.$m['brandName']) ?></option>
-                    <?php endwhile; ?>
-                </select>
-                <input type="text" name="dosage[]" placeholder="Dosage (e.g., 1 tablet)" required>
-                <input type="text" name="frequency[]" placeholder="Frequency (e.g., Twice daily)" required>
-                <input type="text" name="duration[]" placeholder="Duration (e.g., 7 days)" required>
-                <input type="text" name="instructions[]" placeholder="Instructions" required>
+            <hr>
+            <h3>Medications</h3>
+            <div id="meds">
+                <div class="med">
+                    <select name="medicationID[]" required>
+                        <option value="">Select Medication</option>
+                        <?php mysqli_data_seek($medications,0); while ($m = $medications->fetch_assoc()): ?>
+                            <option value="<?= $m['medicationID'] ?>"><?= htmlspecialchars($m['genericName'].' — '.$m['brandName']) ?></option>
+                        <?php endwhile; ?>
+                    </select>
+                    <input type="text" name="dosage[]" placeholder="Dosage" required>
+                    <input type="text" name="frequency[]" placeholder="Frequency" required>
+                    <input type="text" name="duration[]" placeholder="Duration" required>
+                    <input type="text" name="instructions[]" placeholder="Instructions" required>
+                </div>
             </div>
-        </div>
 
-        <button type="button" onclick="addMedication()">+ Add Another Medication</button>
+            <button type="button" onclick="addMed()">+ Add Another Medication</button><br><br>
+            <button class="btn" type="submit">Save Prescription</button>
+        </form>
+    </div>
 
-        <button type="submit" style="padding:10px; background-color:#4CAF50; color:white; border:none; border-radius:5px;">
-            Save Prescription
-        </button>
-    </form>
-</div>
+    <script>
+        function addMed(){
+            const container = document.getElementById('meds');
+            const div = document.createElement('div');
+            div.className = 'med';
+            div.style = 'margin-top:8px;';
+            div.innerHTML = `<?php
+            // generate options markup once server-side (string)
+            $opt = "<select name=\"medicationID[]\" required><option value=\"\">Select Medication</option>";
+            mysqli_data_seek($medications,0);
+            while ($m = $medications->fetch_assoc()) {
+                $opt .= "<option value=\"{$m['medicationID']}\">".htmlspecialchars($m['genericName']." — ".$m['brandName'])."</option>";
+            }
+            $opt .= "</select>";
+            // escape for JS string
+            echo str_replace(["\n","\r","'"],["","","\'"], $opt);
+            ?>
+    <input type="text" name="dosage[]" placeholder="Dosage" required>
+    <input type="text" name="frequency[]" placeholder="Frequency" required>
+    <input type="text" name="duration[]" placeholder="Duration" required>
+    <input type="text" name="instructions[]" placeholder="Instructions" required>
+    <button type="button" onclick="this.parentElement.remove()">Remove</button>`;
+            container.appendChild(div);
+        }
+    </script>
 
-<script>
-function addMedication() {
-    const container = document.getElementById('medications-container');
-    const newItem = document.createElement('div');
-    newItem.classList.add('medication-item');
-    newItem.style = "margin-bottom:8px; border-bottom:1px dashed #ccc; padding-bottom:4px;";
-    newItem.innerHTML = `
-        <select name="medicationID[]" required>
-            <option value="">Select Medication</option>
-            <?php mysqli_data_seek($medications, 0); while ($m = mysqli_fetch_assoc($medications)): ?>
-                <option value="<?= $m['medicationID'] ?>"><?= htmlspecialchars($m['genericName'].' — '.$m['brandName']) ?></option>
-            <?php endwhile; ?>
-        </select>
-        <input type="text" name="dosage[]" placeholder="Dosage" required>
-        <input type="text" name="frequency[]" placeholder="Frequency" required>
-        <input type="text" name="duration[]" placeholder="Duration" required>
-        <input type="text" name="instructions[]" placeholder="Instructions" required>
-        <button type="button" onclick="this.parentElement.remove()">Remove</button>
-    `;
-    container.appendChild(newItem);
-}
-</script>
+<?php
+$content = ob_get_clean();
+include('doctor_standard.php');

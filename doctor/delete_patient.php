@@ -1,62 +1,40 @@
 <?php
 include('../includes/db_connect.php');
 
-// Validate patient ID
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    echo "<script>alert('Invalid Patient ID'); window.location='patients.php';</script>";
+    header("Location: patients.php");
     exit;
 }
+$patientID = intval($_GET['id']);
 
-$patientID = (int)$_GET['id'];
-
-// Begin transaction
 mysqli_begin_transaction($conn);
-
 try {
-
-    // Delete prescription items for this patient
-    $deleteItems = $conn->prepare("
+    // delete items for all prescriptions of this patient
+    $delItems = $conn->prepare("
         DELETE pi FROM prescriptionitem pi
         JOIN prescription p ON pi.prescriptionID = p.prescriptionID
         WHERE p.patientID = ?
     ");
-    $deleteItems->bind_param("i", $patientID);
-    if (!$deleteItems->execute()) {
-        throw new Exception("Error deleting prescription items.");
-    }
-    $deleteItems->close();
+    $delItems->bind_param("i", $patientID);
+    $delItems->execute();
+    $delItems->close();
 
-    // Delete prescriptions for this patient
-    $deletePrescriptions = $conn->prepare("DELETE FROM prescription WHERE patientID = ?");
-    $deletePrescriptions->bind_param("i", $patientID);
-    if (!$deletePrescriptions->execute()) {
-        throw new Exception("Error deleting prescriptions.");
-    }
-    $deletePrescriptions->close();
+    // delete prescriptions
+    $delPres = $conn->prepare("DELETE FROM prescription WHERE patientID = ?");
+    $delPres->bind_param("i", $patientID);
+    $delPres->execute();
+    $delPres->close();
 
-    // Delete patient record
-    $deletePatient = $conn->prepare("DELETE FROM patient WHERE patientID = ?");
-    $deletePatient->bind_param("i", $patientID);
-    if (!$deletePatient->execute()) {
-        throw new Exception("Error deleting patient.");
-    }
-    $deletePatient->close();
+    // delete patient
+    $delPat = $conn->prepare("DELETE FROM patient WHERE patientID = ?");
+    $delPat->bind_param("i", $patientID);
+    $delPat->execute();
+    $delPat->close();
 
-    // Commit deletion
     mysqli_commit($conn);
-
-    echo "<script>
-            alert('Patient and all related prescriptions deleted successfully!');
-            window.location='patients.php';
-          </script>";
-
+    header("Location: patients.php");
+    exit;
 } catch (Exception $e) {
-
     mysqli_rollback($conn);
-
-    echo "<script>
-            alert('Delete failed: {$e->getMessage()}');
-            window.location='patients.php';
-          </script>";
+    echo "Delete failed: " . $e->getMessage();
 }
-?>

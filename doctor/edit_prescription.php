@@ -1,180 +1,141 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 include('../includes/db_connect.php');
-include('../includes/header.php');
-include('../includes/sidebar.php');
+$activePage = 'prescriptions';
 
-$prescriptionID = $_GET['id'] ?? 0;
-$prescriptionID = (int)$prescriptionID;
+$prescriptionID = intval($_GET['id'] ?? 0);
+if ($prescriptionID <= 0) { header("Location: view_prescription.php"); exit; }
 
-// Fetch prescription info
-$presResult = mysqli_query($conn, "SELECT * FROM prescription WHERE prescriptionID = '$prescriptionID'");
-$prescription = mysqli_fetch_assoc($presResult);
+$pres = $conn->prepare("SELECT * FROM prescription WHERE prescriptionID = ?");
+$pres->bind_param("i", $prescriptionID);
+$pres->execute();
+$presData = $pres->get_result()->fetch_assoc();
+$pres->close();
 
-// Fetch all prescription items (medications)
-$itemsResult = mysqli_query($conn, "
-    SELECT pi.prescriptionItemID, pi.medicationID, pi.dosage, pi.frequency, pi.duration, pi.instructions,
-           m.genericName, m.brandName
-    FROM prescriptionitem pi
-    JOIN medication m ON pi.medicationID = m.medicationID
-    WHERE pi.prescriptionID = '$prescriptionID'
-");
+$medications = $conn->query("SELECT medicationID, genericName, brandName FROM medication ORDER BY brandName");
 
-// Fetch all medications for dropdown
-$medications = mysqli_query($conn, "SELECT medicationID, genericName, brandName FROM medication ORDER BY brandName");
+// fetch items
+$items = $conn->prepare("SELECT prescriptionItemID, medicationID, dosage, frequency, duration, instructions FROM prescriptionitem WHERE prescriptionID = ?");
+$items->bind_param("i", $prescriptionID);
+$items->execute();
+$itemsRes = $items->get_result();
+$items->close();
 
-$errors = [];
-$success = false;
+$success = false; $errors=[];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    // Begin transaction
     mysqli_begin_transaction($conn);
-
     try {
-        // Update prescription main fields
-        $status = $_POST['status'];
-        $refillCount = $_POST['refillCount'];
-        $refillInterval = $_POST['refillInterval'];
+        $status = $_POST['status'] ?? $presData['status'];
+        $refillInterval = $_POST['refillInterval'] ?? $presData['refillInterval'];
 
-        $stmt = $conn->prepare("UPDATE prescription SET status=?, refillCount=?, refillInterval=? WHERE prescriptionID=?");
-        $stmt->bind_param("siis", $status, $refillCount, $refillInterval, $prescriptionID);
+        $stmt = $conn->prepare("UPDATE prescription SET status=?, refillInterval=? WHERE prescriptionID=?");
+        $stmt->bind_param("ssi", $status, $refillInterval, $prescriptionID);
         $stmt->execute();
         $stmt->close();
 
-        // Handle prescription items
         $medIDs = $_POST['medicationID'] ?? [];
         $dosages = $_POST['dosage'] ?? [];
-        $frequencies = $_POST['frequency'] ?? [];
-        $durations = $_POST['duration'] ?? [];
-        $instructions = $_POST['instructions'] ?? [];
+        $freqs = $_POST['frequency'] ?? [];
+        $durs = $_POST['duration'] ?? [];
+        $instrs = $_POST['instructions'] ?? [];
         $itemIDs = $_POST['itemID'] ?? [];
 
-        foreach ($medIDs as $i => $medID) {
-            $medID = (int)$medID;
-            $dosage = trim($dosages[$i]);
-            $frequency = trim($frequencies[$i]);
-            $duration = trim($durations[$i]);
-            $instruction = trim($instructions[$i]);
-            $itemID = isset($itemIDs[$i]) ? (int)$itemIDs[$i] : 0;
+        foreach ($medIDs as $i => $m) {
+            $m = intval($m);
+            $dos = $conn->real_escape_string($dosages[$i] ?? '');
+            $fr = $conn->real_escape_string($freqs[$i] ?? '');
+            $du = $conn->real_escape_string($durs[$i] ?? '');
+            $in = $conn->real_escape_string($instrs[$i] ?? '');
+            $itid = intval($itemIDs[$i] ?? 0);
 
-            if ($itemID > 0) {
-                // Update existing item
-                $stmt = $conn->prepare("UPDATE prescriptionitem SET medicationID=?, dosage=?, frequency=?, duration=?, instructions=? WHERE prescriptionItemID=?");
-                $stmt->bind_param("issssi", $medID, $dosage, $frequency, $duration, $instruction, $itemID);
-                $stmt->execute();
-                $stmt->close();
+            if ($itid > 0) {
+                $sql = "UPDATE prescriptionitem SET medicationID=$m, dosage='$dos', frequency='$fr', duration='$du', instructions='$in' WHERE prescriptionItemID=$itid";
+                if (!$conn->query($sql)) throw new Exception($conn->error);
             } else {
-                // Insert new item
-                $stmt = $conn->prepare("INSERT INTO prescriptionitem (prescriptionID, medicationID, dosage, frequency, duration, instructions) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("iissss", $prescriptionID, $medID, $dosage, $frequency, $duration, $instruction);
-                $stmt->execute();
-                $stmt->close();
+                $sql = "INSERT INTO prescriptionitem (doctorID, prescriptionID, medicationID, dosage, frequency, duration, prescribed_amount, refill_count, instructions) VALUES (1, $prescriptionID, $m, '$dos', '$fr', '$du', 0, 0, '$in')";
+                if (!$conn->query($sql)) throw new Exception($conn->error);
             }
         }
 
         mysqli_commit($conn);
         $success = true;
-
     } catch (Exception $e) {
         mysqli_rollback($conn);
-        $errors[] = "Error updating prescription: " . $e->getMessage();
+        $errors[] = $e->getMessage();
     }
+    // reload items
+    $items = $conn->prepare("SELECT prescriptionItemID, medicationID, dosage, frequency, duration, instructions FROM prescriptionitem WHERE prescriptionID = ?");
+    $items->bind_param("i", $prescriptionID);
+    $items->execute();
+    $itemsRes = $items->get_result();
+    $items->close();
 }
+
+ob_start();
 ?>
+    <div class="card">
+        <h2>Edit Prescription #<?= $prescriptionID ?></h2>
+        <?php if ($success): ?><div style="color:green;">Updated.</div><?php endif; ?>
+        <?php if (!empty($errors)): ?><div style="color:red;"><ul><?php foreach($errors as $e) echo "<li>".htmlspecialchars($e)."</li>"; ?></ul></div><?php endif; ?>
 
-<div class="main-content">
-    <h2>Edit Prescription #<?= htmlspecialchars($prescriptionID) ?></h2>
+        <form method="post">
+            <label>Status</label><br>
+            <select name="status">
+                <option <?= $presData['status']=='Active' ? 'selected' : '' ?>>Active</option>
+                <option <?= $presData['status']=='Completed' ? 'selected' : '' ?>>Completed</option>
+                <option <?= $presData['status']=='Expired' ? 'selected' : '' ?>>Expired</option>
+            </select><br><br>
 
-    <?php if ($success): ?>
-        <div style="padding:10px;background:#e6ffed;border:1px solid #1f8a3f;margin-bottom:12px;">
-            ✅ Prescription updated successfully.
-        </div>
-    <?php endif; ?>
+            <label>Refill Interval</label><br>
+            <input type="text" name="refillInterval" value="<?= htmlspecialchars($presData['refillInterval']) ?>"><br><br>
 
-    <?php if (!empty($errors)): ?>
-        <div style="padding:10px;background:#ffe6e6;border:1px solid #d62b2b;margin-bottom:12px;">
-            <ul><?php foreach ($errors as $e) echo "<li>" . htmlspecialchars($e) . "</li>"; ?></ul>
-        </div>
-    <?php endif; ?>
+            <h3>Medications</h3>
+            <div id="meds">
+                <?php while ($it = $itemsRes->fetch_assoc()): ?>
+                    <div style="border:1px solid #eee; padding:8px; margin-bottom:8px;">
+                        <input type="hidden" name="itemID[]" value="<?= $it['prescriptionItemID'] ?>">
+                        <select name="medicationID[]">
+                            <?php mysqli_data_seek($medications,0); while ($m = $medications->fetch_assoc()): $sel = ($m['medicationID']==$it['medicationID'])?'selected':''; ?>
+                                <option value="<?= $m['medicationID'] ?>" <?= $sel ?>><?= htmlspecialchars($m['genericName'].' — '.$m['brandName']) ?></option>
+                            <?php endwhile; ?>
+                        </select><br>
+                        <input type="text" name="dosage[]" value="<?= htmlspecialchars($it['dosage']) ?>"><br>
+                        <input type="text" name="frequency[]" value="<?= htmlspecialchars($it['frequency']) ?>"><br>
+                        <input type="text" name="duration[]" value="<?= htmlspecialchars($it['duration']) ?>"><br>
+                        <input type="text" name="instructions[]" value="<?= htmlspecialchars($it['instructions']) ?>"><br>
+                        <button type="button" onclick="this.parentElement.remove()">Remove</button>
+                    </div>
+                <?php endwhile; ?>
+            </div>
 
-    <form method="POST">
-        <label>Status:</label>
-        <select name="status" required>
-            <option value="Active" <?= $prescription['status'] == 'Active' ? 'selected' : '' ?>>Active</option>
-            <option value="Completed" <?= $prescription['status'] == 'Completed' ? 'selected' : '' ?>>Completed</option>
-            <option value="Expired" <?= $prescription['status'] == 'Expired' ? 'selected' : '' ?>>Expired</option>
-        </select><br><br>
+            <button type="button" onclick="addRow()">+ Add Medication</button><br><br>
+            <button class="btn" type="submit">Update Prescription</button>
+        </form>
+    </div>
 
-        <label>Refill Count:</label>
-        <input type="number" name="refillCount" value="<?= $prescription['refillCount'] ?>" required><br><br>
-
-        <label>Refill Interval:</label>
-        <input type="text" name="refillInterval" value="<?= $prescription['refillInterval'] ?>" required><br><br>
-
-        <h3>Medications</h3>
-        <div id="medications-container">
-            <?php while ($item = mysqli_fetch_assoc($itemsResult)): ?>
-                <div class="med-item" style="border:1px solid #ccc; padding:8px; margin-bottom:8px;">
-                    <input type="hidden" name="itemID[]" value="<?= $item['prescriptionItemID'] ?>">
-                    <label>Medication:</label>
-                    <select name="medicationID[]" required>
-                        <?php
-                        mysqli_data_seek($medications, 0); // reset result pointer
-                        while ($med = mysqli_fetch_assoc($medications)) {
-                            $sel = ($med['medicationID'] == $item['medicationID']) ? 'selected' : '';
-                            echo "<option value='{$med['medicationID']}' $sel>" . htmlspecialchars($med['genericName'] . " — " . $med['brandName']) . "</option>";
-                        }
-                        ?>
-                    </select><br>
-                    <label>Dosage:</label>
-                    <input type="text" name="dosage[]" value="<?= htmlspecialchars($item['dosage']) ?>" required><br>
-                    <label>Frequency:</label>
-                    <input type="text" name="frequency[]" value="<?= htmlspecialchars($item['frequency']) ?>" required><br>
-                    <label>Duration:</label>
-                    <input type="text" name="duration[]" value="<?= htmlspecialchars($item['duration']) ?>" required><br>
-                    <label>Instructions:</label>
-                    <input type="text" name="instructions[]" value="<?= htmlspecialchars($item['instructions']) ?>" required><br>
-                    <button type="button" onclick="this.parentElement.remove();">Remove</button>
-                </div>
-            <?php endwhile; ?>
-        </div>
-
-        <button type="button" onclick="addMedicationRow();">+ Add Medication</button><br><br>
-        <button type="submit">Update Prescription</button>
-    </form>
-</div>
-
-<script>
-function addMedicationRow() {
-    const container = document.getElementById('medications-container');
-    const div = document.createElement('div');
-    div.className = 'med-item';
-    div.style.border = '1px solid #ccc';
-    div.style.padding = '8px';
-    div.style.marginBottom = '8px';
-    div.innerHTML = `
-        <label>Medication:</label>
-        <select name="medicationID[]" required>
-            <?php
-            mysqli_data_seek($medications, 0);
-            while ($med = mysqli_fetch_assoc($medications)) {
-                echo "<option value='{$med['medicationID']}'>" . htmlspecialchars($med['genericName'] . " — " . $med['brandName']) . "</option>";
+    <script>
+        function addRow(){
+            const meds = document.getElementById('meds');
+            const div = document.createElement('div');
+            div.style = 'border:1px solid #eee; padding:8px; margin-bottom:8px;';
+            div.innerHTML = `<?php
+            mysqli_data_seek($medications,0);
+            $opt = '<select name="medicationID[]">';
+            while ($m = $medications->fetch_assoc()) {
+                $opt .= "<option value=\"{$m['medicationID']}\">".htmlspecialchars($m['genericName'].' — '.$m['brandName'])."</option>";
             }
-            ?>
-        </select><br>
-        <label>Dosage:</label>
-        <input type="text" name="dosage[]" required><br>
-        <label>Frequency:</label>
-        <input type="text" name="frequency[]" required><br>
-        <label>Duration:</label>
-        <input type="text" name="duration[]" required><br>
-        <label>Instructions:</label>
-        <input type="text" name="instructions[]" required><br>
-        <button type="button" onclick="this.parentElement.remove();">Remove</button>
-    `;
-    container.appendChild(div);
-}
-</script>
+            $opt .= '</select>';
+            echo str_replace(["\n","\r"],["",""], $opt);
+            ?> <br>
+    <input type="text" name="dosage[]" placeholder="Dosage"><br>
+    <input type="text" name="frequency[]" placeholder="Frequency"><br>
+    <input type="text" name="duration[]" placeholder="Duration"><br>
+    <input type="text" name="instructions[]" placeholder="Instructions"><br>
+    <button type="button" onclick="this.parentElement.remove()">Remove</button>`;
+            meds.appendChild(div);
+        }
+    </script>
+
+<?php
+$content = ob_get_clean();
+include('doctor_standard.php');

@@ -1,67 +1,55 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-$doctor_name = $_SESSION['doctor_name'] ?? "Doctor Name";
-$activePage = $activePage ?? 'dashboard';
+// doctor_standard.php - simple wrapper layout for doctor pages
+// Expects: $activePage (string) and $content (HTML string)
+
+if (!isset($activePage)) $activePage = '';
+if (!isset($content)) $content = '';
+
 ?>
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Doctor Dashboard</title>
-
-    <!-- Global layout CSS -->
-    <link rel="stylesheet" href="../assets/css/layout_standard.css" />
-
-    <!-- Page-specific CSS from content pages -->
-    <?php if (!empty($customCSS)) echo $customCSS; ?>
+    <meta charset="utf-8">
+    <title>MediSync Wellness - Doctor</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        body { margin:0; font-family: Arial, Helvetica, sans-serif; }
+        .sidebar {
+            width:220px; background:#16482f; color:#fff; height:100vh; position:fixed; padding:20px 10px;
+        }
+        .sidebar a { color:#fff; text-decoration:none; display:block; padding:10px 12px; border-radius:6px; margin-bottom:6px;}
+        .sidebar a.active { background:#2a6b48; font-weight:bold; }
+        .topbar { height:60px; background:#214d39; color:#fff; padding:10px 20px; margin-left:220px; display:flex; align-items:center; justify-content:space-between; }
+        .content { margin-left:220px; padding:30px; background:#f6f6f6; min-height:calc(100vh - 60px); }
+        .card { background:#fff; padding:18px; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.05); margin-bottom:18px; }
+        .btn { display:inline-block; padding:8px 12px; background:#28a745; color:#fff; text-decoration:none; border-radius:6px; }
+        table { width:100%; border-collapse:collapse; }
+        th, td { padding:8px; border-bottom:1px solid #eee; text-align:left; }
+        .danger { background:#dc3545; color:#fff; padding:6px 10px; border-radius:5px; text-decoration:none;}
+    </style>
 </head>
 <body>
 
-<!-- TOP NAVBAR -->
-<header class="top-navbar">
-    <div class="logo">
-        <img src="../assets/images/orange_logo.png" alt="Logo" />
-        <span>MediSync Wellness</span>
+<div class="sidebar">
+    <h3 style="margin:0 0 12px 6px;">MediSync Wellness</h3>
+    <a href="dashboard.php" class="<?= $activePage==='dashboard' ? 'active' : '' ?>">Dashboard</a>
+    <a href="patients.php" class="<?= $activePage==='patients' ? 'active' : '' ?>">Patients</a>
+    <a href="view_prescription.php" class="<?= $activePage==='prescriptions' ? 'active' : '' ?>">Prescriptions</a>
+    <a href="profile.php" class="<?= $activePage==='profile' ? 'active' : '' ?>">Profile</a>
+    <a href="../logout.php" style="margin-top:20px;">Logout</a>
+</div>
+
+<div class="topbar">
+    <div style="font-weight:bold;">Doctor Dashboard</div>
+    <div style="display:flex;align-items:center;">
+        <div style="margin-right:12px;">Doctor</div>
+        <div style="width:36px;height:36px;border-radius:50%;background:#e74c3c;"></div>
     </div>
-    <div class="profile">
-        <span><?php echo htmlspecialchars($doctor_name); ?></span>
-        <img src="../assets/images/user.png" class="avatar" alt="Profile">
-        <div class="menu-icon">⋮</div>
-    </div>
-</header>
+</div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-    <ul>
-        <li class="<?= ($activePage == 'dashboard') ? 'active' : ''; ?>">
-            <a href="dashboard.php">Dashboard</a>
-        </li>
-
-        <li class="<?= ($activePage == 'patients') ? 'active' : ''; ?>">
-            <a href="patients.php">Manage Patient</a>
-        </li>
-
-        <li class="<?= ($activePage == 'prescriptions') ? 'active' : ''; ?>">
-            <a href="view_prescription.php">Manage Prescription</a>
-        </li>
-
-        <li class="<?= ($activePage == 'profile') ? 'active' : ''; ?>">
-            <a href="profile.php">Profile</a>
-        </li>
-
-        <li>
-            <a href="../logout.php">Logout</a>
-        </li>
-    </ul>
-</aside>
-
-<!-- MAIN CONTENT -->
-<main class="content">
-    <?= isset($content) ? $content : "<h1>Welcome</h1><p>Select an option from the sidebar.</p>"; ?>
-</main>
+<div class="content">
+    <?= $content ?>
+</div>
 
 </body>
 </html>
