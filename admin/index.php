@@ -56,7 +56,7 @@ $pharmacys        = $conn->query("SELECT COUNT(*) AS total FROM pharmacy")->fetc
       <a href="database.php?view=prescriptions">View Prescriptions</a>
     </div>
     <div class="card">
-      <h3>Total Pharmacys</h3>
+      <h3>Total Pharmacies</h3>
       <p><?= $pharmacys ?></p>
       <a href="database.php?view=pharmacys">View Pharmacys</a>
     </div>
