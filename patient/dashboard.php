@@ -22,10 +22,94 @@ if (empty($_SESSION['patient_name'])) {
     } else {
         $_SESSION['patient_name'] = 'Patient';
     }
+    $stmt->close();
 }
 
 // Active page used by standard layout for sidebar highlighting
 $activePage = 'dashboard';
+
+// Prepare stats and active prescriptions data
+$pid = (int) $_SESSION['patientID'];
+
+// Active prescriptions count
+$activeCount = 0;
+$countStmt = $conn->prepare("
+  SELECT COUNT(DISTINCT p.prescriptionID) AS cnt
+  FROM prescription p
+  WHERE p.patientID = ? AND LOWER(p.status) = 'active'
+");
+if ($countStmt) {
+    $countStmt->bind_param("i", $pid);
+    $countStmt->execute();
+    $countRes = $countStmt->get_result();
+    $activeCount = ($countRes && $countRes->num_rows) ? (int)$countRes->fetch_assoc()['cnt'] : 0;
+    $countStmt->close();
+}
+
+// Upcoming refills (example: expirationDate within next 14 days)
+$refillCount = 0;
+$refillStmt = $conn->prepare("
+  SELECT COUNT(DISTINCT prescriptionID) AS cnt
+  FROM prescription
+  WHERE patientID = ? AND expirationDate BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+");
+if ($refillStmt) {
+    $refillStmt->bind_param("i", $pid);
+    $refillStmt->execute();
+    $refillRes = $refillStmt->get_result();
+    $refillCount = ($refillRes && $refillRes->num_rows) ? (int)$refillRes->fetch_assoc()['cnt'] : 0;
+    $refillStmt->close();
+}
+
+// Nearby pharmacies (simple total; replace with geolocation logic if available)
+$nearbyPharmacies = 0;
+$pharmStmt = $conn->prepare("SELECT COUNT(*) AS cnt FROM pharmacy");
+if ($pharmStmt) {
+    $pharmStmt->execute();
+    $pharmRes = $pharmStmt->get_result();
+    $nearbyPharmacies = ($pharmRes && $pharmRes->num_rows) ? (int)$pharmRes->fetch_assoc()['cnt'] : 0;
+    $pharmStmt->close();
+}
+
+// Pagination settings
+$perPage = 8;
+$currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$offset = ($currentPage - 1) * $perPage;
+
+// Fetch active prescriptions (one representative prescriptionitem per prescription)
+$prescriptions = [];
+$totalPages = 0;
+if ($activeCount > 0) {
+    $totalPages = (int)ceil($activeCount / $perPage);
+
+    $sql = "
+      SELECT
+        p.prescriptionID,
+        MIN(pi.prescriptionItemID) AS sampleItemID,
+        m.genericName AS medicine,
+        CONCAT('Dr ', d.firstName, ' ', d.lastName) AS doctorName,
+        pi.dosage AS dosage,
+        p.issueDate
+      FROM prescription p
+      JOIN prescriptionitem pi ON p.prescriptionID = pi.prescriptionID
+      JOIN medication m ON pi.medicationID = m.medicationID
+      JOIN doctor d ON p.doctorID = d.doctorID
+      WHERE p.patientID = ? AND LOWER(p.status) = 'active'
+      GROUP BY p.prescriptionID
+      ORDER BY p.issueDate DESC
+      LIMIT ? OFFSET ?
+    ";
+    $stmt = $conn->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param("iii", $pid, $perPage, $offset);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        while ($row = $res->fetch_assoc()) {
+            $prescriptions[] = $row;
+        }
+        $stmt->close();
+    }
+}
 
 // --- CONTENT BUFFER (keeps layout_standard / patient_standard usage simple) ---
 ob_start();
@@ -34,10 +118,7 @@ ob_start();
 <div class="patient-dashboard">
   <div class="welcome-row">
     <div class="welcome-card">
-      <?php
-        // Use the session-stored patient name (populated above)
-        $patientName = $_SESSION['patient_name'];
-      ?>
+      <?php $patientName = $_SESSION['patient_name']; ?>
       <h1>Welcome <span class="name"><?php echo htmlspecialchars(strtoupper($patientName)); ?> !!</span></h1>
       <p class="subtitle">View Prescriptions. Manage medications and pharmacies.</p>
       <div class="welcome-actions">
@@ -49,15 +130,15 @@ ob_start();
     <div class="stats-card">
       <div class="stats-row">
         <div class="stat">
-          <div class="stat-number" id="activeCount">0</div>
+          <div class="stat-number" id="activeCount"><?php echo $activeCount; ?></div>
           <div class="stat-label">Active Prescriptions</div>
         </div>
         <div class="stat">
-          <div class="stat-number" id="refillCount">0</div>
+          <div class="stat-number" id="refillCount"><?php echo $refillCount; ?></div>
           <div class="stat-label">Upcoming Refills</div>
         </div>
         <div class="stat">
-          <div class="stat-number" id="nearbyPharmacies">0</div>
+          <div class="stat-number" id="nearbyPharmacies"><?php echo $nearbyPharmacies; ?></div>
           <div class="stat-label">Nearby Pharmacies</div>
         </div>
       </div>
@@ -71,81 +152,30 @@ ob_start();
     <h2 class="section-title">Active Prescriptions</h2>
 
     <div class="cards-grid">
-      <?php
-        // Pagination
-        $perPage = 8;
-        $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-        $offset = ($currentPage - 1) * $perPage;
-
-        // Count active prescriptions for the patient
-        $countStmt = $conn->prepare("SELECT COUNT(DISTINCT p.prescriptionID) AS cnt
-                                     FROM prescription p
-                                     WHERE p.patientID = ? AND LOWER(p.status) = 'active'");
-        $pid = (int) $_SESSION['patientID'];
-        $countStmt->bind_param("i", $pid);
-        $countStmt->execute();
-        $countRes = $countStmt->get_result();
-        $totalItems = ($countRes && $countRes->num_rows > 0) ? (int)$countRes->fetch_assoc()['cnt'] : 0;
-        $countStmt->close();
-
-        $totalPages = $totalItems > 0 ? (int)ceil($totalItems / $perPage) : 0;
-
-        if ($totalItems > 0) {
-            // Fetch active prescriptions with one representative medication per prescription.
-            // We select the earliest prescriptionitem for each prescription using GROUP BY prescriptionID
-            // (schema uses prescriptionitem; adjust if you need multiple items shown per prescription).
-            $sql = "
-              SELECT
-                p.prescriptionID,
-                MIN(pi.prescriptionItemID) AS sampleItemID,
-                m.genericName AS medicine,
-                CONCAT('Dr ', d.firstName, ' ', d.lastName) AS doctorName,
-                pi.dosage AS dosage,
-                p.issueDate
-              FROM prescription p
-              JOIN prescriptionitem pi ON p.prescriptionID = pi.prescriptionID
-              JOIN medication m ON pi.medicationID = m.medicationID
-              JOIN doctor d ON p.doctorID = d.doctorID
-              WHERE p.patientID = ? AND LOWER(p.status) = 'active'
-              GROUP BY p.prescriptionID
-              ORDER BY p.issueDate DESC
-              LIMIT ? OFFSET ?
-            ";
-            $stmt = $conn->prepare($sql);
-            // bind params: patientID, limit, offset (all integers)
-            $stmt->bind_param("iii", $pid, $perPage, $offset);
-            $stmt->execute();
-            $res = $stmt->get_result();
-
-            // Update stats numbers (simple counts from DB)
-            echo '<script>document.getElementById("activeCount")?.innerText = ' . $totalItems . ';</script>';
-
-            while ($row = $res->fetch_assoc()) {
-                $presID = (int)$row['prescriptionID'];
-                $medicine = htmlspecialchars($row['medicine'] ?? '-', ENT_QUOTES, 'UTF-8');
-                $doctor = htmlspecialchars($row['doctorName'] ?? '-', ENT_QUOTES, 'UTF-8');
-                $dosage = htmlspecialchars($row['dosage'] ?? '-', ENT_QUOTES, 'UTF-8');
-                $issueDate = !empty($row['issueDate']) ? date("F j, Y", strtotime($row['issueDate'])) : '-';
-                ?>
-                <article class="prescription-card">
-                  <div class="card-left">
-                    <h3 class="medicine"><?php echo $medicine; ?></h3>
-                    <p class="small muted">Prescribed by <strong><?php echo $doctor; ?></strong></p>
-                    <p class="small muted">First taken at <strong><?php echo $issueDate; ?></strong></p>
-                  </div>
-                  <div class="card-right">
-                    <p class="note"><?php echo $dosage; ?></p>
-                    <a class="details-link" href="view_prescription.php?id=<?php echo $presID; ?>">Medicine Details &gt;&gt;</a>
-                  </div>
-                </article>
-                <?php
-            }
-
-            $stmt->close();
-        } else {
-            echo '<div class="empty-state"><p>No active prescriptions found.</p></div>';
-        }
-      ?>
+      <?php if (!empty($prescriptions)): ?>
+        <?php foreach ($prescriptions as $row): ?>
+          <?php
+            $presID = (int)$row['prescriptionID'];
+            $medicine = htmlspecialchars($row['medicine'] ?? '-', ENT_QUOTES, 'UTF-8');
+            $doctor = htmlspecialchars($row['doctorName'] ?? '-', ENT_QUOTES, 'UTF-8');
+            $dosage = htmlspecialchars($row['dosage'] ?? '-', ENT_QUOTES, 'UTF-8');
+            $issueDate = !empty($row['issueDate']) ? date("F j, Y", strtotime($row['issueDate'])) : '-';
+          ?>
+          <article class="prescription-card">
+            <div class="card-left">
+              <h3 class="medicine"><?php echo $medicine; ?></h3>
+              <p class="small muted">Prescribed by <strong><?php echo $doctor; ?></strong></p>
+              <p class="small muted">First taken at <strong><?php echo $issueDate; ?></strong></p>
+            </div>
+            <div class="card-right">
+              <p class="note"><?php echo $dosage; ?></p>
+              <a class="details-link" href="view_prescription.php?id=<?php echo $presID; ?>">Medicine Details &gt;&gt;</a>
+            </div>
+          </article>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="empty-state"><p>No active prescriptions found.</p></div>
+      <?php endif; ?>
     </div>
 
     <?php if ($totalPages > 1): ?>
