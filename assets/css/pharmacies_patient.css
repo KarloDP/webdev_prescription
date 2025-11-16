@@ -1,0 +1,71 @@
+/* assets/css/pharmacies_patient.css
+   Scoped to .pharmacies-page for the pharmacies list.
+*/
+
+.pharmacies-page {
+  --header-bg: #1e3d2f;
+  --muted: #6b6b6b;
+  --card-bg: #ffffff;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #1b1b1b;
+  padding: 22px;
+  box-sizing: border-box;
+}
+
+/* Page heading */
+.pharmacies-page h2 {
+  font-size: 20px;
+  color: var(--header-bg);
+  margin: 0 0 6px 0;
+  font-weight: 700;
+}
+.pharmacies-page p { color: var(--muted); margin: 6px 0 18px 0; }
+
+/* Use shared table framing */
+.pharmacies-page .table-frame { margin-top: 8px; }
+
+/* Slightly heavier column for pharmacy name */
+.pharmacies-page .table-base td:first-child,
+.pharmacies-page .table-base thead th:first-child {
+  font-weight: 700;
+  color: var(--header-bg);
+}
+
+/* Contact column: keep phone number monospace for readability */
+.pharmacies-page .table-base td:nth-child(2) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+  color: #333;
+}
+
+/* Address small adjustment */
+.pharmacies-page .table-base td:nth-child(3) {
+  color: #444;
+}
+
+/* Operating hours small badge style */
+.pharmacies-page .open-hours {
+  display: inline-block;
+  background: #f3faf3;
+  color: #1a4b33;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Empty state */
+.pharmacies-page .empty-state {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 22px;
+  text-align: center;
+  color: var(--muted);
+  box-shadow: 0 8px 24px rgba(12,18,10,0.04);
+}
+
+/* Small responsive tweaks */
+@media (max-width: 640px) {
+  .pharmacies-page { padding: 14px; }
+  .pharmacies-page .table-base thead th,
+  .pharmacies-page .table-base tbody td { padding: 10px 12px; }
+}

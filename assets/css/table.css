@@ -1,0 +1,111 @@
+/* assets/css/table.css
+   Reusable table styles used across the app.
+   Consolidated fixes: thicker outer border, consistent radii, no gaps.
+*/
+
+/* Base reset for tables using these styles */
+.table-base {
+  width: 100%;
+  border-collapse: separate;    /* allow rounded corners on outer table */
+  border-spacing: 0;
+  background: transparent;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #1b1b1b;
+  box-sizing: border-box;
+}
+
+/* Outer container provides scroll and visual frame */
+.table-frame {
+  background: #fff;
+  border-radius: 12px;          /* rounded outer corners */
+  box-shadow: 0 6px 18px rgba(13,19,12,0.06);
+  overflow: hidden;             /* clip header rounding and rows */
+  margin-bottom: 18px;
+  border: 2px solid rgba(15,61,42,0.12); /* stronger outer border */
+  box-sizing: border-box;
+}
+
+/* Ensure no extra gap below the frame from default flow */
+.table-frame, .table-frame table { margin: 0; }
+
+/* Sticky header row */
+.table-base thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #e6f3ea;          /* light green header */
+  color: #0f3d2a;               /* darker green text for contrast */
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(15,61,42,0.08);
+  border-top: none;
+  box-sizing: border-box;
+}
+
+/* Body cells: keep white background so no gap shows */
+.table-base tbody td {
+  padding: 12px 14px;
+  background: #fff;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  font-size: 14px;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+/* Row hover */
+.table-base tbody tr:hover td {
+  background: #fbfefb;
+}
+
+/* Rounded corners for thead and last row using pseudo-targets in separate border-collapse mode */
+.table-frame .table-base thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.table-frame .table-base thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+/* Remove bottom border on last row cells and apply rounded corners */
+.table-frame .table-base tbody tr:last-child td {
+  border-bottom: none;
+  background: #fff;
+}
+.table-frame .table-base tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+.table-frame .table-base tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+/* Compact modifier */
+.table-base--compact tbody td {
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+/* Responsive: horizontal scroll on small screens */
+@media (max-width: 780px) {
+  .table-frame {
+    overflow-x: auto;
+  }
+  .table-base thead th,
+  .table-base tbody td {
+    white-space: nowrap;
+  }
+}
+
+/* Utility styles for status badges inside cells */
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12px;
+  color: #fff;
+}
+.badge.active { background: #2f6f50; }
+.badge.completed { background: #6aa84f; }
+.badge.cancelled { background: #b22222; }
