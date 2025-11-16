@@ -52,7 +52,7 @@ $content = "
 
 <div class='summary-box'>
     <h3>{$active_count} Active Prescriptions</h3>
-    <a href='medications.php' class='btn-view'>View Details</a>
+    <a href='medication.php' class='btn-view'>View Details</a>
 </div>
 
 <div class='prescription-grid'>
