@@ -49,15 +49,15 @@ ob_start();
     <div class="stats-card">
       <div class="stats-row">
         <div class="stat">
-          <div class="stat-number" id="activeCount">4</div>
+          <div class="stat-number" id="activeCount">0</div>
           <div class="stat-label">Active Prescriptions</div>
         </div>
         <div class="stat">
-          <div class="stat-number" id="refillCount">2</div>
+          <div class="stat-number" id="refillCount">0</div>
           <div class="stat-label">Upcoming Refills</div>
         </div>
         <div class="stat">
-          <div class="stat-number" id="nearbyPharmacies">3</div>
+          <div class="stat-number" id="nearbyPharmacies">0</div>
           <div class="stat-label">Nearby Pharmacies</div>
         </div>
       </div>
@@ -72,49 +72,80 @@ ob_start();
 
     <div class="cards-grid">
       <?php
-        /* Placeholder sample data.
-           Replace with a DB query that selects active prescriptions for the logged-in patient.
-           Example:
-             $sql = "SELECT p.prescriptionID, m.genericName, d.firstName, d.lastName, p.issueDate, pi.dosage
-                     FROM prescription p
-                     JOIN prescriptionitem pi ON p.prescriptionID = pi.prescriptionID
-                     JOIN medication m ON pi.medicationID = m.medicationID
-                     JOIN doctor d ON p.doctorID = d.doctorID
-                     WHERE p.patientID = ? AND p.status = 'Active'
-                     ORDER BY p.issueDate DESC
-                     LIMIT ? OFFSET ?";
-        */
-
-        $sample = [
-          ['id'=>1,'medicine'=>'Ibuprofen','prescribed_at'=>'2025-01-05','doctor_name'=>'Dr Tolentino','notes'=>'First time use'],
-          ['id'=>2,'medicine'=>'Amoxicillin','prescribed_at'=>'2025-03-12','doctor_name'=>'Dr Reyes','notes'=>'Take after meals'],
-          ['id'=>3,'medicine'=>'Paracetamol','prescribed_at'=>'2025-06-01','doctor_name'=>'Dr Cruz','notes'=>'As needed'],
-          ['id'=>4,'medicine'=>'Cetirizine','prescribed_at'=>'2025-08-21','doctor_name'=>'Dr Santos','notes'=>'Once daily'],
-        ];
-
+        // Pagination
         $perPage = 8;
         $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
         $offset = ($currentPage - 1) * $perPage;
 
-        $totalItems = count($sample);
-        $totalPages = (int)ceil($totalItems / $perPage);
-        $display = array_slice($sample, $offset, $perPage);
+        // Count active prescriptions for the patient
+        $countStmt = $conn->prepare("SELECT COUNT(DISTINCT p.prescriptionID) AS cnt
+                                     FROM prescription p
+                                     WHERE p.patientID = ? AND LOWER(p.status) = 'active'");
+        $pid = (int) $_SESSION['patientID'];
+        $countStmt->bind_param("i", $pid);
+        $countStmt->execute();
+        $countRes = $countStmt->get_result();
+        $totalItems = ($countRes && $countRes->num_rows > 0) ? (int)$countRes->fetch_assoc()['cnt'] : 0;
+        $countStmt->close();
 
-        foreach ($display as $pres) :
-          $dateDisplay = date("F j", strtotime($pres['prescribed_at']));
+        $totalPages = $totalItems > 0 ? (int)ceil($totalItems / $perPage) : 0;
+
+        if ($totalItems > 0) {
+            // Fetch active prescriptions with one representative medication per prescription.
+            // We select the earliest prescriptionitem for each prescription using GROUP BY prescriptionID
+            // (schema uses prescriptionitem; adjust if you need multiple items shown per prescription).
+            $sql = "
+              SELECT
+                p.prescriptionID,
+                MIN(pi.prescriptionItemID) AS sampleItemID,
+                m.genericName AS medicine,
+                CONCAT('Dr ', d.firstName, ' ', d.lastName) AS doctorName,
+                pi.dosage AS dosage,
+                p.issueDate
+              FROM prescription p
+              JOIN prescriptionitem pi ON p.prescriptionID = pi.prescriptionID
+              JOIN medication m ON pi.medicationID = m.medicationID
+              JOIN doctor d ON p.doctorID = d.doctorID
+              WHERE p.patientID = ? AND LOWER(p.status) = 'active'
+              GROUP BY p.prescriptionID
+              ORDER BY p.issueDate DESC
+              LIMIT ? OFFSET ?
+            ";
+            $stmt = $conn->prepare($sql);
+            // bind params: patientID, limit, offset (all integers)
+            $stmt->bind_param("iii", $pid, $perPage, $offset);
+            $stmt->execute();
+            $res = $stmt->get_result();
+
+            // Update stats numbers (simple counts from DB)
+            echo '<script>document.getElementById("activeCount")?.innerText = ' . $totalItems . ';</script>';
+
+            while ($row = $res->fetch_assoc()) {
+                $presID = (int)$row['prescriptionID'];
+                $medicine = htmlspecialchars($row['medicine'] ?? '-', ENT_QUOTES, 'UTF-8');
+                $doctor = htmlspecialchars($row['doctorName'] ?? '-', ENT_QUOTES, 'UTF-8');
+                $dosage = htmlspecialchars($row['dosage'] ?? '-', ENT_QUOTES, 'UTF-8');
+                $issueDate = !empty($row['issueDate']) ? date("F j, Y", strtotime($row['issueDate'])) : '-';
+                ?>
+                <article class="prescription-card">
+                  <div class="card-left">
+                    <h3 class="medicine"><?php echo $medicine; ?></h3>
+                    <p class="small muted">Prescribed by <strong><?php echo $doctor; ?></strong></p>
+                    <p class="small muted">First taken at <strong><?php echo $issueDate; ?></strong></p>
+                  </div>
+                  <div class="card-right">
+                    <p class="note"><?php echo $dosage; ?></p>
+                    <a class="details-link" href="view_prescription.php?id=<?php echo $presID; ?>">Medicine Details &gt;&gt;</a>
+                  </div>
+                </article>
+                <?php
+            }
+
+            $stmt->close();
+        } else {
+            echo '<div class="empty-state"><p>No active prescriptions found.</p></div>';
+        }
       ?>
-        <article class="prescription-card">
-          <div class="card-left">
-            <h3 class="medicine"><?php echo htmlspecialchars($pres['medicine']); ?></h3>
-            <p class="small muted">Prescribed by <strong><?php echo htmlspecialchars($pres['doctor_name']); ?></strong></p>
-            <p class="small muted">First taken at <strong><?php echo htmlspecialchars($dateDisplay); ?></strong></p>
-          </div>
-          <div class="card-right">
-            <p class="note"><?php echo htmlspecialchars($pres['notes']); ?></p>
-            <a class="details-link" href="view_prescription.php?id=<?php echo (int)$pres['id']; ?>">Medicine Details &gt;&gt;</a>
-          </div>
-        </article>
-      <?php endforeach; ?>
     </div>
 
     <?php if ($totalPages > 1): ?>
