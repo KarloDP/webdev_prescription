@@ -1,14 +1,28 @@
 <?php
 session_start();
+include __DIR__ . '/../includes/auth.php';
+include __DIR__ . '/../includes/db_connect.php';
 
-/*
-  Patient dashboard (patient/dashboard.php)
-  - Scoped to .patient-dashboard to avoid global CSS conflicts
-  - Includes placeholders and commented markers where your team should
-    replace with real DB queries and dynamic values
-  - Uses includes/db_connect.php for a database connection (confirmed)
-  - Implements a simple pagination scaffold (commented) for later hookup
-*/
+// Redirect if not logged in as patient
+if (!isset($_SESSION['patientID'])) {
+    header('Location: ../TestLoginPatient.php');
+    exit;
+}
+
+// Ensure patient name is loaded into session for consistent display across pages
+if (empty($_SESSION['patient_name'])) {
+    $patientID = (int) $_SESSION['patientID'];
+    $stmt = $conn->prepare("SELECT firstName, lastName FROM patient WHERE patientID = ?");
+    $stmt->bind_param("i", $patientID);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    if ($res && $res->num_rows > 0) {
+        $row = $res->fetch_assoc();
+        $_SESSION['patient_name'] = trim($row['firstName'] . ' ' . $row['lastName']);
+    } else {
+        $_SESSION['patient_name'] = 'Patient';
+    }
+}
 
 // Active page used by standard layout for sidebar highlighting
 $activePage = 'dashboard';
@@ -21,14 +35,14 @@ ob_start();
   <div class="welcome-row">
     <div class="welcome-card">
       <?php
-        // Display patient name from session (placeholder fallback)
-        $patientName = $_SESSION['patient_name'] ?? 'Patient';
+        // Use the session-stored patient name (populated above)
+        $patientName = $_SESSION['patient_name'];
       ?>
       <h1>Welcome <span class="name"><?php echo htmlspecialchars(strtoupper($patientName)); ?> !!</span></h1>
       <p class="subtitle">View Prescriptions. Manage medications and pharmacies.</p>
       <div class="welcome-actions">
-        <a class="btn btn-primary" href="patient/medication.php">View Medications</a>
-        <a class="btn btn-outline" href="patient/pharmacies.php">Find Pharmacies</a>
+        <a class="btn btn-primary" href="medication.php">View Medications</a>
+        <a class="btn btn-outline" href="pharmacies.php">Find Pharmacies</a>
       </div>
     </div>
 
@@ -48,7 +62,7 @@ ob_start();
         </div>
       </div>
       <div class="stats-cta">
-        <a class="link" href="patient/prescriptions.php">View Details</a>
+        <a class="link" href="prescriptions.php">View Details</a>
       </div>
     </div>
   </div>
@@ -58,24 +72,19 @@ ob_start();
 
     <div class="cards-grid">
       <?php
-        /*
-          DATA SOURCE (placeholder)
-          -------------------------------------------------------
-          Replace the following placeholder block with a DB query.
-          Example (pseudo-code):
-
-          require_once __DIR__ . '/../includes/db_connect.php';
-          $patientId = $_SESSION['patient_id']; // ensure this exists
-          // Prepare query to fetch active prescriptions only (adjust columns)
-          $sql = "SELECT id, medicine, prescribed_at, doctor_name, notes FROM prescription
-                  WHERE patient_id = ? AND status = 'active'
-                  ORDER BY prescribed_at DESC
-                  LIMIT ? OFFSET ?";
-          // Bind parameters and execute, then loop the results below.
-          -------------------------------------------------------
+        /* Placeholder sample data.
+           Replace with a DB query that selects active prescriptions for the logged-in patient.
+           Example:
+             $sql = "SELECT p.prescriptionID, m.genericName, d.firstName, d.lastName, p.issueDate, pi.dosage
+                     FROM prescription p
+                     JOIN prescriptionitem pi ON p.prescriptionID = pi.prescriptionID
+                     JOIN medication m ON pi.medicationID = m.medicationID
+                     JOIN doctor d ON p.doctorID = d.doctorID
+                     WHERE p.patientID = ? AND p.status = 'Active'
+                     ORDER BY p.issueDate DESC
+                     LIMIT ? OFFSET ?";
         */
 
-        // Placeholder sample data (remove after hooking DB)
         $sample = [
           ['id'=>1,'medicine'=>'Ibuprofen','prescribed_at'=>'2025-01-05','doctor_name'=>'Dr Tolentino','notes'=>'First time use'],
           ['id'=>2,'medicine'=>'Amoxicillin','prescribed_at'=>'2025-03-12','doctor_name'=>'Dr Reyes','notes'=>'Take after meals'],
@@ -83,21 +92,15 @@ ob_start();
           ['id'=>4,'medicine'=>'Cetirizine','prescribed_at'=>'2025-08-21','doctor_name'=>'Dr Santos','notes'=>'Once daily'],
         ];
 
-        // Pagination scaffold (server-side)
-        $perPage = 8; // adjust as desired
+        $perPage = 8;
         $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
         $offset = ($currentPage - 1) * $perPage;
 
-        // If using DB, fetch total count and items using LIMIT/OFFSET using $perPage and $offset
-        // $totalItems = ...; $totalPages = ceil($totalItems / $perPage);
-
-        // For placeholder we paginate the sample array manually
         $totalItems = count($sample);
         $totalPages = (int)ceil($totalItems / $perPage);
         $display = array_slice($sample, $offset, $perPage);
 
         foreach ($display as $pres) :
-          // Format date
           $dateDisplay = date("F j", strtotime($pres['prescribed_at']));
       ?>
         <article class="prescription-card">
@@ -108,14 +111,12 @@ ob_start();
           </div>
           <div class="card-right">
             <p class="note"><?php echo htmlspecialchars($pres['notes']); ?></p>
-            <!-- Placeholder detail link: replace with real page -->
-            <a class="details-link" href="patient/view_prescription.php?id=<?php echo (int)$pres['id']; ?>">Medicine Details &gt;&gt;</a>
+            <a class="details-link" href="view_prescription.php?id=<?php echo (int)$pres['id']; ?>">Medicine Details &gt;&gt;</a>
           </div>
         </article>
       <?php endforeach; ?>
     </div>
 
-    <!-- Pagination controls (server-side) -->
     <?php if ($totalPages > 1): ?>
       <nav class="pagination">
         <?php if ($currentPage > 1): ?>
@@ -140,6 +141,5 @@ ob_start();
 <?php
 $content = ob_get_clean();
 
-// Include patient standard layout (this file should call $content in its main area)
-// Try patient_standard.php first; if your app uses layout_standard.php instead, swap the include
+// Include patient standard layout (this file should echo $content in its main area)
 include __DIR__ . '/patient_standard.php';
