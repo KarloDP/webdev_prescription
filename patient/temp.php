@@ -1,12 +1,11 @@
 <?php
-// ---------- Prescription viewer (single patient textbox + filters) ----------
-// Paste this into medication.php to replace the previous prescription display block.
-// Assumes session_start() was already called earlier in the file. If not, uncomment below.
-// session_start();
+// ---------- Prescription viewer with "View Dispense" action ----------
+// Paste this block into medication.php (replace previous prescription block).
+// Assumes session_start() was already called earlier in the file.
 
 require_once __DIR__ . '/../includes/db_connect.php';
 
-// ---------- Determine current patient ID (priority: POST override -> session -> nothing) ----------
+// ---------- Determine current patient ID (priority: POST override -> session -> GET) ----------
 $sessionPatientID = isset($_SESSION['patientID']) ? intval($_SESSION['patientID']) : null;
 $patientID = $sessionPatientID;
 
@@ -14,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['patientID']) && $_POS
     $entered = intval($_POST['patientID']);
     if ($entered > 0) {
         $patientID = $entered;
-        // Optionally persist override to session: uncomment if you want changes to stick
+        // Optional: persist to session:
         // $_SESSION['patientID'] = $patientID;
     }
 } elseif (isset($_GET['patientID']) && $_GET['patientID'] !== '') {
@@ -22,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['patientID']) && $_POS
     if ($entered > 0) $patientID = $entered;
 }
 
-// Read filters (keep them tied to the same single form)
+// Read filters & dispenseFor (if viewing dispense history)
 $prescriptionID = null;
 $q = '';
 $attr = 'all';
@@ -35,8 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $q = isset($_GET['q']) ? trim($_GET['q']) : '';
     $attr = isset($_GET['attr']) ? $_GET['attr'] : 'all';
 }
+$dispenseFor = isset($_GET['dispenseFor']) ? intval($_GET['dispenseFor']) : 0;
 
-// Simple whitelist for attributes you can arrange by
+// Whitelist for arrange/search attributes
 $searchable = [
     'medicationID'      => 'Medication ID',
     'dosage'            => 'Dosage',
@@ -55,14 +55,14 @@ if ($attr !== 'all' && !array_key_exists($attr, $searchable)) $attr = 'all';
     <label for="patientID">Patient ID:</label>
     <input type="text" name="patientID" id="patientID"
            value="<?php echo htmlspecialchars($patientID ?? ''); ?>"
-           placeholder="Enter patient ID (type & press Enter or wait)..."
+           placeholder="Enter patient ID (type & pause)..."
            oninput="clearTimeout(window._pidTimer); window._pidTimer=setTimeout(function(){ document.getElementById('patientFilterForm').submit(); }, 450);"
            style="padding:6px; width:120px;" />
 
     &nbsp;&nbsp;
 
     <label for="prescriptionID">Prescription ID:</label>
-    <input type="number" name="prescriptionID" id="prescriptionID" value="<?php echo htmlspecialchars($prescriptionID ?? ''); ?>" min="1" style="padding:6px; width:90px;">
+    <input type="number" name="prescriptionID" id="prescriptionID" value="<?php echo htmlspecialchars($prescriptionID ?? '') ?>" min="1" style="padding:6px; width:90px;">
 
     &nbsp;&nbsp;
 
@@ -85,13 +85,13 @@ if ($attr !== 'all' && !array_key_exists($attr, $searchable)) $attr = 'all';
 </form>
 <?php
 
-// If no patient selected show message but allow the form to remain (no DB query)
+// If no patient selected show message and stop (so user can enter patient id)
 if (!isset($patientID) || !is_numeric($patientID) || $patientID <= 0) {
     echo '<p class="no-results">No patient selected. Enter a Patient ID in the box above to load prescriptions.</p>';
-    return; // stop here — user can type patient ID and submit
+    return;
 }
 
-// Optionally fetch and show patient name
+// Optionally fetch & display patient name
 $patientName = '';
 $pnStmt = $conn->prepare("SELECT firstName, lastName FROM patient WHERE patientID = ?");
 if ($pnStmt) {
@@ -106,7 +106,7 @@ if ($pnStmt) {
 }
 echo '<h3>Prescription history for ' . ($patientName ? htmlspecialchars($patientName) : 'Patient ID ' . htmlspecialchars($patientID)) . '.</h3>';
 
-// ---------- Build main query: join prescriptionitem -> prescription -> medication -> doctor
+// ---------- Build main query (prescriptionitem -> prescription -> medication -> doctor) ----------
 $select = "pi.doctorID,
            pi.prescriptionItemID,
            pi.prescriptionID,
@@ -133,7 +133,6 @@ $params = [];
 $types = 'i';
 $params[] = $patientID;
 
-// optional prescriptionID filter
 if ($prescriptionID !== null) {
     $sql .= " AND pi.prescriptionID = ?";
     $types .= 'i';
@@ -153,7 +152,6 @@ if ($q !== '') {
             $params[] = '%' . $q . '%';
         }
     } else {
-        // search many text columns; include numeric checks if q is numeric
         $sql .= " AND (pi.dosage LIKE ? OR pi.frequency LIKE ? OR pi.duration LIKE ? OR pi.instructions LIKE ?";
         $types .= 's'; $params[] = '%' . $q . '%';
         $types .= 's'; $params[] = '%' . $q . '%';
@@ -168,7 +166,7 @@ if ($q !== '') {
     }
 }
 
-// ORDER BY: group by prescriptionID then by attribute (if chosen)
+// ORDER BY
 if ($attr !== 'all') {
     $orderCol = $attr;
     if (in_array($orderCol, ['dosage','frequency','duration','instructions','prescribed_amount','refill_count'])) {
@@ -180,15 +178,13 @@ if ($attr !== 'all') {
     $sql .= " ORDER BY pi.prescriptionID ASC, pi.prescriptionItemID ASC";
 }
 
-// prepare and bind
+// prepare & bind
 $stmt = $conn->prepare($sql);
 if ($stmt === false) {
     echo '<p class="no-results">Query prepare failed: ' . htmlspecialchars($conn->error) . '</p>';
-    // debug: echo '<pre>' . htmlspecialchars($sql) . '</pre>';
     return;
 }
 if (!empty($params)) {
-    // dynamic bind
     $bind_names = [];
     $bind_names[] = $types;
     for ($i = 0; $i < count($params); $i++) {
@@ -198,15 +194,13 @@ if (!empty($params)) {
     }
     call_user_func_array([$stmt, 'bind_param'], $bind_names);
 }
-
 if (!$stmt->execute()) {
     echo '<p class="no-results">Execute failed: ' . htmlspecialchars($stmt->error) . '</p>';
     return;
 }
-
 $result = $stmt->get_result();
 
-// ---------- Output grouped prescription tables ----------
+// ---------- Output grouped prescription tables with Actions column ----------
 $currentPrescription = null;
 $rowsFound = false;
 
@@ -216,13 +210,11 @@ while ($row = $result->fetch_assoc()) {
 
     $prescID = $row['prescriptionID'];
     if ($currentPrescription !== $prescID) {
-        // close previous
         if ($currentPrescription !== null) {
             echo "</tbody></table></div>\n";
         }
         $currentPrescription = $prescID;
 
-        // header (prescription id, doctor name, date issued)
         echo '<div class="prescription" style="margin-bottom:16px;border:1px solid #ddd;border-radius:6px;padding:0;overflow:hidden;">';
         echo '<h4 style="margin:0;padding:10px;background:#f6f6f6;border-bottom:1px solid #e6e6e6;">'
              .'Prescription ID: '.htmlspecialchars($prescID)
@@ -239,9 +231,11 @@ while ($row = $result->fetch_assoc()) {
                 <th style="padding:8px;border-bottom:1px solid #eee;">Amount</th>
                 <th style="padding:8px;border-bottom:1px solid #eee;">Refills</th>
                 <th style="padding:8px;border-bottom:1px solid #eee;">Instructions</th>
+                <th style="padding:8px;border-bottom:1px solid #eee;">Actions</th>
               </tr></thead><tbody>';
     }
 
+    // row
     echo '<tr>';
     echo '<td style="padding:8px;border-bottom:1px solid #f0f0f0;">' . htmlspecialchars($row['prescriptionItemID']) . '</td>';
     echo '<td style="padding:8px;border-bottom:1px solid #f0f0f0;">' . htmlspecialchars($row['medicine']) . ' (' . htmlspecialchars($row['medicationID']) . ')</td>';
@@ -252,17 +246,92 @@ while ($row = $result->fetch_assoc()) {
     echo '<td style="padding:8px;border-bottom:1px solid #f0f0f0;">' . htmlspecialchars($row['prescribed_amount']) . '</td>';
     echo '<td style="padding:8px;border-bottom:1px solid #f0f0f0;">' . htmlspecialchars($row['refill_count']) . '</td>';
     echo '<td style="padding:8px;border-bottom:1px solid #f0f0f0;">' . nl2br(htmlspecialchars($row['instructions'])) . '</td>';
+
+    // Actions column (View Dispense)
+    $pi = (int)$row['prescriptionItemID'];
+    $qs = http_build_query([
+        'patientID' => $patientID,
+        'prescriptionID' => $prescID,
+        'attr' => $attr,
+        'q' => $q,
+        'dispenseFor' => $pi
+    ]);
+    echo '<td style="padding:8px;border-bottom:1px solid #f0f0f0;">';
+    echo '<a href="?' . htmlspecialchars($qs) . '" style="display:inline-block;padding:6px 8px;background:#2b7cff;color:#fff;border-radius:4px;text-decoration:none;">View Dispense</a>';
+    echo '</td>';
+
     echo '</tr>';
 }
 
 if ($currentPrescription !== null) {
     echo "</tbody></table></div>\n";
 }
+echo '</div>'; // .prescription-list
 
 if (!$rowsFound) {
     echo '<p class="no-results">No prescription items found for this patient.</p>';
 }
 
 $stmt->close();
+
+// ---------- Dispense history panel (if requested) ----------
+$drTable = 'dispenserecord'; // adjust if your table name differs
+if ($dispenseFor > 0) {
+    $sqlDr = "SELECT dispenseID, pharmacyID, quantityDispensed, dateDispensed, pharmacistName, status, nextAvailableDates
+              FROM $drTable
+              WHERE prescriptionItemID = ?
+              ORDER BY dateDispensed DESC, dispenseID DESC";
+    $drStmt = $conn->prepare($sqlDr);
+    if ($drStmt) {
+        $drStmt->bind_param('i', $dispenseFor);
+        $drStmt->execute();
+        $drRes = $drStmt->get_result();
+
+        echo '<div style="margin-top:20px;border:1px solid #ccc;padding:12px;border-radius:6px;background:#fff;">';
+        echo '<h4 style="margin-top:0;margin-bottom:8px;">Dispense history for item ID ' . htmlspecialchars($dispenseFor) . '</h4>';
+
+        if ($drRes && $drRes->num_rows > 0) {
+            echo '<table style="width:100%;border-collapse:collapse;">';
+            echo '<thead><tr>
+                    <th style="padding:8px;border-bottom:1px solid #eee;">Dispense ID</th>
+                    <th style="padding:8px;border-bottom:1px solid #eee;">Pharmacy ID</th>
+                    <th style="padding:8px;border-bottom:1px solid #eee;">Quantity</th>
+                    <th style="padding:8px;border-bottom:1px solid #eee;">Date Dispensed</th>
+                    <th style="padding:8px;border-bottom:1px solid #eee;">Pharmacist</th>
+                    <th style="padding:8px;border-bottom:1px solid #eee;">Status</th>
+                    <th style="padding:8px;border-bottom:1px solid #eee;">Next Available</th>
+                  </tr></thead><tbody>';
+            while ($dr = $drRes->fetch_assoc()) {
+                echo '<tr>';
+                echo '<td style="padding:8px;border-bottom:1px solid #f5f5f5;">' . htmlspecialchars($dr['dispenseID']) . '</td>';
+                echo '<td style="padding:8px;border-bottom:1px solid #f5f5f5;">' . htmlspecialchars($dr['pharmacyID']) . '</td>';
+                echo '<td style="padding:8px;border-bottom:1px solid #f5f5f5;">' . htmlspecialchars($dr['quantityDispensed']) . '</td>';
+                echo '<td style="padding:8px;border-bottom:1px solid #f5f5f5;">' . htmlspecialchars($dr['dateDispensed']) . '</td>';
+                echo '<td style="padding:8px;border-bottom:1px solid #f5f5f5;">' . htmlspecialchars($dr['pharmacistName']) . '</td>';
+                echo '<td style="padding:8px;border-bottom:1px solid #f5f5f5;">' . htmlspecialchars($dr['status']) . '</td>';
+                echo '<td style="padding:8px;border-bottom:1px solid #f5f5f5;">' . htmlspecialchars($dr['nextAvailableDates']) . '</td>';
+                echo '</tr>';
+            }
+            echo '</tbody></table>';
+        } else {
+            echo '<p class="no-results">No dispense records found for this prescription item.</p>';
+        }
+
+        // back link (preserves patient & filters)
+        $backQs = http_build_query([
+            'patientID' => $patientID,
+            'prescriptionID' => $prescriptionID ?? '',
+            'attr' => $attr ?? 'all',
+            'q' => $q ?? ''
+        ]);
+        echo '<p style="margin-top:10px;"><a href="?' . htmlspecialchars($backQs) . '">&larr; Back to prescriptions</a></p>';
+
+        echo '</div>';
+        $drStmt->close();
+    } else {
+        echo '<p class="no-results">Unable to prepare dispense query: ' . htmlspecialchars($conn->error) . '</p>';
+    }
+}
+
 $conn->close();
 ?>
