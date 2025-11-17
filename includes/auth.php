@@ -21,18 +21,55 @@ if (session_status() === PHP_SESSION_NONE) {
  */
 function set_user_session(array $row): void
 {
-    // regenerate session id to mitigate fixation
+    // regenerate session id to mitigate fixation (call this only at login)
     session_regenerate_id(true);
 
-    // canonical keys used across the app
     $_SESSION['patientID'] = isset($row['patientID']) ? (int)$row['patientID'] : null;
+
     $first = $row['firstName'] ?? ($row['first_name'] ?? '');
     $last  = $row['lastName']  ?? ($row['last_name']  ?? '');
     $name  = trim($first . ' ' . $last);
+
     $_SESSION['patient_name']  = $name !== '' ? $name : ($_SESSION['patient_name'] ?? 'Patient');
+
     if (isset($row['email'])) {
         $_SESSION['patient_email'] = $row['email'];
     }
+}
+
+/**
+ * Convenience: load patient by ID and populate session keys.
+ * Requires an active $conn (mysqli).
+ * Safe to call where you have a DB connection and want to canonicalize session.
+ *
+ * @param mysqli $conn
+ * @param int $patientID
+ * @return bool true on success (session set), false otherwise
+ */
+function set_user_session_from_db(mysqli $conn, int $patientID): bool
+{
+    if ($patientID <= 0) {
+        return false;
+    }
+
+    $stmt = $conn->prepare('SELECT patientID, firstName, lastName, email FROM patient WHERE patientID = ? LIMIT 1');
+    if ($stmt === false) {
+        error_log('set_user_session_from_db prepare failed: ' . $conn->error);
+        return false;
+    }
+
+    $stmt->bind_param('i', $patientID);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    if ($res && $res->num_rows === 1) {
+        $row = $res->fetch_assoc();
+        set_user_session($row);
+        $stmt->close();
+        return true;
+    }
+
+    $stmt->close();
+    return false;
 }
 
 /**
@@ -43,9 +80,6 @@ function set_user_session(array $row): void
 function clear_user_session(): void
 {
     unset($_SESSION['patientID'], $_SESSION['patient_name'], $_SESSION['patient_email']);
-    // Optionally destroy the session entirely on logout:
-    // session_unset();
-    // session_destroy();
 }
 
 /**
@@ -65,7 +99,6 @@ function is_logged_in(): bool
 function require_login(string $loginPath = '../TestLoginPatient.php'): void
 {
     if (!is_logged_in()) {
-        // simple redirect; caller should exit after require_login() if needed
         header('Location: ' . $loginPath);
         exit;
     }
@@ -104,3 +137,4 @@ function resolve_session_from_email(mysqli $conn): void
     }
     $stmt->close();
 }
+
