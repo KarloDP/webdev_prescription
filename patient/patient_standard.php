@@ -18,10 +18,10 @@ $user_name = $_SESSION['patient_name']
 // Defaults
 $activePage = $activePage ?? 'dashboard';
 $sidebarItems = $sidebarItems ?? [
-    'dashboard'   => 'Dashboard',
-    'patient'     => 'History',
-    'medication' => 'Medications',
-    'pharmacies'  => 'Pharmacies'
+    'dashboard'     => 'Dashboard',
+    'patient'       => 'History',
+    'medication'    => 'Medications',
+    'pharmacies'    => 'Pharmacies',
 ];
 
 // Asset base (relative to the current script) — resolves to .../assets
@@ -68,7 +68,7 @@ $assetBase = dirname($_SERVER['PHP_SELF']) . '/../assets';
           </a>
         </li>
       <?php endforeach; ?>
-      <li><a href="../logout.php">Logout</a></li>
+      <li><a href="testlogout.php">Logout</a></li>
     </ul>
   </aside>
 
