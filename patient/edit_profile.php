@@ -17,7 +17,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 $patient = $result->fetch_assoc();
 
-// Handle form submission
+// Handle form submissionQ
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   // Trim input values
   $contactNumber = trim($_POST['contactNumber']);
