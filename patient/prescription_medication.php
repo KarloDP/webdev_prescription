@@ -74,7 +74,7 @@ ob_start();
                     echo "</tbody></table></div>"; // close previous group
                 }
 
-                $rxID = 'RX-' . str_pad($row['prescriptionID'], 4, '0', STR_PAD_LEFT);
+                $rxID = 'RX-' . str_pad($row['prescriptionID'], 2, '0', STR_PAD_LEFT);
                 $statusBadge = $row['status'] === 'Active'
                     ? "<span style='color:#155724;background:#d4edda;padding:1px 4px;border-radius:4px;'>Active</span>"
                     : "<span style='color:#721c24;background:#f8d7da;padding:1px 4px;border-radius:4px;'>Expired</span>";
