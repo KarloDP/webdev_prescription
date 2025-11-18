@@ -94,7 +94,7 @@ if (!$stmt) {
 
         while ($row = $result->fetch_assoc()) {
             // Format prescription ID
-            $rxID = 'RX-' . str_pad($row['prescriptionID'], 4, '0', STR_PAD_LEFT);
+            $rxID = 'RX-' . str_pad($row['prescriptionID'], 2, '0', STR_PAD_LEFT);
 
             $medicine = htmlspecialchars($row['medicine'] ?? '-', ENT_QUOTES, 'UTF-8');
             $brand = htmlspecialchars($row['brandName'] ?? '-', ENT_QUOTES, 'UTF-8');
@@ -125,7 +125,7 @@ if (!$stmt) {
         echo "<div style='margin-top:20px;'>
                 <a href='prescription_medication.php' class='btn-view'
                    style='display:inline-block;padding:10px 15px;background:#6c757d;color:#fff;border-radius:4px;text-decoration:none;'>
-                   View Grouped Medications
+                   View Medications
                 </a>
               </div>";
     } else {
