@@ -1,9 +1,8 @@
 <?php
-// ---------- Prescription viewer with "View Dispense" action ----------
-// Paste this block into medication.php (replace previous prescription block).
-// Assumes session_start() was already called earlier in the file.
+// ---------- Full prescription viewer + inline dispense history (hideable) ----------
 
 require_once __DIR__ . '/../includes/db_connect.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
 
 // ---------- Determine current patient ID (priority: POST override -> session -> GET) ----------
 $sessionPatientID = isset($_SESSION['patientID']) ? intval($_SESSION['patientID']) : null;
@@ -13,15 +12,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['patientID']) && $_POS
     $entered = intval($_POST['patientID']);
     if ($entered > 0) {
         $patientID = $entered;
-        // Optional: persist to session:
-        // $_SESSION['patientID'] = $patientID;
+        // $_SESSION['patientID'] = $patientID; // optional persist
     }
 } elseif (isset($_GET['patientID']) && $_GET['patientID'] !== '') {
     $entered = intval($_GET['patientID']);
     if ($entered > 0) $patientID = $entered;
 }
 
-// Read filters & dispenseFor (if viewing dispense history)
+// Read filters & dispenseFor
 $prescriptionID = null;
 $q = '';
 $attr = 'all';
@@ -287,7 +285,8 @@ if ($dispenseFor > 0) {
         $drStmt->execute();
         $drRes = $drStmt->get_result();
 
-        echo '<div style="margin-top:20px;border:1px solid #ccc;padding:12px;border-radius:6px;background:#fff;">';
+        // PANEL with ID so JS can hide it
+        echo '<div id="dispenseHistoryPanel" style="margin-top:20px;border:1px solid #ccc;padding:12px;border-radius:6px;background:#fff;">';
         echo '<h4 style="margin-top:0;margin-bottom:8px;">Dispense history for item ID ' . htmlspecialchars($dispenseFor) . '</h4>';
 
         if ($drRes && $drRes->num_rows > 0) {
@@ -317,14 +316,11 @@ if ($dispenseFor > 0) {
             echo '<p class="no-results">No dispense records found for this prescription item.</p>';
         }
 
-        // back link (preserves patient & filters)
-        $backQs = http_build_query([
-            'patientID' => $patientID,
-            'prescriptionID' => $prescriptionID ?? '',
-            'attr' => $attr ?? 'all',
-            'q' => $q ?? ''
-        ]);
-        echo '<p style="margin-top:10px;"><a href="?' . htmlspecialchars($backQs) . '">&larr; Back to prescriptions</a></p>';
+        // Hide button (no reload) - hides the panel
+        echo '<button onclick="hideDispenseHistory()" 
+                style="margin-top:12px;padding:6px 10px;background:#888;color:#fff;border:none;border-radius:4px;cursor:pointer;">
+                Hide Dispense History
+              </button>';
 
         echo '</div>';
         $drStmt->close();
@@ -335,3 +331,11 @@ if ($dispenseFor > 0) {
 
 $conn->close();
 ?>
+
+<!-- Inline JS to hide the dispense panel without reload -->
+<script>
+function hideDispenseHistory() {
+    const panel = document.getElementById("dispenseHistoryPanel");
+    if (panel) panel.style.display = "none";
+}
+</script>

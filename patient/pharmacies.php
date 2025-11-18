@@ -1,79 +1,54 @@
 <?php
 session_start();
-include('../includes/auth.php');
-include('../includes/db_connect.php');
-//include 'patient_standard.php';
+include(__DIR__ . '/../includes/auth.php');
+include(__DIR__ . '/../includes/db_connect.php');
+
+// Redirect if not logged in as patient
 if (!isset($_SESSION['patientID'])) {
-  header("Location: ../TestLoginPatient.php");
-  exit;
+    header("Location: ../TestLoginPatient.php");
+    exit;
 }
 
 $patientID = $_SESSION['patientID'];
+$activePage = 'pharmacies';
 
-// Fetch patient name
+// Fetch patient name for header/profile display
 $patientName = "Patient";
 $stmt = $conn->prepare("SELECT firstName, lastName FROM patient WHERE patientID = ?");
 $stmt->bind_param("i", $patientID);
 $stmt->execute();
 $result = $stmt->get_result();
 if ($result && $result->num_rows > 0) {
-  $patient = $result->fetch_assoc();
-  $patientName = $patient['firstName'] . ' ' . $patient['lastName'];
+    $patient = $result->fetch_assoc();
+    $patientName = $patient['firstName'] . ' ' . $patient['lastName'];
 }
+
+// --- Capture page-specific content into $content so patient_standard.php can render it ---
+ob_start();
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>View Pharmacies</title>
-  <link rel="stylesheet" href="../admin/assets/css/role-patient.css">
-  <style>
-    .pharmacy-table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-bottom: 30px;
-    }
-    .pharmacy-table th, .pharmacy-table td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-    .pharmacy-table th {
-      background-color: #f4f4f4;
-    }
-    .pharmacy-table td {
-      background-color: #fff;
-    }
-  </style>
-</head>
-<body>
+<!-- Page-specific styles: shared table.css + page overrides -->
+<link rel="stylesheet" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/../assets/css/table.css">
+<link rel="stylesheet" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/../assets/css/pharmacies_patient.css">
 
-<!-- Sidebar -->
-<div class="sidebar">
-  <h3>Welcome To MediSync</h3>
-  <div class="profile-section">
-    <img src="../assets/img/profile.png" alt="Profile" class="profile-icon" />
-    <p><?= strtoupper($patientName) ?> <span class="role-label"></span></p>
-    <div id="dropdown-menu" class="dropdown-content">
-    </div>
-  </div>
-  <ul>
-    <li><a href="dashboard.php">Dashboard</a></li>
-    <li><a href="patient.php">History</a></li>
-    <li><a href="medication.php">Medications</a></li>
-    <li><a href="pharmacies.php" class="active">Pharmacies</a></li>
-  </ul>
-</div>
-
-<!-- Main Content -->
-<div class="main-content">
-  <h2>Pharmacy</h2>
-  <p>View Pharmacies</p>
+<div class="pharmacies-page">
+  <h2>Pharmacies</h2>
+  <p>Find nearby pharmacies and their contact details.</p>
 
   <?php
+  /*
+    NOTE:
+    - The original query selected "operatingHours" which caused a SQL error because that column
+      doesn't exist in your pharmacy table.
+    - If you later add operatingHours to the DB, change the SELECT below to include it:
+        SELECT pharmacyID, name, contactNumber, address, operatingHours
+    - For now we select only existing columns and provide a placeholder value for display.
+  */
+
+  // Use a placeholder column for operating hours until the real column exists
   $stmt = $conn->prepare("
-    SELECT name, contactNumber, address, clinicAddress
+    SELECT pharmacyID, name, contactNumber, address
+    /* , operatingHours  <-- uncomment this when the column exists */
     FROM pharmacy
     ORDER BY name ASC
   ");
@@ -81,29 +56,48 @@ if ($result && $result->num_rows > 0) {
   $result = $stmt->get_result();
 
   if ($result && $result->num_rows > 0) {
-    echo "<table class='pharmacy-table'>";
-    echo "<tr>
-            <th>Pharmacy</th>
-            <th>Contact Info</th>
-            <th>Address</th>
-            <th>Operating Hours</th>
-          </tr>";
+    echo '<div class="table-frame">';
+    echo "<table class='table-base'>";
+    echo "<thead>
+            <tr>
+              <th>Pharmacy</th>
+              <th>Contact Info</th>
+              <th>Address</th>
+              <th>Operating Hours</th>
+            </tr>
+          </thead>";
+    echo "<tbody>";
 
     while ($row = $result->fetch_assoc()) {
+      // Safely escape output
+      $name = htmlspecialchars($row['name'] ?? '-', ENT_QUOTES, 'UTF-8');
+      $contact = htmlspecialchars($row['contactNumber'] ?? '-', ENT_QUOTES, 'UTF-8');
+      $address = htmlspecialchars($row['address'] ?? '-', ENT_QUOTES, 'UTF-8');
+
+      // Placeholder for hours: replace with $row['operatingHours'] when column exists
+      $hours = '<span class="open-hours">Mon–Sat, 8:00–18:00</span>'; // example placeholder
+      // $hours = htmlspecialchars($row['operatingHours'] ?? '-', ENT_QUOTES, 'UTF-8');
+
       echo "<tr>
-              <td>{$row['name']}</td>
-              <td>{$row['contactNumber']}</td>
-              <td>{$row['address']}</td>
-              <td>" . date("F j, Y", strtotime("2001-09-08")) . "</td>
+              <td>{$name}</td>
+              <td>{$contact}</td>
+              <td>{$address}</td>
+              <td>{$hours}</td>
             </tr>";
     }
 
+    echo "</tbody>";
     echo "</table>";
+    echo "</div>";
   } else {
-    echo "<p>No pharmacies found.</p>";
+    echo '<div class="empty-state"><p>No pharmacies found.</p></div>';
   }
   ?>
 </div>
 
-</body>
-</html>
+<?php
+// End buffer and set $content
+$content = ob_get_clean();
+
+// patient_standard.php should render header, sidebar (using $activePage) and echo $content in the main area
+include __DIR__ . '/patient_standard.php';

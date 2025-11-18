@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Nov 16, 2025 at 07:48 AM
+-- Host: localhost
+-- Generation Time: Nov 18, 2025 at 01:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -157,24 +157,28 @@ CREATE TABLE `patient` (
   `contactNumber` int(11) NOT NULL,
   `address` text NOT NULL,
   `email` text NOT NULL,
-  `doctorID` int(11) NOT NULL
+  `doctorID` int(11) NOT NULL,
+  `healthCondition` text DEFAULT NULL,
+  `allergies` text DEFAULT NULL,
+  `currentMedication` text DEFAULT NULL,
+  `knownDiseases` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `patient`
 --
 
-INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `birthDate`, `gender`, `contactNumber`, `address`, `email`, `doctorID`) VALUES
-(1, 'Juan', 'Dela Cruz', '1990-05-12', 'Male', 912345678, 'Batangas City', 'juan.delacruz@example.com', 1),
-(2, 'Maria', 'Santos', '1988-09-23', 'Female', 923456789, 'Quezon City', 'maria.santos@example.com', 2),
-(3, 'Jose', 'Reyes', '1975-02-10', 'Male', 934567890, 'Cebu City', 'jose.reyes@example.com', 3),
-(4, 'Ana', 'Ramos', '1995-11-30', 'Female', 945678901, 'Davao City', 'ana.ramos@example.com', 4),
-(5, 'Carlos', 'Garcia', '1982-03-15', 'Male', 956789012, 'Pasig City', 'carlos.garcia@example.com', 5),
-(6, 'Liza', 'Torres', '2000-07-08', 'Female', 967890123, 'Iloilo City', 'liza.torres@example.com', 6),
-(7, 'Mark', 'Lim', '1998-04-25', 'Male', 978901234, 'Makati City', 'mark.lim@example.com', 7),
-(8, 'Patricia', 'Mendoza', '1993-06-18', 'Female', 989012345, 'Taguig City', 'patricia.mendoza@example.com', 8),
-(9, 'Andrew', 'Lopez', '1987-12-01', 'Male', 990123456, 'Manila', 'andrew.lopez@example.com', 9),
-(10, 'Sophia', 'De Guzman', '1999-10-05', 'Female', 901234567, 'Cavite', 'sophia.deguzman@example.com', 10);
+INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `birthDate`, `gender`, `contactNumber`, `address`, `email`, `doctorID`, `healthCondition`, `allergies`, `currentMedication`, `knownDiseases`) VALUES
+(1, 'Juan', 'Dela Cruz', '1990-05-12', 'Male', 912345678, 'Batangas City', 'juan.delacruz@example.com', 1, NULL, NULL, NULL, NULL),
+(2, 'Maria', 'Santos', '1988-09-23', 'Female', 923456789, 'Quezon City', 'maria.santos@example.com', 2, NULL, NULL, NULL, NULL),
+(3, 'Jose', 'Reyes', '1975-02-10', 'Male', 934567890, 'Cebu City', 'jose.reyes@example.com', 3, NULL, NULL, NULL, NULL),
+(4, 'Ana', 'Ramos', '1995-11-30', 'Female', 945678901, 'Davao City', 'ana.ramos@example.com', 4, NULL, NULL, NULL, NULL),
+(5, 'Carlos', 'Garcia', '1982-03-15', 'Male', 956789012, 'Pasig City', 'carlos.garcia@example.com', 5, NULL, NULL, NULL, NULL),
+(6, 'Liza', 'Torres', '2000-07-08', 'Female', 967890123, 'Iloilo City', 'liza.torres@example.com', 6, NULL, NULL, NULL, NULL),
+(7, 'Mark', 'Lim', '1998-04-25', 'Male', 978901234, 'Makati City', 'mark.lim@example.com', 7, NULL, NULL, NULL, NULL),
+(8, 'Patricia', 'Mendoza', '1993-06-18', 'Female', 989012345, 'Taguig City', 'patricia.mendoza@example.com', 8, NULL, NULL, NULL, NULL),
+(9, 'Andrew', 'Lopez', '1987-12-01', 'Male', 990123456, 'Manila', 'andrew.lopez@example.com', 9, NULL, NULL, NULL, NULL),
+(10, 'Sophia', 'De Guzman', '1999-10-05', 'Female', 901234567, 'Cavite', 'sophia.deguzman@example.com', 10, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -259,7 +263,7 @@ CREATE TABLE `prescriptionitem` (
 --
 
 INSERT INTO `prescriptionitem` (`doctorID`, `prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `prescribed_amount`, `refill_count`, `instructions`) VALUES
-(1, 81, 1, 2, '500 mg', '3 times a day', '5 days', 15, 0, 'Take after meals'),
+(1, 1, 1, 2, '500 mg', '3 times a day', '5 days', 15, 0, 'Take after meals'),
 (1, 82, 1, 3, '500 mg', '2 times a day', '7 days', 14, 0, 'Complete the full course'),
 (2, 83, 2, 4, '10 mg', 'Once daily', '10 days', 10, 1, 'Take at night'),
 (2, 84, 2, 2, '200 mg', 'Every 6 hours', '3 days', 12, 0, 'Take with water'),
@@ -346,6 +350,12 @@ ALTER TABLE `prescriptionitem`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `patient`
+--
+ALTER TABLE `patient`
+  MODIFY `patientID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `prescription`
