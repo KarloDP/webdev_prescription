@@ -81,6 +81,7 @@ if (!$stmt) {
         echo "<table class='table-base'>";
         echo "<thead>
                 <tr>
+                  <th>Prescription ID</th>
                   <th>Medicine</th>
                   <th>Medication Brand</th>
                   <th>Doctor Name</th>
@@ -92,6 +93,9 @@ if (!$stmt) {
         echo "<tbody>";
 
         while ($row = $result->fetch_assoc()) {
+            // Format prescription ID
+            $rxID = 'RX-' . str_pad($row['prescriptionID'], 4, '0', STR_PAD_LEFT);
+
             $medicine = htmlspecialchars($row['medicine'] ?? '-', ENT_QUOTES, 'UTF-8');
             $brand = htmlspecialchars($row['brandName'] ?? '-', ENT_QUOTES, 'UTF-8');
             $doctor = htmlspecialchars($row['doctorName'] ?? '-', ENT_QUOTES, 'UTF-8');
@@ -103,6 +107,7 @@ if (!$stmt) {
             $issueDate = !empty($row['issueDate']) ? date("F j, Y", strtotime($row['issueDate'])) : '-';
 
             echo "<tr>
+                    <td>{$rxID}</td>
                     <td>{$medicine}</td>
                     <td>{$brand}</td>
                     <td>{$doctor}</td>
@@ -115,6 +120,14 @@ if (!$stmt) {
         echo "</tbody>";
         echo "</table>";
         echo "</div>";
+
+        // Add button to view grouped medications
+        echo "<div style='margin-top:20px;'>
+                <a href='prescription_medication.php' class='btn-view'
+                   style='display:inline-block;padding:10px 15px;background:#6c757d;color:#fff;border-radius:4px;text-decoration:none;'>
+                   View Grouped Medications
+                </a>
+              </div>";
     } else {
         echo '<div class="empty-state"><p>No prescriptions found.</p></div>';
     }
@@ -130,3 +143,4 @@ $content = ob_get_clean();
 
 // patient_standard.php should render header, sidebar (using $activePage) and echo $content in the main area
 include __DIR__ . '/patient_standard.php';
+?>
