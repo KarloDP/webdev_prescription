@@ -1,80 +1,90 @@
 <?php
 // view_prescription.php
+
+session_start();
 include('../includes/db_connect.php');
+
 $activePage = 'prescriptions';
 
-$stmt = $conn->prepare("
-    SELECT p.prescriptionID, p.patientID, p.issueDate, p.expirationDate, p.refillInterval, p.status,
-           pat.firstName, pat.lastName
+// Fetch all prescriptions with patient + doctor names
+$sql = "
+    SELECT 
+        p.prescriptionID,
+        p.issueDate,
+        p.expirationDate,
+        p.status,
+        pat.firstName AS patientFirst,
+        pat.lastName AS patientLast,
+        d.firstName AS doctorFirst,
+        d.lastName AS doctorLast
     FROM prescription p
-    JOIN patient pat ON p.patientID = pat.patientID
-    ORDER BY p.issueDate DESC
-");
-$stmt->execute();
-$pres = $stmt->get_result();
-$stmt->close();
+    LEFT JOIN patient pat ON pat.patientID = p.patientID
+    LEFT JOIN doctor d ON d.doctorID = p.doctorID
+    ORDER BY p.prescriptionID DESC
+";
 
+$list = $conn->query($sql);
+
+// ─────────── BUILD PAGE CONTENT ───────────
 ob_start();
 ?>
 
     <div class="card">
-        <h2>View Prescriptions</h2>
-        <a class="btn" href="add_prescription.php">+ Add Prescription</a>
-    </div>
+        <h2 style="margin-bottom:15px;">Prescription List</h2>
 
-    <div class="card">
-        <?php if ($pres->num_rows > 0): ?>
-            <table>
-                <thead>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Issue Date</th>
+                <th>Expiration</th>
+                <th>Status</th>
+                <th style="width:220px;">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <?php while ($p = $list->fetch_assoc()): ?>
                 <tr>
-                    <th>ID</th><th>Patient</th><th>Medications</th><th>Issue</th><th>Expires</th><th>Interval</th><th>Status</th><th>Actions</th>
+                    <td><?= $p['prescriptionID'] ?></td>
+
+                    <td>
+                        <?= htmlspecialchars($p['patientFirst'] . " " . $p['patientLast']) ?>
+                    </td>
+
+                    <td>
+                        <?= htmlspecialchars($p['doctorFirst'] . " " . $p['doctorLast']) ?>
+                    </td>
+
+                    <td><?= htmlspecialchars($p['issueDate']) ?></td>
+                    <td><?= htmlspecialchars($p['expirationDate']) ?></td>
+
+                    <td><?= htmlspecialchars($p['status']) ?></td>
+
+                    <td>
+                        <a href="view_patient_prescription.php?id=<?= $p['prescriptionID'] ?>" class="btn">
+                            View
+                        </a>
+
+                        <a href="edit_prescription.php?id=<?= $p['prescriptionID'] ?>" class="btn" style="background:#007bff;">
+                            Edit
+                        </a>
+
+                        <a href="delete_prescription.php?id=<?= $p['prescriptionID'] ?>"
+                           class="btn btn-danger"
+                           onclick="return confirm('Delete this prescription?');">
+                            Delete
+                        </a>
+                    </td>
                 </tr>
-                </thead>
-                <tbody>
-                <?php while ($r = $pres->fetch_assoc()): ?>
-                    <tr>
-                        <td><?= (int)$r['prescriptionID'] ?></td>
-                        <td>
-                            <?= htmlspecialchars($r['firstName'].' '.$r['lastName']) ?><br>
-                            <a href="view_patient_prescription.php?id=<?= (int)$r['patientID'] ?>">View Patient</a>
-                        </td>
-                        <td>
-                            <ul style="margin:0; padding-left:14px;">
-                                <?php
-                                $it = $conn->prepare("
-                                SELECT m.genericName, m.brandName, pi.dosage, pi.frequency
-                                FROM prescriptionitem pi
-                                JOIN medication m ON pi.medicationID = m.medicationID
-                                WHERE pi.prescriptionID = ?
-                            ");
-                                $it->bind_param("i", $r['prescriptionID']);
-                                $it->execute();
-                                $items = $it->get_result();
-                                while ($row = $items->fetch_assoc()):
-                                    ?>
-                                    <li><strong><?= htmlspecialchars($row['genericName'].' — '.$row['brandName']) ?></strong>
-                                        (<?= htmlspecialchars($row['dosage']) ?>, <?= htmlspecialchars($row['frequency']) ?>)
-                                    </li>
-                                <?php endwhile; $it->close(); ?>
-                            </ul>
-                        </td>
-                        <td><?= htmlspecialchars($r['issueDate']) ?></td>
-                        <td><?= htmlspecialchars($r['expirationDate']) ?></td>
-                        <td><?= htmlspecialchars($r['refillInterval']) ?></td>
-                        <td><?= htmlspecialchars($r['status']) ?></td>
-                        <td>
-                            <a href="edit_prescription.php?id=<?= (int)$r['prescriptionID'] ?>">Edit</a><br>
-                            <a class="danger" href="delete_prescription.php?id=<?= (int)$r['prescriptionID'] ?>" onclick="return confirm('Delete prescription?')">Delete</a>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-                </tbody>
-            </table>
-        <?php else: ?>
-            <p>No prescriptions found.</p>
-        <?php endif; ?>
+            <?php endwhile; ?>
+            </tbody>
+        </table>
     </div>
 
 <?php
 $content = ob_get_clean();
 include('doctor_standard.php');
+?>

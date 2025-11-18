@@ -5,17 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5e480325-aaa8-4eb3-ae15-400c2f6bfa35" name="Changes" comment="updated doctor backend">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/webdev_prescription.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/webdev_prescription.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doctor/add_patient.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/add_patient.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doctor/add_prescription.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/add_prescription.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doctor/delete_patient.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/delete_patient.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doctor/delete_prescription.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/delete_prescription.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doctor/doctor_standard.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/doctor_standard.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doctor/edit_prescription.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/edit_prescription.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doctor/patients.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/patients.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doctor/view_patient_prescription.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/view_patient_prescription.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doctor/view_prescription.php" beforeDir="false" afterPath="$PROJECT_DIR$/doctor/view_prescription.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/includes/header.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/includes/sidebar.php" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,7 +91,11 @@
       <updated>1763283344951</updated>
       <workItem from="1763283641862" duration="10000" />
       <workItem from="1763283662973" duration="8728000" />
-      <workItem from="1763375272741" duration="9137000" />
+      <workItem from="1763375272741" duration="10185000" />
+      <workItem from="1763386769608" duration="54000" />
+      <workItem from="1763386847242" duration="8632000" />
+      <workItem from="1763443546386" duration="6246000" />
+      <workItem from="1763481333489" duration="5970000" />
     </task>
     <task id="LOCAL-00001" summary="Updated database SQL file">
       <option name="closed" value="true" />
@@ -107,7 +113,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763291867883</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="updated doctor backend">
+      <option name="closed" value="true" />
+      <created>1763385756885</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1763385756885</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
