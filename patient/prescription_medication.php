@@ -76,8 +76,8 @@ ob_start();
 
                 $rxID = 'RX-' . str_pad($row['prescriptionID'], 4, '0', STR_PAD_LEFT);
                 $statusBadge = $row['status'] === 'Active'
-                    ? "<span style='color:#155724;background:#d4edda;padding:2px 6px;border-radius:4px;'>Active</span>"
-                    : "<span style='color:#721c24;background:#f8d7da;padding:2px 6px;border-radius:4px;'>Expired</span>";
+                    ? "<span style='color:#155724;background:#d4edda;padding:1px 4px;border-radius:4px;'>Active</span>"
+                    : "<span style='color:#721c24;background:#f8d7da;padding:1px 4px;border-radius:4px;'>Expired</span>";
 
                 echo "<div class='prescription-group'>";
                 echo "<h3>Prescription {$rxID} ({$statusBadge})</h3>";
