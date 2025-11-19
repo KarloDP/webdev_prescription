@@ -191,6 +191,8 @@ if ($result && $result->num_rows > 0) {
     } else {
         echo "<p>No medication records found.</p>";
     }
+
+    $stmt->close();
     ?>
 
 
