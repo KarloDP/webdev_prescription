@@ -1,7 +1,5 @@
 <?php
 include('../includes/db_connect.php');
-include('../includes/header.php');
-include('../includes/sidebar.php');
 
 // Get Prescription ID from URL
 $prescriptionID = isset($_GET['id']) ? intval($_GET['id']) : 0;

@@ -1,7 +1,6 @@
 <?php
 include('../includes/db_connect.php');
-include('../includes/header.php');
-include('../includes/sidebar.php');
+
 
 // Fetch all prescriptions (ADD patientID so we can link back!)
 $prescriptions = mysqli_query($conn, "

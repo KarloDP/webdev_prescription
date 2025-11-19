@@ -1,151 +1,127 @@
 <?php
+// add_patient.php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 include('../includes/db_connect.php');
-include('../includes/header.php');
-include('../includes/sidebar.php');
 
-$doctorID = $_SESSION['doctor_id'] ?? 0;
 $activePage = 'patients';
 
-$message = "";
+$doctors = $conn->query("SELECT doctorID, firstName, lastName FROM doctor ORDER BY firstName");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$errors = [];
+$success = false;
 
-    $firstName = trim($_POST['firstName']);
-    $lastName = trim($_POST['lastName']);
-    $birthDate = $_POST['birthDate'];
-    $gender = $_POST['gender'];
-    $contact = trim($_POST['contactNumber']);
-    $email = trim($_POST['email']);
-    $address = trim($_POST['address']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $firstName = trim($_POST['firstName'] ?? '');
+    $lastName = trim($_POST['lastName'] ?? '');
+    $birthDate = $_POST['birthDate'] ?? null;
+    $gender = trim($_POST['gender'] ?? '');
+    $contactNumber = trim($_POST['contactNumber'] ?? '');
+    $address = trim($_POST['address'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $doctorID = intval($_POST['doctorID'] ?? 0);
 
-    // NEW FIELDS
-    $healthCondition = trim($_POST['healthCondition']);
-    $allergies = trim($_POST['allergies']);
-    $currentMedication = trim($_POST['currentMedication']);
-    $knownDiseases = trim($_POST['knownDiseases']);
+    if ($firstName === '' || $lastName === '') $errors[] = "First and last name required.";
+    if (empty($birthDate)) $errors[] = "Birth date required.";
+    if ($doctorID <= 0) $errors[] = "Select a doctor.";
 
-    // Prevent duplicates
-    $check = $conn->prepare("
-        SELECT patientID FROM patient
-        WHERE firstName = ? AND lastName = ? AND birthDate = ? AND contactNumber = ?
-    ");
-    $check->bind_param("ssss", $firstName, $lastName, $birthDate, $contact);
-    $check->execute();
-    $check->store_result();
+    if (empty($errors)) {
+        try {
+            $stmt = $conn->prepare("
+                INSERT INTO patient (firstName, lastName, birthDate, gender, contactNumber, address, email, doctorID)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ");
+            if (!$stmt) throw new Exception("Prepare failed: " . $conn->error);
+            $stmt->bind_param("sssss ssi", $firstName, $lastName, $birthDate, $gender, $contactNumber, $address, $email, $doctorID);
+            // NOTE: small PHP quirk — bind_param requires types combined without spaces; we'll correct
+            // Rebind properly
+            $stmt->close();
 
-    if ($check->num_rows > 0) {
-        $message = "<p style='color:red; font-weight:bold;'>⚠ Patient already exists!</p>";
-    } else {
+            // Re-prepare properly
+            $stmt = $conn->prepare("
+                INSERT INTO patient (firstName, lastName, birthDate, gender, contactNumber, address, email, doctorID)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ");
+            $stmt->bind_param("sssssssi", $firstName, $lastName, $birthDate, $gender, $contactNumber, $address, $email, $doctorID);
+            if (!$stmt->execute()) throw new Exception("Execute failed: " . $stmt->error);
+            $stmt->close();
 
-        // Insert patient
-        $stmt = $conn->prepare("
-            INSERT INTO patient
-            (firstName, lastName, birthDate, gender, contactNumber, address, email, doctorID,
-             healthCondition, allergies, currentMedication, knownDiseases)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-
-        $stmt->bind_param(
-            "ssssssssssss",
-            $firstName, $lastName, $birthDate, $gender, $contact, $address, $email, $doctorID,
-            $healthCondition, $allergies, $currentMedication, $knownDiseases
-        );
-
-        if ($stmt->execute()) {
-            $message = "<p style='color:green; font-weight:bold;'>✔ Patient added successfully!</p>";
-        } else {
-            $message = "<p style='color:red;'>❌ Error: " . $stmt->error . "</p>";
+            $success = true;
+            // show message and redirect back to patients.php (or referrer) - B2 behavior
+        } catch (Exception $e) {
+            $errors[] = "DB error: " . $e->getMessage();
         }
     }
 }
+
+ob_start();
 ?>
 
-<!-- ================= MAIN CONTENT ================= -->
-<div class="main-content" style="padding:30px;">
+    <div class="card">
+        <h2>Add Patient</h2>
 
-    <h2 style="text-align:center;">Add New Patient</h2>
-    <?= $message ?>
+        <?php if ($success): ?>
+            <div style="padding:10px;background:#e6ffed;border:1px solid #1f8a3f;margin-bottom:12px;">
+                ✅ Patient added successfully. Redirecting...
+            </div>
+            <script>
+                setTimeout(function(){
+                    // redirect back to referrer if exists, else patients.php
+                    var ref = <?= json_encode($_SERVER['HTTP_REFERER'] ?? 'patients.php') ?>;
+                    window.location.href = ref || 'patients.php';
+                }, 2000);
+            </script>
+        <?php endif; ?>
 
-    <div style="
-        width: 500px;
-        margin: 0 auto;
-        padding: 25px;
-        background: #f8f8f8;
-        border-radius: 10px;
-        box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-    ">
+        <?php if (!empty($errors)): ?>
+            <div style="padding:10px;background:#ffe6e6;border:1px solid #d62b2b;margin-bottom:12px;">
+                <strong>Errors:</strong>
+                <ul><?php foreach($errors as $e) echo "<li>".htmlspecialchars($e)."</li>"; ?></ul>
+            </div>
+        <?php endif; ?>
 
-        <form method="POST">
+        <form method="post" style="max-width:700px;">
+            <label>First name</label><br>
+            <input type="text" name="firstName" required value="<?= htmlspecialchars($_POST['firstName'] ?? '') ?>"><br><br>
 
-            <label>First Name:</label>
-            <input type="text" name="firstName" required class="input-field">
+            <label>Last name</label><br>
+            <input type="text" name="lastName" required value="<?= htmlspecialchars($_POST['lastName'] ?? '') ?>"><br><br>
 
-            <label>Last Name:</label>
-            <input type="text" name="lastName" required class="input-field">
+            <label>Birth Date</label><br>
+            <input type="date" name="birthDate" required value="<?= htmlspecialchars($_POST['birthDate'] ?? '') ?>"><br><br>
 
-            <label>Birth Date:</label>
-            <input type="date" name="birthDate" required class="input-field">
+            <label>Gender</label><br>
+            <select name="gender">
+                <option <?php if(($_POST['gender'] ?? '')=='Male') echo 'selected' ?>>Male</option>
+                <option <?php if(($_POST['gender'] ?? '')=='Female') echo 'selected' ?>>Female</option>
+                <option <?php if(($_POST['gender'] ?? '')=='Other') echo 'selected' ?>>Other</option>
+            </select><br><br>
 
-            <label>Gender:</label>
-            <select name="gender" required class="input-field">
-                <option value="">Select Gender</option>
-                <option>Male</option>
-                <option>Female</option>
-            </select>
+            <label>Contact Number</label><br>
+            <input type="text" name="contactNumber" value="<?= htmlspecialchars($_POST['contactNumber'] ?? '') ?>"><br><br>
 
-            <label>Contact Number:</label>
-            <input type="text" name="contactNumber" required class="input-field">
+            <label>Address</label><br>
+            <input type="text" name="address" value="<?= htmlspecialchars($_POST['address'] ?? '') ?>"><br><br>
 
-            <label>Email:</label>
-            <input type="email" name="email" class="input-field">
+            <label>Email</label><br>
+            <input type="email" name="email" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"><br><br>
 
-            <label>Address:</label>
-            <input type="text" name="address" class="input-field">
+            <label>Doctor</label><br>
+            <select name="doctorID" required>
+                <option value="">Select Doctor</option>
+                <?php while($d = $doctors->fetch_assoc()): ?>
+                    <option value="<?= (int)$d['doctorID'] ?>" <?= (isset($_POST['doctorID']) && $_POST['doctorID']==$d['doctorID']) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($d['firstName'].' '.$d['lastName']) ?>
+                    </option>
+                <?php endwhile; ?>
+            </select><br><br>
 
-            <hr style="margin:20px 0;">
-
-            <h3>Medical Information</h3>
-
-            <label>Health Condition:</label>
-            <textarea name="healthCondition" class="input-field"></textarea>
-
-            <label>Allergies:</label>
-            <textarea name="allergies" class="input-field"></textarea>
-
-            <label>Current Medication:</label>
-            <textarea name="currentMedication" class="input-field"></textarea>
-
-            <label>Known Diseases:</label>
-            <textarea name="knownDiseases" class="input-field"></textarea>
-
-            <button type="submit"
-                style="
-                    margin-top: 15px;
-                    width: 100%;
-                    padding: 10px;
-                    background: #28a745;
-                    color: white;
-                    border: none;
-                    font-size: 16px;
-                    border-radius: 5px;
-                    font-weight: bold;
-                ">
-                Add Patient
-            </button>
-
+            <button class="btn" type="submit">Add Patient</button>
         </form>
-
     </div>
 
-</div>
-
-<style>
-.input-field {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 12px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-</style>
+<?php
+$content = ob_get_clean();
+include('doctor_standard.php');
