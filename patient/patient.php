@@ -7,8 +7,7 @@ include('../includes/db_connect.php');
 if (!isset($_SESSION['patientID'])) {
     header("Location: ../TestLoginPatient.php");
     exit;
-
-@@ -11,9 +10,6 @@ if (!isset($_SESSION['patientID'])) {
+}
 
 $patientID = $_SESSION['patientID'];
 
@@ -18,8 +17,7 @@ $patientID = $_SESSION['patientID'];
 // Fetch patient name
 $patientName = "Patient";
 $stmt = $conn->prepare("SELECT firstName, lastName FROM patient WHERE patientID = ?");
-
-@@ -21,116 +17,161 @@ $stmt->bind_param("i", $patientID);
+$stmt->bind_param("i", $patientID);
 $stmt->execute();
 $result = $stmt->get_result();
 if ($result && $result->num_rows > 0) {
@@ -191,8 +189,6 @@ if ($result && $result->num_rows > 0) {
     } else {
         echo "<p>No medication records found.</p>";
     }
-
-    $stmt->close();
     ?>
 
 
