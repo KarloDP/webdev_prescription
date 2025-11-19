@@ -45,7 +45,7 @@ ob_start();
         <!-- Back Button -->
         <div style="margin-bottom: 20px;">
             <a href="medication.php" class="btn-view"
-               style="display:inline-block;padding:10px 15px;background:#6c757d;color:#fff;border-radius:4px;text-decoration:none;">
+               style="display:inline-block;padding:10px 15px;background:#1e3d2f;color:#fff;border-radius:4px;text-decoration:none;">
                 ← Back to Medications
             </a>
         </div>

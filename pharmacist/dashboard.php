@@ -28,5 +28,5 @@ ob_start();
 $content = ob_get_clean();
 
 // Include the layout
-include 'pharmacist_standard.php';
+include 'pharmacy_standard.php';
 ?>
