@@ -120,7 +120,7 @@ ob_start();
             echo "<div style='margin-top:20px; display:flex; gap:12px;'>";
 
             echo "<a href='prescription_medication.php' class='btn-view'
-                    style='display:inline-block;padding:10px 15px;background:#6c757d;color:#fff;border-radius:4px;text-decoration:none;'>
+                    style='display:inline-block;padding:10px 15px;background:#1e3d2f;color:#fff;border-radius:4px;text-decoration:none;'>
                     View Medications
                   </a>";
 
