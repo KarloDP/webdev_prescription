@@ -1,120 +1,65 @@
 <?php
 session_start();
-include('../includes/auth.php');
-include('../includes/db_connect.php');
+include(__DIR__ . '/../includes/auth.php');
+include(__DIR__ . '/../includes/db_connect.php');
 
-
+// Redirect if not logged in as patient
 if (!isset($_SESSION['patientID'])) {
     header("Location: ../TestLoginPatient.php");
     exit;
 }
 
 $patientID = $_SESSION['patientID'];
+$activePage = 'history';
 
-
-
-
-// Fetch patient name
+// Fetch patient name for header/profile display
 $patientName = "Patient";
 $stmt = $conn->prepare("SELECT firstName, lastName FROM patient WHERE patientID = ?");
 $stmt->bind_param("i", $patientID);
 $stmt->execute();
 $result = $stmt->get_result();
 if ($result && $result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $patientName = $row['firstName'] . ' ' . $row['lastName'];
+    $patient = $result->fetch_assoc();
+    $patientName = $patient['firstName'] . ' ' . $patient['lastName'];
 }
 
-
-
+// --- Capture page-specific content into $content so patient_standard.php can render it ---
+ob_start();
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Prescriptions & Medication Details</title>
-    <link rel="stylesheet" href="../assets/css/role-patient.css">
 
+<!-- Page-specific styles: shared table.css + page overrides -->
+<link rel="stylesheet" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/../assets/css/table.css">
+<link rel="stylesheet" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/../assets/css/history_patient.css">
 
+<div class="history-page">
+  <h2>Patient History</h2>
+  <p>Below are all prescriptions and medical history records for <?php echo htmlspecialchars($patientName, ENT_QUOTES, 'UTF-8'); ?>.</p>
 
-
-    <style>
-        .prescription-table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 20px 0;
-        }
-        .prescription-table th, .prescription-table td {
-
-            padding: 8px;
-            border: 1px solid #ccc;
-
-
-
-        }
-        .prescription-table th {
-            background: #f4f4f4;
-        }
-    </style>
-</head>
-
-<body>
-
-
-<!-- Sidebar -->
-<div class="sidebar">
-    <h3>Welcome To MediSync</h3>
-    <div class="profile-section">
-        <img src="../assets/img/profile.png" class="profile-icon">
-        <p><?= strtoupper($patientName) ?></p>
-    </div>
-    <ul>
-        <li><a href="dashboard.php">Dashboard</a></li>
-        <li><a href="patient.php">History</a></li>
-        <li><a href="medication.php" class="active">Medications</a></li>
-        <li><a href="pharmacies.php">Pharmacies</a></li>
-    </ul>
-</div>
-
-<!-- Main Content -->
-<div class="main-content">
-    <h2>Prescriptions & Medication Details</h2>
-    <p>Below are all medications prescribed to <?= $patientName ?>.</p>
-
-    <?php
-    // ---- FIXED QUERY ----
-    // Subquery aggregates dispense records per prescriptionItemID (avoids GROUP BY errors)
-    $query = "
+  <?php
+  $query = "
     SELECT 
-
         p.prescriptionID,
         p.issueDate,
         p.expirationDate,
         p.refillInterval,
         p.status AS prescriptionStatus,
-
         m.genericName,
         m.brandName,
         m.form,
         m.strength,
-
         d.firstName AS doctorFirst,
         d.lastName AS doctorLast,
-
         pi.dosage,
         pi.frequency,
         pi.duration,
         pi.instructions,
         pi.refill_count,
-
         COALESCE(dr.totalDispensed, 0) AS totalDispensed,
         dr.nextRefillDate
-
     FROM prescription p
     INNER JOIN prescriptionitem pi ON p.prescriptionID = pi.prescriptionID
     INNER JOIN medication m ON pi.medicationID = m.medicationID
     INNER JOIN doctor d ON p.doctorID = d.doctorID
-
     LEFT JOIN (
         SELECT 
             prescriptionItemID,
@@ -123,22 +68,20 @@ if ($result && $result->num_rows > 0) {
         FROM dispenserecord
         GROUP BY prescriptionItemID
     ) dr ON pi.prescriptionItemID = dr.prescriptionItemID
-
     WHERE p.patientID = ?
     ORDER BY p.issueDate DESC, p.prescriptionID DESC
-";
+  ";
 
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("i", $patientID);
-    $stmt->execute();
-    $result = $stmt->get_result();
+  $stmt = $conn->prepare($query);
+  $stmt->bind_param("i", $patientID);
+  $stmt->execute();
+  $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-
-        echo "<table class='prescription-table'>
-
-
-            <tr>
+  if ($result && $result->num_rows > 0) {
+      echo '<div class="table-frame">';
+      echo "<table class='table-base'>";
+      echo "<thead>
+              <tr>
                 <th>Prescription #</th>
                 <th>Medicine</th>
                 <th>Brand</th>
@@ -154,44 +97,58 @@ if ($result && $result->num_rows > 0) {
                 <th>Next Refill</th>
                 <th>Issued</th>
                 <th>Expires</th>
-            </tr>";
+              </tr>
+            </thead>";
+      echo "<tbody>";
 
-        while ($row = $result->fetch_assoc()) {
+      while ($row = $result->fetch_assoc()) {
+          $prescriptionID = htmlspecialchars($row['prescriptionID'], ENT_QUOTES, 'UTF-8');
+          $genericName    = htmlspecialchars($row['genericName'], ENT_QUOTES, 'UTF-8');
+          $brandName      = htmlspecialchars($row['brandName'], ENT_QUOTES, 'UTF-8');
+          $form           = htmlspecialchars($row['form'], ENT_QUOTES, 'UTF-8');
+          $strength       = htmlspecialchars($row['strength'], ENT_QUOTES, 'UTF-8');
+          $doctor         = "Dr. " . htmlspecialchars($row['doctorFirst'], ENT_QUOTES, 'UTF-8') . " " . htmlspecialchars($row['doctorLast'], ENT_QUOTES, 'UTF-8');
+          $dosage         = htmlspecialchars($row['dosage'], ENT_QUOTES, 'UTF-8');
+          $frequency      = htmlspecialchars($row['frequency'], ENT_QUOTES, 'UTF-8');
+          $duration       = htmlspecialchars($row['duration'], ENT_QUOTES, 'UTF-8');
+          $instructions   = htmlspecialchars($row['instructions'], ENT_QUOTES, 'UTF-8');
+          $status         = htmlspecialchars($row['prescriptionStatus'], ENT_QUOTES, 'UTF-8');
+          $dispensed      = htmlspecialchars($row['totalDispensed'], ENT_QUOTES, 'UTF-8') . " unit(s)";
+          $nextRefill     = $row['nextRefillDate'] ? date("F j, Y", strtotime($row['nextRefillDate'])) : "N/A";
+          $issued         = date("F j, Y", strtotime($row['issueDate']));
+          $expires        = date("F j, Y", strtotime($row['expirationDate']));
 
+          echo "<tr>
+                  <td>{$prescriptionID}</td>
+                  <td>{$genericName}</td>
+                  <td>{$brandName}</td>
+                  <td>{$form}</td>
+                  <td>{$strength}</td>
+                  <td>{$doctor}</td>
+                  <td>{$dosage}</td>
+                  <td>{$frequency}</td>
+                  <td>{$duration}</td>
+                  <td>{$instructions}</td>
+                  <td>{$status}</td>
+                  <td>{$dispensed}</td>
+                  <td>{$nextRefill}</td>
+                  <td>{$issued}</td>
+                  <td>{$expires}</td>
+                </tr>";
+      }
 
-            echo "<tr>
-                <td>{$row['prescriptionID']}</td>
-                <td>{$row['genericName']}</td>
-                <td>{$row['brandName']}</td>
-                <td>{$row['form']}</td>
-                <td>{$row['strength']}</td>
-
-                <td>Dr. {$row['doctorFirst']} {$row['doctorLast']}</td>
-
-                <td>{$row['dosage']}</td>
-                <td>{$row['frequency']}</td>
-                <td>{$row['duration']}</td>
-                <td>{$row['instructions']}</td>
-
-                <td>{$row['prescriptionStatus']}</td>
-                <td>{$row['totalDispensed']} unit(s)</td>
-
-                <td>" . ($row['nextRefillDate'] ? date("F j, Y", strtotime($row['nextRefillDate'])) : "N/A") . "</td>
-
-                <td>" . date("F j, Y", strtotime($row['issueDate'])) . "</td>
-                <td>" . date("F j, Y", strtotime($row['expirationDate'])) . "</td>
-            </tr>";
-        }
-
-
-        echo "</table>";
-
-    } else {
-        echo "<p>No medication records found.</p>";
-    }
-    ?>
-
-
+      echo "</tbody>";
+      echo "</table>";
+      echo "</div>";
+  } else {
+      echo '<div class="empty-state"><p>No history records found.</p></div>';
+  }
+  ?>
 </div>
-</body>
-</html>
+
+<?php
+// End buffer and set $content
+$content = ob_get_clean();
+
+// patient_standard.php should render header, sidebar (using $activePage) and echo $content in the main area
+include __DIR__ . '/patient_standard.php';
