@@ -1,102 +1,90 @@
 <?php
+// view_prescription.php
+
+session_start();
 include('../includes/db_connect.php');
 
+$activePage = 'prescriptions';
 
-// Fetch all prescriptions (ADD patientID so we can link back!)
-$prescriptions = mysqli_query($conn, "
-    SELECT
+// Fetch all prescriptions with patient + doctor names
+$sql = "
+    SELECT 
         p.prescriptionID,
-        p.patientID,
-        pat.firstName,
-        pat.lastName,
         p.issueDate,
         p.expirationDate,
-        p.refillInterval,
-        p.status
+        p.status,
+        pat.firstName AS patientFirst,
+        pat.lastName AS patientLast,
+        d.firstName AS doctorFirst,
+        d.lastName AS doctorLast
     FROM prescription p
-    JOIN patient pat ON p.patientID = pat.patientID
-    ORDER BY p.issueDate DESC
-");
+    LEFT JOIN patient pat ON pat.patientID = p.patientID
+    LEFT JOIN doctor d ON d.doctorID = p.doctorID
+    ORDER BY p.prescriptionID DESC
+";
+
+$list = $conn->query($sql);
+
+// ─────────── BUILD PAGE CONTENT ───────────
+ob_start();
 ?>
 
-<div class="main-content">
-    <h2>View Prescriptions</h2>
+    <div class="card">
+        <h2 style="margin-bottom:15px;">Prescription List</h2>
 
-    <?php if (mysqli_num_rows($prescriptions) > 0): ?>
-        <table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse:collapse;">
-            <tr style="background-color:#f2f2f2;">
+        <table>
+            <thead>
+            <tr>
                 <th>ID</th>
                 <th>Patient</th>
-                <th>Medications</th>
+                <th>Doctor</th>
                 <th>Issue Date</th>
-                <th>Expiration Date</th>
-                <th>Refill Interval</th>
+                <th>Expiration</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th style="width:220px;">Actions</th>
             </tr>
+            </thead>
 
-            <?php while ($pres = mysqli_fetch_assoc($prescriptions)): ?>
-
-                <?php
-                // Fetch all items for this prescription
-                $items = mysqli_query($conn, "
-                    SELECT
-                        pi.dosage,
-                        pi.frequency,
-                        pi.duration,
-                        pi.instructions,
-                        m.genericName,
-                        m.brandName
-                    FROM prescriptionitem pi
-                    JOIN medication m ON pi.medicationID = m.medicationID
-                    WHERE pi.prescriptionID = {$pres['prescriptionID']}
-                ");
-                ?>
-
+            <tbody>
+            <?php while ($p = $list->fetch_assoc()): ?>
                 <tr>
-                    <td><?= $pres['prescriptionID'] ?></td>
+                    <td><?= $p['prescriptionID'] ?></td>
 
                     <td>
-                        <a href="view_patient_prescription.php?id=<?= $pres['patientID'] ?>">
-                            <?= htmlspecialchars($pres['firstName'] . " " . $pres['lastName']) ?>
+                        <?= htmlspecialchars($p['patientFirst'] . " " . $p['patientLast']) ?>
+                    </td>
+
+                    <td>
+                        <?= htmlspecialchars($p['doctorFirst'] . " " . $p['doctorLast']) ?>
+                    </td>
+
+                    <td><?= htmlspecialchars($p['issueDate']) ?></td>
+                    <td><?= htmlspecialchars($p['expirationDate']) ?></td>
+
+                    <td><?= htmlspecialchars($p['status']) ?></td>
+
+                    <td>
+                        <a href="view_patient_prescription.php?id=<?= $p['prescriptionID'] ?>" class="btn">
+                            View
                         </a>
-                    </td>
 
-                    <td>
-                        <?php
-                        // List medication brand names
-                        if (mysqli_num_rows($items) > 0) {
-                            $medNames = [];
-                            while ($item = mysqli_fetch_assoc($items)) {
-                                $medNames[] = htmlspecialchars($item['brandName']);
-                            }
-                            echo implode(', ', $medNames);
-                        } else {
-                            echo "N/A";
-                        }
-                        ?>
-                    </td>
+                        <a href="edit_prescription.php?id=<?= $p['prescriptionID'] ?>" class="btn" style="background:#007bff;">
+                            Edit
+                        </a>
 
-                    <td><?= $pres['issueDate'] ?></td>
-                    <td><?= $pres['expirationDate'] ?></td>
-                    <td><?= $pres['refillInterval'] ?></td>
-                    <td><?= $pres['status'] ?></td>
-
-                    <td>
-                        <a href="prescription_history.php?id=<?= $pres['prescriptionID'] ?>" style="color:green;">History</a> |
-                        <a href="edit_prescription.php?id=<?= $pres['prescriptionID'] ?>" style="color:blue;">Edit</a> |
-                        <a href="delete_prescription.php?id=<?= $pres['prescriptionID'] ?>"
-                           onclick="return confirm('Delete this prescription?')"
-                           style="color:red;">
-                           Delete
+                        <a href="delete_prescription.php?id=<?= $p['prescriptionID'] ?>"
+                           class="btn btn-danger"
+                           onclick="return confirm('Delete this prescription?');">
+                            Delete
                         </a>
                     </td>
                 </tr>
-
             <?php endwhile; ?>
+            </tbody>
         </table>
+    </div>
 
-    <?php else: ?>
-        <p style="text-align:center;">No prescriptions found.</p>
-    <?php endif; ?>
-</div>
+<?php
+$content = ob_get_clean();
+include('doctor_standard.php');
+?>
