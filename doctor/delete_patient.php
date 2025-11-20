@@ -1,40 +1,41 @@
 <?php
 include('../includes/db_connect.php');
+session_start();
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    header("Location: patients.php");
-    exit;
+$id = intval($_GET['id'] ?? 0);
+
+if ($id > 0) {
+    $stmt = $conn->prepare("DELETE FROM prescription WHERE prescriptionID = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $stmt->close();
 }
-$patientID = intval($_GET['id']);
 
-mysqli_begin_transaction($conn);
-try {
-    // delete items for all prescriptions of this patient
-    $delItems = $conn->prepare("
-        DELETE pi FROM prescriptionitem pi
-        JOIN prescription p ON pi.prescriptionID = p.prescriptionID
-        WHERE p.patientID = ?
-    ");
-    $delItems->bind_param("i", $patientID);
-    $delItems->execute();
-    $delItems->close();
-
-    // delete prescriptions
-    $delPres = $conn->prepare("DELETE FROM prescription WHERE patientID = ?");
-    $delPres->bind_param("i", $patientID);
-    $delPres->execute();
-    $delPres->close();
-
-    // delete patient
-    $delPat = $conn->prepare("DELETE FROM patient WHERE patientID = ?");
-    $delPat->bind_param("i", $patientID);
-    $delPat->execute();
-    $delPat->close();
-
-    mysqli_commit($conn);
-    header("Location: patients.php");
-    exit;
-} catch (Exception $e) {
-    mysqli_rollback($conn);
-    echo "Delete failed: " . $e->getMessage();
+// Success + redirect
+echo "
+<html>
+<head>
+<meta http-equiv='refresh' content='2;url=view_prescription.php'>
+<style>
+.success-box {
+    margin: 40px auto;
+    padding: 15px 25px;
+    width: 400px;
+    background: #d4edda;
+    border-left: 6px solid #28a745;
+    font-size: 18px;
+    border-radius: 4px;
+    font-family: Arial;
 }
+</style>
+</head>
+<body>
+<div class='success-box'>
+    ✅ Prescription deleted successfully.<br>
+    Redirecting in 2 seconds...
+</div>
+</body>
+</html>
+";
+exit;
+?>

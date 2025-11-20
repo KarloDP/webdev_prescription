@@ -1,42 +1,41 @@
 <?php
 include('../includes/db_connect.php');
+session_start();
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    header("Location: view_prescription.php");
-    exit;
+$id = intval($_GET['id'] ?? 0);
+
+if ($id > 0) {
+    $stmt = $conn->prepare("DELETE FROM patient WHERE patientID = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $stmt->close();
 }
-$prescriptionID = intval($_GET['id']);
 
-// get patient for redirect if needed
-$stmt = $conn->prepare("SELECT patientID FROM prescription WHERE prescriptionID = ?");
-$stmt->bind_param("i", $prescriptionID);
-$stmt->execute();
-$res = $stmt->get_result()->fetch_assoc();
-$stmt->close();
-
-$patientID = $res['patientID'] ?? null;
-
-mysqli_begin_transaction($conn);
-try {
-    $delItems = $conn->prepare("DELETE FROM prescriptionitem WHERE prescriptionID = ?");
-    $delItems->bind_param("i", $prescriptionID);
-    $delItems->execute();
-    $delItems->close();
-
-    $delPres = $conn->prepare("DELETE FROM prescription WHERE prescriptionID = ?");
-    $delPres->bind_param("i", $prescriptionID);
-    $delPres->execute();
-    $delPres->close();
-
-    mysqli_commit($conn);
-
-    if (isset($_GET['from']) && $_GET['from'] === 'patient' && $patientID) {
-        header("Location: view_patient_prescription.php?id=".$patientID);
-    } else {
-        header("Location: view_prescription.php");
-    }
-    exit;
-} catch (Exception $e) {
-    mysqli_rollback($conn);
-    echo "Delete failed: " . $e->getMessage();
+// Success message + 2 sec redirect
+echo "
+<html>
+<head>
+<meta http-equiv='refresh' content='2;url=patients.php'>
+<style>
+.success-box {
+    margin: 40px auto;
+    padding: 15px 25px;
+    width: 400px;
+    background: #d4edda;
+    border-left: 6px solid #28a745;
+    font-size: 18px;
+    border-radius: 4px;
+    font-family: Arial;
 }
+</style>
+</head>
+<body>
+<div class='success-box'>
+    ✅ Patient deleted successfully.<br>
+    Redirecting in 2 seconds...
+</div>
+</body>
+</html>
+";
+exit;
+?>
