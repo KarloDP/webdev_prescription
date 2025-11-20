@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 20, 2025 at 01:22 PM
+-- Generation Time: Nov 20, 2025 at 01:27 PM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -231,7 +231,6 @@ INSERT INTO `pharmacy` (`pharmacyID`, `name`, `address`, `contactNumber`, `email
 DROP TABLE IF EXISTS `prescription`;
 CREATE TABLE IF NOT EXISTS `prescription` (
   `prescriptionID` int NOT NULL AUTO_INCREMENT,
-  `medicationID` int NOT NULL,
   `patientID` int NOT NULL,
   `issueDate` date NOT NULL,
   `expirationDate` date NOT NULL,
@@ -239,7 +238,6 @@ CREATE TABLE IF NOT EXISTS `prescription` (
   `doctorID` int NOT NULL,
   PRIMARY KEY (`prescriptionID`),
   KEY `patientID` (`patientID`),
-  KEY `medID` (`medicationID`),
   KEY `fk_prescription_doctor` (`doctorID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -247,16 +245,16 @@ CREATE TABLE IF NOT EXISTS `prescription` (
 -- Dumping data for table `prescription`
 --
 
-INSERT INTO `prescription` (`prescriptionID`, `medicationID`, `patientID`, `issueDate`, `expirationDate`, `status`, `doctorID`) VALUES
-(1, 2, 2, '2025-02-02', '2025-04-03', 'Expired', 1),
-(2, 2, 2, '2025-01-05', '2025-04-05', 'Active', 2),
-(3, 3, 3, '2025-01-10', '2025-04-10', 'Expired', 3),
-(4, 4, 4, '2025-02-01', '2025-05-01', 'Active', 4),
-(5, 5, 5, '2025-02-10', '2025-05-10', 'Active', 5),
-(6, 6, 6, '2025-02-15', '2025-05-15', 'Active', 6),
-(7, 7, 7, '2025-02-20', '2025-05-20', 'Active', 7),
-(8, 8, 8, '2025-03-01', '2025-06-01', 'Active', 8),
-(9, 9, 9, '2025-03-05', '2025-06-05', 'Active', 9);
+INSERT INTO `prescription` (`prescriptionID`, `patientID`, `issueDate`, `expirationDate`, `status`, `doctorID`) VALUES
+(1, 2, '2025-02-02', '2025-04-03', 'Expired', 1),
+(2, 2, '2025-01-05', '2025-04-05', 'Active', 2),
+(3, 3, '2025-01-10', '2025-04-10', 'Expired', 3),
+(4, 4, '2025-02-01', '2025-05-01', 'Active', 4),
+(5, 5, '2025-02-10', '2025-05-10', 'Active', 5),
+(6, 6, '2025-02-15', '2025-05-15', 'Active', 6),
+(7, 7, '2025-02-20', '2025-05-20', 'Active', 7),
+(8, 8, '2025-03-01', '2025-06-01', 'Active', 8),
+(9, 9, '2025-03-05', '2025-06-05', 'Active', 9);
 
 -- --------------------------------------------------------
 
