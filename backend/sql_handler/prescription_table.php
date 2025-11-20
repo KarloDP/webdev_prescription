@@ -1,1 +1,3 @@
-<!-- handles add data retrieval and insertion to the database>
+<?php
+// handles add data retrieval and insertion to the database
+?>

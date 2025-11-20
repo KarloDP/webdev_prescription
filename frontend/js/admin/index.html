@@ -21,27 +21,43 @@
 <pre id="output"></pre>
 
 <script>
-const API_URL = "backend/sql_handler/admins_table.php";  // Change if needed
+const API_URL = "../../../backend/sql_handler/admins_table.php";  // adjust if needed
 
 function showOutput(data) {
     document.getElementById("output").innerText = JSON.stringify(data, null, 2);
 }
 
+// Helper: fetch and show RAW response for debugging
+function debugFetch(url, options) {
+    return fetch(url, options)
+        .then(async res => {
+            const text = await res.text();
+            console.log("HTTP", res.status, res.statusText);
+            console.log("RAW RESPONSE:", text);
+
+            // Try to parse JSON; if fail, show raw text
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                showOutput({ parseError: e.message, raw: text, status: res.status });
+                throw e; // rethrow to stop chained .then
+            }
+        });
+}
+
 function testGetAllAdmins() {
-    fetch(API_URL)
-        .then(res => res.json())
+    debugFetch(API_URL)
         .then(data => showOutput(data))
-        .catch(err => showOutput(err));
+        .catch(err => console.error("GET ALL ERROR:", err));
 }
 
 function testGetAdminByID() {
     const id = document.getElementById("adminID").value;
     if (!id) return alert("Enter adminID first!");
 
-    fetch(`${API_URL}?adminID=${id}`)
-        .then(res => res.json())
+    debugFetch(`${API_URL}?adminID=${id}`)
         .then(data => showOutput(data))
-        .catch(err => showOutput(err));
+        .catch(err => console.error("GET ONE ERROR:", err));
 }
 
 function testAddAdmin() {
@@ -50,14 +66,13 @@ function testAddAdmin() {
 
     if (!firstName || !lastName) return alert("Enter both names!");
 
-    fetch(API_URL, {
+    debugFetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ firstName, lastName })
     })
-    .then(res => res.json())
     .then(data => showOutput(data))
-    .catch(err => showOutput(err));
+    .catch(err => console.error("POST ERROR:", err));
 }
 </script>
 
