@@ -1,1 +1,65 @@
 <!--this should be the only html file. contents will be changes by JS files-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin API Test</title>
+</head>
+<body>
+
+<h2>Test admins_table.php</h2>
+
+<button onclick="testGetAllAdmins()">GET ALL ADMINS</button><br><br>
+
+<input type="number" id="adminID" placeholder="Admin ID">
+<button onclick="testGetAdminByID()">GET ADMIN BY ID</button><br><br>
+
+<input type="text" id="firstName" placeholder="First Name">
+<input type="text" id="lastName" placeholder="Last Name">
+<button onclick="testAddAdmin()">ADD NEW ADMIN</button>
+
+<pre id="output"></pre>
+
+<script>
+const API_URL = "backend/sql_handler/admins_table.php";  // Change if needed
+
+function showOutput(data) {
+    document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+}
+
+function testGetAllAdmins() {
+    fetch(API_URL)
+        .then(res => res.json())
+        .then(data => showOutput(data))
+        .catch(err => showOutput(err));
+}
+
+function testGetAdminByID() {
+    const id = document.getElementById("adminID").value;
+    if (!id) return alert("Enter adminID first!");
+
+    fetch(`${API_URL}?adminID=${id}`)
+        .then(res => res.json())
+        .then(data => showOutput(data))
+        .catch(err => showOutput(err));
+}
+
+function testAddAdmin() {
+    const firstName = document.getElementById("firstName").value;
+    const lastName  = document.getElementById("lastName").value;
+
+    if (!firstName || !lastName) return alert("Enter both names!");
+
+    fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName, lastName })
+    })
+    .then(res => res.json())
+    .then(data => showOutput(data))
+    .catch(err => showOutput(err));
+}
+</script>
+
+</body>
+</html>
