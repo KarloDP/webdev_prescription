@@ -1,6 +1,8 @@
 <?php
 // handles add data retrieval and insertion to the database
+session_start();
 include(__DIR__ . '/../includes/db_connect.php');
+include(__DIR__ . '/../includes/auth.php'); // still need to include session handling
 function respond($data, $statusCode = 200) {
     http_response_code($statusCode);
     echo json_encode($data);
@@ -18,10 +20,10 @@ if ($method === 'GET') {
         $stmt->execute();
         $result = $stmt->get_result();
 
-    if ($result->num_rows === 0) {
-        respond(['error' => 'Admin not found'], 404);
-    }
-    respond($result->fetch_assoc());
+        if ($result->num_rows === 0) {
+            respond(['error' => 'Admin not found'], 404);
+        }
+        respond($result->fetch_assoc());
     }
 
     //returns all entries from admin table
@@ -61,6 +63,25 @@ if ($method === 'GET') {
         ], 201);
     } else {
         respond(['error'=> 'Insert Failed: ' . $stmt->error], 500);
+    }
+}elseif ($method === 'DELETE') {
+    if (!isset($_GET['adminID'])) {
+        respond(['error' => 'adminID is required'], 400);
+    }
+
+    $adminID = intval($_GET['adminID']);
+    $stmt = $conn->prepare('DELETE FROM admins WHERE adminID = ?');
+    if (!$stmt) {
+        respond(['error' => 'Prepare failed: ' . $conn->error], 500);
+    }
+
+    $stmt->bind_param('i', $adminID);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        respond(['status' => 'success', 'message' => 'Admin deleted']);
+    } else {
+        respond(['error' => 'Admin not found or already deleted'], 404);
     }
 }
 ?>
