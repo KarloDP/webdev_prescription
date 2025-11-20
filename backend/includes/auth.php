@@ -56,6 +56,24 @@ function auth_id_field_for_role(string $role): ?string
     return $map[$role] ?? null;
 }
 
+function redirect_based_on_role(string $role): void {
+    switch ($role) {
+        case 'patient':
+            header("Location: ../patient/dashboard/dashboard.php");
+            break;
+        case 'doctor':
+            header("Location: ../doctor/dashboard.php");
+            break;
+        case 'admin':
+            header("Location: ../admin/dashboard.php");
+            break;
+        case 'pharmacist':
+            header("Location: ../pharmacist/dashboard.php");
+            break;
+    }
+    exit;
+}
+
 /**
  * Set canonical session values for a logged-in user of any role.
  *
@@ -170,7 +188,7 @@ function require_role(array $allowedRoles): array
  * @param string    $loginPath   Relative path/URL to login page.
  * @param array|null $allowedRoles Optional array of allowed roles; if null, any logged-in user is allowed.
  */
-function require_login(string $loginPath = '../TestLoginPatient.php', ?array $allowedRoles = null): void
+function require_login(string $loginPath = '/webdev_prescription/login.php', ?array $allowedRoles = null): void
 {
     if (!is_logged_in()) {
         header('Location: ' . $loginPath);

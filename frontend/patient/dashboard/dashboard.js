@@ -1,15 +1,10 @@
-//default landing page. redirect to login page if user session is not started.
-//code below is chatGPT generated, will likely need to redo. ******
+// frontend/patient/dashboard/dashboard.js
 
-// patient_dashboard.js
-// Frontend-only version of the PHP dashboard.
-// Assumes:
-//   - <div id="patient-dashboard-root"></div> exists in index.html
-//   - API_URL returns a JSON array of prescriptions for the logged-in patient
-//     with fields: prescriptionID, medicine, doctor_name, notes, prescribed_at
-//   - window.patientName may be defined elsewhere; falls back to "Patient"
-
-const API_URL = "../../backend/sql_handler/prescriptions_table.php"; // <-- change to your endpoint
+// From the point of view of dashboard.php URL:
+//   /frontend/patient/dashboard/dashboard.php
+// → backend API is at:
+//   ../../backend/sql_handler/prescription_table.php
+const API_URL = "../../../backend/sql_handler/prescription_table.php";
 
 const PER_PAGE = 8;
 let allPrescriptions = [];
@@ -23,15 +18,19 @@ async function loadDashboard(page = 1) {
   currentPage = page;
 
   try {
-    const res = await fetch(API_URL, { method: "GET", credentials: "include" });
+    const res = await fetch(API_URL, {
+      method: "GET",
+      credentials: "include", // send cookies/session
+    });
+
     if (!res.ok) {
       throw new Error(`HTTP ${res.status}`);
     }
 
-    // Expecting an array of prescriptions
     const data = await res.json();
+
     if (!Array.isArray(data)) {
-      throw new Error("Invalid data format from API (expected array)");
+      throw new Error("API did not return an array");
     }
 
     allPrescriptions = data;
@@ -40,7 +39,8 @@ async function loadDashboard(page = 1) {
     console.error("Failed to load prescriptions:", err);
     const root = document.getElementById("patient-dashboard-root");
     if (root) {
-      root.innerHTML = `<p class="error">Failed to load dashboard. Please try again later.</p>`;
+      root.innerHTML =
+        '<p class="error">Failed to load dashboard. Please try again later.</p>';
     }
   }
 }
@@ -49,48 +49,55 @@ function renderDashboard() {
   const root = document.getElementById("patient-dashboard-root");
   if (!root) return;
 
-  const patientName = (window.patientName || "Patient").toUpperCase();
+  const patientName =
+    (window.patientName && String(window.patientName).toUpperCase()) ||
+    "PATIENT";
+
   const totalItems = allPrescriptions.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / PER_PAGE));
 
-  // Clamp current page
   if (currentPage > totalPages) currentPage = totalPages;
   if (currentPage < 1) currentPage = 1;
 
   const offset = (currentPage - 1) * PER_PAGE;
   const pageItems = allPrescriptions.slice(offset, offset + PER_PAGE);
 
-  // Build cards HTML
   const cardsHtml = pageItems.length
-    ? pageItems.map(p => renderPrescriptionCard(p)).join("")
+    ? pageItems.map(renderPrescriptionCard).join("")
     : `<div class="empty-state"><p>No active prescriptions found.</p></div>`;
 
-  // Pagination HTML
-  const paginationHtml = totalPages > 1
-    ? `
+  const paginationHtml =
+    totalPages > 1
+      ? `
       <nav class="pagination">
-        ${currentPage > 1
-          ? `<button class="page-link" data-page="${currentPage - 1}">&laquo; Prev</button>`
-          : `<span class="page-link disabled">&laquo; Prev</span>`}
+        ${
+          currentPage > 1
+            ? `<button class="page-link" data-page="${currentPage - 1}">&laquo; Prev</button>`
+            : `<span class="page-link disabled">&laquo; Prev</span>`
+        }
 
         <span class="page-info">Page ${currentPage} of ${totalPages}</span>
 
-        ${currentPage < totalPages
-          ? `<button class="page-link" data-page="${currentPage + 1}">Next &raquo;</button>`
-          : `<span class="page-link disabled">Next &raquo;</span>`}
+        ${
+          currentPage < totalPages
+            ? `<button class="page-link" data-page="${currentPage + 1}">Next &raquo;</button>`
+            : `<span class="page-link disabled">Next &raquo;</span>`
+        }
       </nav>
     `
-    : "";
+      : "";
 
   root.innerHTML = `
     <div class="patient-dashboard">
       <div class="welcome-row">
         <div class="welcome-card">
-          <h1>Welcome <span class="name">${escapeHtml(patientName)} !!</span></h1>
+          <h1>Welcome <span class="name">${escapeHtml(
+            patientName
+          )} !!</span></h1>
           <p class="subtitle">View Prescriptions. Manage medications and pharmacies.</p>
           <div class="welcome-actions">
-            <a class="btn btn-primary" href="medication.html">View Medications</a>
-            <a class="btn btn-outline" href="pharmacies.html">Find Pharmacies</a>
+            <a class="btn btn-primary" href="../medication.php">View Medications</a>
+            <a class="btn btn-outline" href="../pharmacies.php">Find Pharmacies</a>
           </div>
         </div>
 
@@ -110,7 +117,7 @@ function renderDashboard() {
             </div>
           </div>
           <div class="stats-cta">
-            <a class="link" href="prescriptions.html">View Details</a>
+            <a class="link" href="../prescriptions.php">View Details</a>
           </div>
         </div>
       </div>
@@ -127,8 +134,8 @@ function renderDashboard() {
     </div>
   `;
 
-  // Attach pagination handlers (if any)
-  root.querySelectorAll(".pagination .page-link[data-page]").forEach(btn => {
+  // pagination handlers
+  root.querySelectorAll(".pagination .page-link[data-page]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const page = parseInt(btn.getAttribute("data-page"), 10);
       if (!Number.isNaN(page)) {
@@ -140,24 +147,23 @@ function renderDashboard() {
 }
 
 function renderPrescriptionCard(p) {
-  const medicine = p.medicine || "-";
-  const doctorName = p.doctor_name || "-";
-  const notes = p.notes || "-";
+  const medicine = p.medicine || p.medicineName || "-";
+  const doctorName = p.doctor_name || p.doctorName || "-";
+  const notes = p.notes || p.dosage || "-";
 
   let dateDisplay = "-";
-  if (p.prescribed_at) {
-    const d = new Date(p.prescribed_at);
+  if (p.prescribed_at || p.issueDate) {
+    const d = new Date(p.prescribed_at || p.issueDate);
     if (!isNaN(d.getTime())) {
-      // e.g. "March 5, 2025"
       dateDisplay = d.toLocaleDateString(undefined, {
         year: "numeric",
         month: "long",
-        day: "numeric"
+        day: "numeric",
       });
     }
   }
 
-  const id = Number(p.prescriptionID) || 0;
+  const id = Number(p.prescriptionID || p.id || 0);
 
   return `
     <article class="prescription-card">
@@ -172,13 +178,14 @@ function renderPrescriptionCard(p) {
       </div>
       <div class="card-right">
         <p class="note">${escapeHtml(notes)}</p>
-        <a class="details-link" href="view_prescription.html?id=${id}">Medicine Details &gt;&gt;</a>
+        <a class="details-link" href="../view_prescription.php?id=${id}">
+          Medicine Details &gt;&gt;
+        </a>
       </div>
     </article>
   `;
 }
 
-// Simple HTML escape helper (similar to htmlspecialchars in PHP)
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, "&amp;")
