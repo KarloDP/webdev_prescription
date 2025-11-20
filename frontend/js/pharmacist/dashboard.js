@@ -1,1 +1,0 @@
-//default landing page. redirect to login page if user session is not started.
