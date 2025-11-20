@@ -31,7 +31,7 @@ if ($method == 'GET') {
             $stmt = $conn->prepare(
                 'SELECT * FROM prescription WHERE prescriptionID = ?'
             );
-            $stmt->bind_param('ii', $prescriptionID);
+            $stmt->bind_param('i', $prescriptionID);
         }
 
         $stmt->execute();
@@ -54,7 +54,7 @@ if ($method == 'GET') {
         $stmt = $conn->prepare(
             'SELECT * FROM prescription WHERE doctorID = ? ORDER BY prescriptionID'
         );
-        $stmt->bind_param('doctorID', $userID);
+        $stmt->bind_param('i', $userID);
     //return all prescriptions
     } elseif (in_array($role, ['admin', 'pharmacist'], true)) {
         $stmt = $conn->prepare(
@@ -78,16 +78,72 @@ if ($method == 'GET') {
     respond($data);
 } else if ($method == 'POST') {
     if (in_array($role, ['admin', 'doctor'],true)){
-        $raw = file_get_contents("pgp://input");
+        $raw = file_get_contents("php://input");
         $data = json_decode($raw, true);
 
-        $medicaionID = trim($data['medicationID']);
         $patientID = trim($data['patientID']);
         $issueDate = trim($data['issueDate']);
         $expirationDate = trim($data['expirationDate']);
-        $refillInterval = trim($data['refillInterval']);
         $status = trim($data['status']);
         $doctorID = $userID;
+    }
+    if ($patientID === '') {
+        respond(['error' => 'PatienID is required'], 400);
+    }
+    $stmt = $conn->prepare('INSERT INTO prescription (patientID, issueDate, expirationDate, status, doctorID) VALUES (?, ?, ?, ?, ?)');
+    $stmt->bind_param('isssi', $patientID,$issueDate,$expirationDate,$status,$doctorID);
+
+    if ($stmt->execute()) {
+        respond([
+            'staus'=> 'success',
+            'message' => 'New Prescription Added',
+            'insert_ID' => $stmt->insert_id
+        ], 201);
+    } else {
+        respond(['error'=> 'Insert Failed: ' . $stmt->error], 500);
+    }
+} else if ($method === 'DELETE') { //ChatGPT generated, remember that since it will likely be a cause of issues
+    // Only admin or doctor can delete
+    if (!in_array($role, ['admin', 'doctor'], true)) {
+        respond(['error' => 'You are not allowed to delete prescriptions'], 403);
+    }
+
+    if (!isset($_GET['prescriptionID'])) {
+        respond(['error' => 'prescriptionID is required'], 400);
+    }
+
+    $prescriptionID = (int)$_GET['prescriptionID'];
+
+    // If doctor: only allow deleting prescriptions that belong to this doctor
+    if ($role === 'doctor') {
+        $stmt = $conn->prepare(
+            'DELETE FROM prescription WHERE prescriptionID = ? AND doctorID = ?'
+        );
+        if (!$stmt) {
+            respond(['error' => 'Prepare failed: ' . $conn->error], 500);
+        }
+        $stmt->bind_param('ii', $prescriptionID, $userID);
+    } else {
+        // admin: can delete any prescription
+        $stmt = $conn->prepare(
+            'DELETE FROM prescription WHERE prescriptionID = ?'
+        );
+        if (!$stmt) {
+            respond(['error' => 'Prepare failed: ' . $conn->error], 500);
+        }
+        $stmt->bind_param('i', $prescriptionID);
+    }
+
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        respond([
+            'status'  => 'success',
+            'message' => 'Prescription deleted'
+        ]);
+    } else {
+        // Either not found, or doctor tried to delete someone else's prescription
+        respond(['error' => 'Prescription not found or not allowed to delete'], 404);
     }
 }
 ?>

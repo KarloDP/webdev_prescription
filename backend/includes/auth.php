@@ -137,4 +137,3 @@ function resolve_session_from_email(mysqli $conn): void
     }
     $stmt->close();
 }
-
