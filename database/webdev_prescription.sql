@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Nov 16, 2025 at 10:14 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: 127.0.0.1:3306
+-- Generation Time: Nov 23, 2025 at 02:42 AM
+-- Server version: 9.1.0
+-- PHP Version: 8.3.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -27,22 +27,24 @@ SET time_zone = "+00:00";
 -- Table structure for table `admins`
 --
 
-CREATE TABLE `admins` (
-                          `adminID` int(11) NOT NULL,
-                          `firstName` text NOT NULL,
-                          `lastName` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `admins`;
+CREATE TABLE IF NOT EXISTS `admins` (
+  `adminID` int NOT NULL AUTO_INCREMENT,
+  `firstName` text COLLATE utf8mb4_general_ci NOT NULL,
+  `lastName` text COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`adminID`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `admins`
 --
 
 INSERT INTO `admins` (`adminID`, `firstName`, `lastName`) VALUES
-                                                              (1, 'Alice', 'Johnson'),
-                                                              (2, 'Benjamin', 'Lopez'),
-                                                              (3, 'Clara', 'Hughes'),
-                                                              (4, 'Daniel', 'Parker'),
-                                                              (5, 'Elena', 'Mitchell');
+(1, 'Alice', 'Johnson'),
+(2, 'Benjamin', 'Lopez'),
+(3, 'Clara', 'Hughes'),
+(4, 'Daniel', 'Parker'),
+(5, 'Elena', 'Mitchell');
 
 -- --------------------------------------------------------
 
@@ -50,15 +52,19 @@ INSERT INTO `admins` (`adminID`, `firstName`, `lastName`) VALUES
 -- Table structure for table `dispenserecord`
 --
 
-CREATE TABLE `dispenserecord` (
-                                  `prescriptionItemID` int(11) NOT NULL,
-                                  `pharmacyID` int(11) NOT NULL,
-                                  `dispenseID` int(11) NOT NULL,
-                                  `quantityDispensed` int(11) NOT NULL,
-                                  `dateDispensed` date NOT NULL,
-                                  `pharmacistName` text NOT NULL,
-                                  `status` text NOT NULL,
-                                  `nextAvailableDates` date NOT NULL
+DROP TABLE IF EXISTS `dispenserecord`;
+CREATE TABLE IF NOT EXISTS `dispenserecord` (
+  `prescriptionItemID` int NOT NULL,
+  `pharmacyID` int NOT NULL,
+  `dispenseID` int NOT NULL,
+  `quantityDispensed` int NOT NULL,
+  `dateDispensed` date NOT NULL,
+  `pharmacistName` text COLLATE utf8mb4_general_ci NOT NULL,
+  `status` text COLLATE utf8mb4_general_ci NOT NULL,
+  `nextAvailableDates` date NOT NULL,
+  PRIMARY KEY (`dispenseID`),
+  KEY `PrescItemID` (`prescriptionItemID`),
+  KEY `pharmacyID` (`pharmacyID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -66,17 +72,17 @@ CREATE TABLE `dispenserecord` (
 --
 
 INSERT INTO `dispenserecord` (`prescriptionItemID`, `pharmacyID`, `dispenseID`, `quantityDispensed`, `dateDispensed`, `pharmacistName`, `status`, `nextAvailableDates`) VALUES
-                                                                                                                                                                            (1, 1, 1, 7, '2025-01-01', 'Maria Reyes', 'Dispensed', '2025-01-31'),
-                                                                                                                                                                            (2, 2, 2, 5, '2025-01-06', 'John Cruz', 'Dispensed', '2025-02-05'),
-                                                                                                                                                                            (3, 3, 3, 30, '2025-01-12', 'Anna Santos', 'Dispensed', '2025-02-11'),
-                                                                                                                                                                            (4, 4, 4, 14, '2025-01-14', 'Mark Dela Cruz', 'Dispensed', '2025-02-13'),
-                                                                                                                                                                            (5, 5, 5, 3, '2025-01-18', 'Paula Ramos', 'Dispensed', '2025-02-17'),
-                                                                                                                                                                            (6, 6, 6, 14, '2025-01-20', 'Liza Garcia', 'Dispensed', '2025-02-19'),
-                                                                                                                                                                            (7, 7, 7, 10, '2025-01-23', 'Rafael Lopez', 'Dispensed', '2025-02-22'),
-                                                                                                                                                                            (8, 8, 8, 30, '2025-01-25', 'Carla Mendoza', 'Dispensed', '2025-02-24'),
-                                                                                                                                                                            (9, 9, 9, 14, '2025-01-28', 'Simon Cruz', 'Dispensed', '2025-02-27'),
-                                                                                                                                                                            (1, 1, 10, 1, '2002-01-01', 'dan', 'dispensed', '2002-01-02'),
-                                                                                                                                                                            (1, 1, 11, 1, '2002-01-01', 'john', 'Dispensed', '2002-01-02');
+(1, 1, 1, 7, '2025-01-01', 'Maria Reyes', 'Dispensed', '2025-01-31'),
+(2, 2, 2, 5, '2025-01-06', 'John Cruz', 'Dispensed', '2025-02-05'),
+(3, 3, 3, 30, '2025-01-12', 'Anna Santos', 'Dispensed', '2025-02-11'),
+(4, 4, 4, 14, '2025-01-14', 'Mark Dela Cruz', 'Dispensed', '2025-02-13'),
+(5, 5, 5, 3, '2025-01-18', 'Paula Ramos', 'Dispensed', '2025-02-17'),
+(6, 6, 6, 14, '2025-01-20', 'Liza Garcia', 'Dispensed', '2025-02-19'),
+(7, 7, 7, 10, '2025-01-23', 'Rafael Lopez', 'Dispensed', '2025-02-22'),
+(8, 8, 8, 30, '2025-01-25', 'Carla Mendoza', 'Dispensed', '2025-02-24'),
+(9, 9, 9, 14, '2025-01-28', 'Simon Cruz', 'Dispensed', '2025-02-27'),
+(1, 1, 10, 1, '2002-01-01', 'dan', 'dispensed', '2002-01-02'),
+(1, 1, 11, 1, '2002-01-01', 'john', 'Dispensed', '2002-01-02');
 
 -- --------------------------------------------------------
 
@@ -84,23 +90,25 @@ INSERT INTO `dispenserecord` (`prescriptionItemID`, `pharmacyID`, `dispenseID`, 
 -- Table structure for table `doctor`
 --
 
-CREATE TABLE `doctor` (
-                          `doctorID` int(11) NOT NULL,
-                          `firstName` text NOT NULL,
-                          `lastName` text NOT NULL,
-                          `specialization` text NOT NULL,
-                          `licenseNumber` int(11) NOT NULL,
-                          `email` text NOT NULL,
-                          `clinicAddress` text NOT NULL,
-                          `status` enum('active','pending') NOT NULL DEFAULT 'pending'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `doctor`;
+CREATE TABLE IF NOT EXISTS `doctor` (
+  `doctorID` int NOT NULL AUTO_INCREMENT,
+  `firstName` text COLLATE utf8mb4_general_ci NOT NULL,
+  `lastName` text COLLATE utf8mb4_general_ci NOT NULL,
+  `specialization` text COLLATE utf8mb4_general_ci NOT NULL,
+  `licenseNumber` int NOT NULL,
+  `email` text COLLATE utf8mb4_general_ci NOT NULL,
+  `clinicAddress` text COLLATE utf8mb4_general_ci NOT NULL,
+  `status` enum('active','pending') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pending',
+  PRIMARY KEY (`doctorID`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `doctor`
 --
 
 INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `specialization`, `licenseNumber`, `email`, `clinicAddress`, `status`) VALUES
-    (1, 'Antonio', 'Santos', 'Cardiology', 12345, 'antonio.santos@medph.com', 'St. Luke\'s Medical Center, Quezon City', 'active'),
+(1, 'Antonio', 'Santos', 'Cardiology', 12345, 'antonio.santos@medph.com', 'St. Luke\'s Medical Center, Quezon City', 'active'),
 (2, 'Maria', 'Reyes', 'Pediatrics', 23456, 'maria.reyes@childcareph.com', 'The Medical City, Pasig', 'active'),
 (3, 'Jose', 'Ramos', 'Dermatology', 34567, 'jose.ramos@skincareph.com', 'Makati Medical Center, Makati', 'active'),
 (4, 'Ana', 'Garcia', 'Neurology', 45678, 'ana.garcia@neuroph.com', 'Cardinal Santos Hospital, San Juan', 'active'),
@@ -117,14 +125,16 @@ INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `specialization`, `li
 -- Table structure for table `medication`
 --
 
-CREATE TABLE `medication` (
-  `medicationID` int(11) UNSIGNED NOT NULL,
-  `genericName` text NOT NULL,
-  `brandName` text NOT NULL,
-  `form` text NOT NULL,
-  `strength` int(11) NOT NULL,
-  `manufacturer` text NOT NULL,
-  `stock` int(11) DEFAULT NULL
+DROP TABLE IF EXISTS `medication`;
+CREATE TABLE IF NOT EXISTS `medication` (
+  `medicationID` int UNSIGNED NOT NULL,
+  `genericName` text COLLATE utf8mb4_general_ci NOT NULL,
+  `brandName` text COLLATE utf8mb4_general_ci NOT NULL,
+  `form` text COLLATE utf8mb4_general_ci NOT NULL,
+  `strength` int NOT NULL,
+  `manufacturer` text COLLATE utf8mb4_general_ci NOT NULL,
+  `stock` int DEFAULT NULL,
+  PRIMARY KEY (`medicationID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -148,21 +158,24 @@ INSERT INTO `medication` (`medicationID`, `genericName`, `brandName`, `form`, `s
 -- Table structure for table `patient`
 --
 
-CREATE TABLE `patient` (
-  `patientID` int(11) NOT NULL,
-  `firstName` text NOT NULL,
-  `lastName` text NOT NULL,
+DROP TABLE IF EXISTS `patient`;
+CREATE TABLE IF NOT EXISTS `patient` (
+  `patientID` int NOT NULL AUTO_INCREMENT,
+  `firstName` text COLLATE utf8mb4_general_ci NOT NULL,
+  `lastName` text COLLATE utf8mb4_general_ci NOT NULL,
   `birthDate` date NOT NULL,
-  `gender` text NOT NULL,
-  `contactNumber` int(11) NOT NULL,
-  `address` text NOT NULL,
-  `email` text NOT NULL,
-  `doctorID` int(11) NOT NULL,
-  `healthCondition` text DEFAULT NULL,
-  `allergies` text DEFAULT NULL,
-  `currentMedication` text DEFAULT NULL,
-  `knownDiseases` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `gender` text COLLATE utf8mb4_general_ci NOT NULL,
+  `contactNumber` int NOT NULL,
+  `address` text COLLATE utf8mb4_general_ci NOT NULL,
+  `email` text COLLATE utf8mb4_general_ci NOT NULL,
+  `doctorID` int DEFAULT NULL,
+  `healthCondition` text COLLATE utf8mb4_general_ci,
+  `allergies` text COLLATE utf8mb4_general_ci,
+  `currentMedication` text COLLATE utf8mb4_general_ci,
+  `knownDiseases` text COLLATE utf8mb4_general_ci,
+  PRIMARY KEY (`patientID`),
+  KEY `fk_patient_doctor` (`doctorID`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `patient`
@@ -186,13 +199,15 @@ INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `birthDate`, `gende
 -- Table structure for table `pharmacy`
 --
 
-CREATE TABLE `pharmacy` (
-  `pharmacyID` int(11) NOT NULL,
-  `name` text NOT NULL,
-  `address` text NOT NULL,
-  `contactNumber` varchar(20) NOT NULL,
-  `email` text NOT NULL,
-  `clinicAddress` text NOT NULL
+DROP TABLE IF EXISTS `pharmacy`;
+CREATE TABLE IF NOT EXISTS `pharmacy` (
+  `pharmacyID` int NOT NULL,
+  `name` text COLLATE utf8mb4_general_ci NOT NULL,
+  `address` text COLLATE utf8mb4_general_ci NOT NULL,
+  `contactNumber` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` text COLLATE utf8mb4_general_ci NOT NULL,
+  `clinicAddress` text COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`pharmacyID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -213,31 +228,33 @@ INSERT INTO `pharmacy` (`pharmacyID`, `name`, `address`, `contactNumber`, `email
 -- Table structure for table `prescription`
 --
 
-CREATE TABLE `prescription` (
-  `prescriptionID` int(11) NOT NULL,
-  `medicationID` int(11) NOT NULL,
-  `patientID` int(11) NOT NULL,
+DROP TABLE IF EXISTS `prescription`;
+CREATE TABLE IF NOT EXISTS `prescription` (
+  `prescriptionID` int NOT NULL AUTO_INCREMENT,
+  `patientID` int NOT NULL,
   `issueDate` date NOT NULL,
   `expirationDate` date NOT NULL,
-  `refillInterval` date NOT NULL,
-  `status` text NOT NULL,
-  `doctorID` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `status` text COLLATE utf8mb4_general_ci NOT NULL,
+  `doctorID` int NOT NULL,
+  PRIMARY KEY (`prescriptionID`),
+  KEY `patientID` (`patientID`),
+  KEY `fk_prescription_doctor` (`doctorID`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `prescription`
 --
 
-INSERT INTO `prescription` (`prescriptionID`, `medicationID`, `patientID`, `issueDate`, `expirationDate`, `refillInterval`, `status`, `doctorID`) VALUES
-(1, 2, 2, '2025-02-02', '2025-04-03', '2025-02-01', 'Expired', 1),
-(2, 2, 2, '2025-01-05', '2025-04-05', '2025-02-04', 'Active', 2),
-(3, 3, 3, '2025-01-10', '2025-04-10', '2025-02-09', 'Expired', 3),
-(4, 4, 4, '2025-02-01', '2025-05-01', '2025-03-01', 'Active', 4),
-(5, 5, 5, '2025-02-10', '2025-05-10', '2025-03-12', 'Active', 5),
-(6, 6, 6, '2025-02-15', '2025-05-15', '2025-03-17', 'Active', 6),
-(7, 7, 7, '2025-02-20', '2025-05-20', '2025-03-22', 'Active', 7),
-(8, 8, 8, '2025-03-01', '2025-06-01', '2025-04-01', 'Active', 8),
-(9, 9, 9, '2025-03-05', '2025-06-05', '2025-04-04', 'Active', 9);
+INSERT INTO `prescription` (`prescriptionID`, `patientID`, `issueDate`, `expirationDate`, `status`, `doctorID`) VALUES
+(1, 2, '2025-02-02', '2025-04-03', 'Expired', 1),
+(2, 2, '2025-01-05', '2025-04-05', 'Active', 2),
+(3, 3, '2025-01-10', '2025-04-10', 'Expired', 3),
+(4, 4, '2025-02-01', '2025-05-01', 'Active', 4),
+(5, 5, '2025-02-10', '2025-05-10', 'Active', 5),
+(6, 6, '2025-02-15', '2025-05-15', 'Active', 6),
+(7, 7, '2025-02-20', '2025-05-20', 'Active', 7),
+(8, 8, '2025-03-01', '2025-06-01', 'Active', 8),
+(9, 9, '2025-03-05', '2025-06-05', 'Active', 9);
 
 -- --------------------------------------------------------
 
@@ -245,123 +262,59 @@ INSERT INTO `prescription` (`prescriptionID`, `medicationID`, `patientID`, `issu
 -- Table structure for table `prescriptionitem`
 --
 
-CREATE TABLE `prescriptionitem` (
-  `doctorID` int(11) NOT NULL,
-  `prescriptionItemID` int(11) NOT NULL,
-  `prescriptionID` int(11) NOT NULL,
-  `medicationID` int(11) UNSIGNED NOT NULL,
-  `dosage` text NOT NULL,
-  `frequency` text NOT NULL,
-  `duration` text NOT NULL,
-  `prescribed_amount` int(11) NOT NULL,
-  `refill_count` int(11) NOT NULL,
-  `instructions` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `prescriptionitem`;
+CREATE TABLE IF NOT EXISTS `prescriptionitem` (
+  `doctorID` int NOT NULL,
+  `prescriptionItemID` int NOT NULL AUTO_INCREMENT,
+  `prescriptionID` int NOT NULL,
+  `medicationID` int UNSIGNED NOT NULL,
+  `dosage` text COLLATE utf8mb4_general_ci NOT NULL,
+  `frequency` text COLLATE utf8mb4_general_ci NOT NULL,
+  `duration` text COLLATE utf8mb4_general_ci NOT NULL,
+  `prescribed_amount` int NOT NULL,
+  `refill_count` int NOT NULL,
+  `refillInterval` date NOT NULL,
+  `instructions` text COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`prescriptionItemID`),
+  KEY `fk_medicationID` (`medicationID`),
+  KEY `fk_prescriptionID` (`prescriptionID`),
+  KEY `fk_doctorID` (`doctorID`)
+) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `prescriptionitem`
 --
 
-INSERT INTO `prescriptionitem` (`doctorID`, `prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `prescribed_amount`, `refill_count`, `instructions`) VALUES
-(1, 1, 1, 2, '500 mg', '3 times a day', '5 days', 15, 0, 'Take after meals'),
-(1, 82, 1, 3, '500 mg', '2 times a day', '7 days', 14, 0, 'Complete the full course'),
-(2, 83, 2, 4, '10 mg', 'Once daily', '10 days', 10, 1, 'Take at night'),
-(2, 84, 2, 2, '200 mg', 'Every 6 hours', '3 days', 12, 0, 'Take with water'),
-(3, 85, 3, 1, '500 mg', 'As needed', '7 days', 20, 0, 'For fever or pain'),
-(3, 86, 3, 3, '500 mg', 'Three times a day', '10 days', 30, 0, 'Finish full course'),
-(4, 87, 4, 5, '850 mg', 'Twice a day', '30 days', 60, 2, 'Take with breakfast and dinner'),
-(5, 88, 5, 6, '20 mg', 'Once daily', '30 days', 30, 2, 'Take at the same time daily'),
-(5, 89, 5, 1, '500 mg', 'Every 6 hours', '6 days', 24, 0, 'Pain management'),
-(6, 90, 6, 7, '40 mg', 'Once daily', '14 days', 14, 1, 'Take before breakfast'),
-(6, 91, 6, 2, '200 mg', 'Every 8 hours', '5 days', 15, 0, 'Hydrate well'),
-(7, 92, 7, 9, '5 mg', 'Once daily', '30 days', 30, 1, 'Monitor blood pressure'),
-(7, 93, 7, 3, '500 mg', 'Twice daily', '7 days', 14, 0, 'Complete regimen'),
-(8, 94, 8, 8, '10 mg', 'Once daily', '10 days', 10, 1, 'Take before bed'),
-(8, 95, 8, 5, '850 mg', 'Twice a day', '60 days', 120, 3, 'Long-term maintenance'),
-(9, 96, 9, 4, '10 mg', 'Once daily', '14 days', 14, 1, 'Non-drowsy formula'),
-(9, 97, 9, 6, '20 mg', 'Once daily', '30 days', 30, 2, 'Take regularly'),
-(1, 98, 1, 8, '10 mg', 'Once daily', '7 days', 7, 0, 'For allergies'),
-(2, 99, 2, 9, '5 mg', 'Once daily', '90 days', 90, 3, 'Long-term therapy'),
-(3, 100, 3, 5, '850 mg', 'Twice daily', '90 days', 180, 3, 'Maintain diet'),
-(4, 101, 4, 1, '500 mg', 'As needed', '10 days', 30, 0, 'Do not exceed 4 doses/day'),
-(5, 102, 5, 2, '200 mg', 'Every 4 hours', '2 days', 12, 0, 'Do not exceed recommended dose'),
-(6, 103, 6, 3, '500 mg', 'Every 12 hours', '10 days', 20, 0, 'Take until symptoms improve'),
-(7, 104, 7, 1, '500 mg', 'Every 8 hours', '7 days', 21, 0, 'Take with food'),
-(8, 105, 8, 2, '200 mg', 'Every 6 hours', '5 days', 20, 0, 'Pain or fever relief'),
-(9, 106, 9, 7, '40 mg', 'Once daily', '30 days', 30, 1, 'Avoid spicy food'),
-(1, 107, 1, 9, '5 mg', 'Once daily', '30 days', 30, 1, 'Check BP weekly'),
-(2, 108, 2, 6, '20 mg', 'Once daily', '14 days', 14, 0, 'Morning dose recommended'),
-(3, 109, 3, 4, '10 mg', 'Once daily', '14 days', 14, 1, 'Avoid alcohol');
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `dispenserecord`
---
-ALTER TABLE `dispenserecord`
-  ADD PRIMARY KEY (`dispenseID`),
-  ADD KEY `PrescItemID` (`prescriptionItemID`),
-  ADD KEY `pharmacyID` (`pharmacyID`);
-
---
--- Indexes for table `doctor`
---
-ALTER TABLE `doctor`
-  ADD PRIMARY KEY (`doctorID`);
-
---
--- Indexes for table `medication`
---
-ALTER TABLE `medication`
-  ADD PRIMARY KEY (`medicationID`);
-
---
--- Indexes for table `patient`
---
-ALTER TABLE `patient`
-  ADD PRIMARY KEY (`patientID`),
-  ADD KEY `fk_patient_doctor` (`doctorID`);
-
---
--- Indexes for table `pharmacy`
---
-ALTER TABLE `pharmacy`
-  ADD PRIMARY KEY (`pharmacyID`);
-
---
--- Indexes for table `prescription`
---
-ALTER TABLE `prescription`
-  ADD PRIMARY KEY (`prescriptionID`),
-  ADD KEY `patientID` (`patientID`),
-  ADD KEY `medID` (`medicationID`),
-  ADD KEY `fk_prescription_doctor` (`doctorID`);
-
---
--- Indexes for table `prescriptionitem`
---
-ALTER TABLE `prescriptionitem`
-  ADD PRIMARY KEY (`prescriptionItemID`),
-  ADD KEY `fk_medicationID` (`medicationID`),
-  ADD KEY `fk_prescriptionID` (`prescriptionID`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `prescription`
---
-ALTER TABLE `prescription`
-  MODIFY `prescriptionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
---
--- AUTO_INCREMENT for table `prescriptionitem`
---
-ALTER TABLE `prescriptionitem`
-  MODIFY `prescriptionItemID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+INSERT INTO `prescriptionitem` (`doctorID`, `prescriptionItemID`, `prescriptionID`, `medicationID`, `dosage`, `frequency`, `duration`, `prescribed_amount`, `refill_count`, `refillInterval`, `instructions`) VALUES
+(1, 1, 1, 2, '500 mg', '3 times a day', '5 days', 15, 0, '0000-00-00', 'Take after meals'),
+(1, 82, 1, 3, '500 mg', '2 times a day', '7 days', 14, 0, '0000-00-00', 'Complete the full course'),
+(2, 83, 2, 4, '10 mg', 'Once daily', '10 days', 10, 1, '0000-00-00', 'Take at night'),
+(2, 84, 2, 2, '200 mg', 'Every 6 hours', '3 days', 12, 0, '0000-00-00', 'Take with water'),
+(3, 85, 3, 1, '500 mg', 'As needed', '7 days', 20, 0, '0000-00-00', 'For fever or pain'),
+(3, 86, 3, 3, '500 mg', 'Three times a day', '10 days', 30, 0, '0000-00-00', 'Finish full course'),
+(4, 87, 4, 5, '850 mg', 'Twice a day', '30 days', 60, 2, '0000-00-00', 'Take with breakfast and dinner'),
+(5, 88, 5, 6, '20 mg', 'Once daily', '30 days', 30, 2, '0000-00-00', 'Take at the same time daily'),
+(5, 89, 5, 1, '500 mg', 'Every 6 hours', '6 days', 24, 0, '0000-00-00', 'Pain management'),
+(6, 90, 6, 7, '40 mg', 'Once daily', '14 days', 14, 1, '0000-00-00', 'Take before breakfast'),
+(6, 91, 6, 2, '200 mg', 'Every 8 hours', '5 days', 15, 0, '0000-00-00', 'Hydrate well'),
+(7, 92, 7, 9, '5 mg', 'Once daily', '30 days', 30, 1, '0000-00-00', 'Monitor blood pressure'),
+(7, 93, 7, 3, '500 mg', 'Twice daily', '7 days', 14, 0, '0000-00-00', 'Complete regimen'),
+(8, 94, 8, 8, '10 mg', 'Once daily', '10 days', 10, 1, '0000-00-00', 'Take before bed'),
+(8, 95, 8, 5, '850 mg', 'Twice a day', '60 days', 120, 3, '0000-00-00', 'Long-term maintenance'),
+(9, 96, 9, 4, '10 mg', 'Once daily', '14 days', 14, 1, '0000-00-00', 'Non-drowsy formula'),
+(9, 97, 9, 6, '20 mg', 'Once daily', '30 days', 30, 2, '0000-00-00', 'Take regularly'),
+(1, 98, 1, 8, '10 mg', 'Once daily', '7 days', 7, 0, '0000-00-00', 'For allergies'),
+(2, 99, 2, 9, '5 mg', 'Once daily', '90 days', 90, 3, '0000-00-00', 'Long-term therapy'),
+(3, 100, 3, 5, '850 mg', 'Twice daily', '90 days', 180, 3, '0000-00-00', 'Maintain diet'),
+(4, 101, 4, 1, '500 mg', 'As needed', '10 days', 30, 0, '0000-00-00', 'Do not exceed 4 doses/day'),
+(5, 102, 5, 2, '200 mg', 'Every 4 hours', '2 days', 12, 0, '0000-00-00', 'Do not exceed recommended dose'),
+(6, 103, 6, 3, '500 mg', 'Every 12 hours', '10 days', 20, 0, '0000-00-00', 'Take until symptoms improve'),
+(7, 104, 7, 1, '500 mg', 'Every 8 hours', '7 days', 21, 0, '0000-00-00', 'Take with food'),
+(8, 105, 8, 2, '200 mg', 'Every 6 hours', '5 days', 20, 0, '0000-00-00', 'Pain or fever relief'),
+(9, 106, 9, 7, '40 mg', 'Once daily', '30 days', 30, 1, '0000-00-00', 'Avoid spicy food'),
+(1, 107, 1, 9, '5 mg', 'Once daily', '30 days', 30, 1, '0000-00-00', 'Check BP weekly'),
+(2, 108, 2, 6, '20 mg', 'Once daily', '14 days', 14, 0, '0000-00-00', 'Morning dose recommended'),
+(3, 109, 3, 4, '10 mg', 'Once daily', '14 days', 14, 1, '0000-00-00', 'Avoid alcohol');
 
 --
 -- Constraints for dumped tables
@@ -371,18 +324,19 @@ ALTER TABLE `prescriptionitem`
 -- Constraints for table `patient`
 --
 ALTER TABLE `patient`
-  ADD CONSTRAINT `fk_patient_doctor` FOREIGN KEY (`doctorID`) REFERENCES `doctor` (`doctorID`);
+  ADD CONSTRAINT `fk_patient_doctor` FOREIGN KEY (`doctorID`) REFERENCES `doctor` (`doctorID`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `prescription`
 --
 ALTER TABLE `prescription`
-  ADD CONSTRAINT `fk_prescription_doctor` FOREIGN KEY (`doctorID`) REFERENCES `doctor` (`doctorID`);
+  ADD CONSTRAINT `fk_prescription_doctor` FOREIGN KEY (`doctorID`) REFERENCES `patient` (`patientID`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
 -- Constraints for table `prescriptionitem`
 --
 ALTER TABLE `prescriptionitem`
+  ADD CONSTRAINT `fk_doctorID` FOREIGN KEY (`doctorID`) REFERENCES `doctor` (`doctorID`) ON DELETE RESTRICT ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_medicationID` FOREIGN KEY (`medicationID`) REFERENCES `medication` (`medicationID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_prescriptionID` FOREIGN KEY (`prescriptionID`) REFERENCES `prescription` (`prescriptionID`) ON UPDATE CASCADE;
 COMMIT;
