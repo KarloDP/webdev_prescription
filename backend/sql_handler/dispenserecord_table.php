@@ -1,7 +1,7 @@
 <?php
 // backend/sql_handler/dispense_record.php
 // Handles get/add/delete for dispenserecord table.
-
+// SCRIPT BELOW IS CHAT GPT GENERATED, NEEDS TO BE REVIEWED
 include(__DIR__ . '/../includes/db_connect.php');
 include(__DIR__ . '/../includes/auth.php');
 

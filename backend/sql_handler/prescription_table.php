@@ -76,7 +76,10 @@ if ($method == 'GET') {
         $data[]=$row;
     }
     respond($data);
-} else if ($method == 'POST') {
+} 
+
+//POST method add entries to database tables
+else if ($method == 'POST') {
     if (in_array($role, ['admin', 'doctor'],true)){
         $raw = file_get_contents("php://input");
         $data = json_decode($raw, true);
@@ -102,7 +105,10 @@ if ($method == 'GET') {
     } else {
         respond(['error'=> 'Insert Failed: ' . $stmt->error], 500);
     }
-} else if ($method === 'DELETE') { //ChatGPT generated, remember that since it will likely be a cause of issues
+} 
+
+//DELETE method removes entries from database tables
+else if ($method === 'DELETE') { //ChatGPT generated, remember that since it will likely be a cause of issues
     // Only admin or doctor can delete
     if (!in_array($role, ['admin', 'doctor'], true)) {
         respond(['error' => 'You are not allowed to delete prescriptions'], 403);
