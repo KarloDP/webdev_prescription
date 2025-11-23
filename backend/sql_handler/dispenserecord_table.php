@@ -84,8 +84,8 @@ if ($method === 'GET') {
         $stmt->bind_param('i', $userID);
 
     } elseif (in_array($role, ['admin', 'pharmacist', 'doctor'], true)) {
+        //for all administrative users
         //find record by dispenseID
-
         if (isset($_GET['dispenseID'])) {
             $dispenseID = (int)$_GET['dispenseID'];
             $stmt = $conn->prepare(
@@ -97,8 +97,23 @@ if ($method === 'GET') {
                 respond(['error' => 'Prepare failed: ' . $conn->error], 500);
             }
             $stmt->bind_param('i', $dispenseID);
-        } else {
-
+        
+        //find records by prescriptionItemID
+        }else if(isset($_GET['prescriptionItemID'])){
+            $prescriptionItemID = (int)$_GET['prescriptionItemID'];
+            $stmt = $conn->prepare(
+                'SELECT *
+                FROM dispenserecord
+                WHERE prescriptionItemID = ?
+                ORDER BY dateDispensed DESC, dispenseID DESC'
+            );
+            if (!$stmt) {
+                respond(['error' => 'Prepare failed: ' . $conn->error], 500);
+            }
+            $stmt->bind_param('i', $prescriptionItemID);
+        }
+        
+        else {
             //see all records
             $stmt = $conn->prepare(
                 'SELECT *
@@ -109,7 +124,6 @@ if ($method === 'GET') {
         if (!$stmt) {
             respond(['error' => 'Prepare failed: ' . $conn->error], 500);
         }
-
     } else {
         respond(['error' => 'Unknown role: ' . $role], 403);
     }
