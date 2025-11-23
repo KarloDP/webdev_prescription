@@ -84,13 +84,28 @@ if ($method === 'GET') {
         $stmt->bind_param('i', $userID);
 
     } elseif (in_array($role, ['admin', 'pharmacist', 'doctor'], true)) {
-        // Admin, pharmacist, doctor: see all records
-        $sql = "
-            SELECT *
-            FROM dispenserecord
-            ORDER BY dateDispensed DESC, dispenseID DESC
-        ";
-        $stmt = $conn->prepare($sql);
+        //find record by dispenseID
+
+        if (isset($_GET['dispenseID'])) {
+            $dispenseID = (int)$_GET['dispenseID'];
+            $stmt = $conn->prepare(
+                'SELECT *
+                FROM dispenserecord
+                WHERE dispenseID = ?'
+            );
+            if (!$stmt) {
+                respond(['error' => 'Prepare failed: ' . $conn->error], 500);
+            }
+            $stmt->bind_param('i', $dispenseID);
+        } else {
+
+            //see all records
+            $stmt = $conn->prepare(
+                'SELECT *
+                FROM dispenserecord
+                ORDER BY dateDispensed DESC, dispenseID DESC'
+            );
+        }
         if (!$stmt) {
             respond(['error' => 'Prepare failed: ' . $conn->error], 500);
         }
