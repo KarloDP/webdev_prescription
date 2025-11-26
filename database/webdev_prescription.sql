@@ -207,6 +207,7 @@ CREATE TABLE IF NOT EXISTS `pharmacy` (
   `contactNumber` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
   `email` text COLLATE utf8mb4_general_ci NOT NULL,
   `clinicAddress` text COLLATE utf8mb4_general_ci NOT NULL,
+  `status` enum('active','inactive','pending') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pending',   -- 👈 ADDED COLUMN
   PRIMARY KEY (`pharmacyID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -214,15 +215,13 @@ CREATE TABLE IF NOT EXISTS `pharmacy` (
 -- Dumping data for table `pharmacy`
 --
 
-INSERT INTO `pharmacy` (`pharmacyID`, `name`, `address`, `contactNumber`, `email`, `clinicAddress`) VALUES
-(1, 'HealthPlus Pharmacy', '123 Rizal St', '09171234567', 'healthplus@example.com', 'Unit 5 Medical Plaza Baguio'),
-(2, 'CareWell Pharmacy', '45 Session Road', '09182345678', 'carewell@example.com', 'Room 204 Saint Louis Hospital'),
-(3, 'MediServe Pharmacy', '88 Aurora Hill', '09273456789', 'mediserve@example.com', '2F Pines Doctors Clinic'),
-(4, 'WellLife Pharmacy', '21 Legarda Road', '09384567890', 'welllife@example.com', 'G5 University Clinic Center'),
-(5, 'GreenCare Pharmacy', '67 Marcos Highway', '09495678901', 'greencare@example.com', 'Health Wing - Baguio General Hospital'),
-(6, 'CityMeds Pharmacy', '34 Bonifacio St', '09771234098', 'citymeds@example.com', 'Room 12 Baguio Medical Center');
-
--- --------------------------------------------------------
+INSERT INTO `pharmacy` (`pharmacyID`, `name`, `address`, `contactNumber`, `email`, `clinicAddress`, `status`) VALUES
+(1, 'HealthPlus Pharmacy', '123 Rizal St', '09171234567', 'healthplus@example.com', 'Unit 5 Medical Plaza Baguio', 'active'),
+(2, 'CareWell Pharmacy', '45 Session Road', '09182345678', 'carewell@example.com', 'Room 204 Saint Louis Hospital', 'active'),
+(3, 'MediServe Pharmacy', '88 Aurora Hill', '09273456789', 'mediserve@example.com', '2F Pines Doctors Clinic', 'active'),
+(4, 'WellLife Pharmacy', '21 Legarda Road', '09384567890', 'welllife@example.com', 'G5 University Clinic Center', 'active'),
+(5, 'GreenCare Pharmacy', '67 Marcos Highway', '09495678901', 'greencare@example.com', 'Health Wing - Baguio General Hospital', 'pending'),
+(6, 'CityMeds Pharmacy', '34 Bonifacio St', '09771234098', 'citymeds@example.com', 'Room 12 Baguio Medical Center', 'pending');
 
 --
 -- Table structure for table `prescription`
