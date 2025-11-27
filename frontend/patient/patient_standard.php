@@ -61,18 +61,19 @@ $imgBase = $baseUrl . '/assets/images';
   </header>
 
   <!-- Sidebar Navigation -->
-  <aside class="sidebar">
-    <ul>
-      <?php foreach ($sidebarItems as $key => $label): ?>
-        <li class="<?php echo ($activePage === $key) ? 'active' : ''; ?>">
-          <a href="<?php echo $key; ?>.php">
-            <?php echo htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?>
-          </a>
-        </li>
-      <?php endforeach; ?>
-      <li><a href="testlogout.php">Logout</a></li>
-    </ul>
-  </aside>
+ <aside class="sidebar">
+  <ul>
+    <?php
+      foreach ($sidebarItems as $key => $label) {
+        // Build the URL properly:
+        $url = $baseUrl . '/frontend/patient/' . $key .'/'. $key . '.php';
+        $activeClass = ($activePage === $key) ? 'active' : '';
+        echo "<li class='$activeClass'><a href='$url'>$label</a></li>";
+      }
+    ?>
+    <li><a href="<?php echo $baseUrl . '/frontend/patient/testlogout.php'; ?>">Logout</a></li>
+  </ul>
+</aside>
 
   <!-- Main Page Content -->
   <main class="content">
