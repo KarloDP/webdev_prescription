@@ -28,31 +28,38 @@ if ($method == 'GET') {
             respond(['error' => 'Not allowed'], 403);
         }
 
-        // SQL for grouped items per prescription
+        // One row per medication, including prescription + doctor + med details
         $stmt = $conn->prepare("
             SELECT
                 p.prescriptionID,
                 p.status,
                 p.issueDate,
+                p.expirationDate,
                 CONCAT('Dr ', d.firstName, ' ', d.lastName) AS doctorName,
+
+                pi.prescriptionItemID,
                 
                 m.genericName AS medicine,
-                m.brandName AS brand,
+                m.brandName   AS brand,
+                m.form,
+                m.strength,
+
                 pi.dosage,
                 pi.frequency,
                 pi.duration,
                 pi.prescribed_amount,
                 pi.refill_count,
+                pi.refillInterval,
                 pi.instructions
 
             FROM prescription p
             JOIN prescriptionitem pi ON p.prescriptionID = pi.prescriptionID
-            JOIN medication m ON pi.medicationID = m.medicationID
-            JOIN doctor d ON p.doctorID = d.doctorID
+            JOIN medication m        ON pi.medicationID   = m.medicationID
+            JOIN doctor d            ON p.doctorID        = d.doctorID
             WHERE p.patientID = ?
             ORDER BY p.prescriptionID DESC, pi.prescriptionItemID ASC
         ");
-        
+
         $stmt->bind_param("i", $patientID);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -64,6 +71,7 @@ if ($method == 'GET') {
 
         respond($data);
     }
+
 
     if (isset($_GET['prescriptionID'])) {
         $prescriptionID = (int)$_GET['prescriptionID'];

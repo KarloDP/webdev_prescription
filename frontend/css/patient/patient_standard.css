@@ -225,6 +225,56 @@
   font-weight: 600;
 }
 
+/* Prescription Container */
+.prescription-group {
+  margin-bottom: 30px;
+}
+
+/* Button Wrapper */
+.prescription-button-container {
+  margin-bottom: 10px;
+}
+
+/* Prescription Button */
+.prescription-btn-view {
+  padding: 8px 14px;
+  background: #1e3d2f;
+  color: #fff;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 0.95rem;
+  transition: 0.2s ease;
+}
+
+.prescription-btn-view:hover {
+  background: #284e3a;
+}
+
+/* Table Styling */
+.table-frame {
+  overflow-x: auto;
+}
+
+.table-base {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table-base th,
+.table-base td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.table-base th {
+  background: #f0f0f0;
+  font-weight: bold;
+}
+
+
+
 /* Responsive adjustments */
 @media (max-width: 900px) {
   .patient-dashboard .welcome-row {

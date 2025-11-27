@@ -1,113 +1,126 @@
-// frontend/patient/prescription_medication.js
+// frontend/patient/prescription/prescription_medication.js
 
-// API endpoints
-const RX_API = "../../backend/sql_handler/prescription_table.php";
-const RX_ITEM_API = "../../backend/sql_handler/prescriptionitem_table.php";
+// From the point of view of prescription_medication.php:
+//   /frontend/patient/prescription/prescription_medication.php
+// → backend API endpoint (adjust name if your file differs):
+const DISPENSE_API = "../../../backend/sql_handler/dispenserecord_table.php";
+
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadGroupedPrescriptions();
+  loadDispenseHistory();
 });
 
-async function loadGroupedPrescriptions() {
-    const container = document.getElementById("prescription-groups");
-    const patientID = window.currentPatient?.id;
+async function loadDispenseHistory() {
+  const container = document.getElementById("dispense-history-container");
+  if (!container) return;
 
-    if (!patientID) {
-        container.innerHTML = "<p>Error: No patient ID found.</p>";
-        return;
+  container.innerHTML = "<p>Loading dispense history...</p>";
+
+  const itemId = Number(window.currentPrescriptionItemID || 0);
+  if (!itemId) {
+    container.innerHTML =
+      "<p>No prescription item selected. Missing prescriptionItemID in URL.</p>";
+    return;
+  }
+
+  try {
+    // For patients, the PHP handler ignores prescriptionItemID and returns
+    // all records for the patient, so we filter client-side.
+    const params = new URLSearchParams({
+      prescriptionItemID: String(itemId),
+    });
+
+    const res = await fetch(`${DISPENSE_API}?${params.toString()}`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
     }
 
-    try {
-        // fetch via prescriptionitem_table.php?patientID=xx&group=true
-        const res = await fetch(`${RX_ITEM_API}?patientID=${patientID}&grouped=true`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        const data = await res.json();
-        if (!Array.isArray(data) || data.length === 0) {
-            container.innerHTML = "<p>No prescriptions found.</p>";
-            return;
-        }
-
-        // Group rows by prescriptionID
-        const groups = {};
-        data.forEach(item => {
-            const rxID = item.prescriptionID;
-            if (!groups[rxID]) groups[rxID] = [];
-            groups[rxID].push(item);
-        });
-
-        container.innerHTML = Object.keys(groups)
-            .map(renderPrescriptionGroup)
-            .join("");
-
-    } catch (err) {
-        console.error("Failed loading prescriptions:", err);
-        container.innerHTML = "<p>Error loading prescriptions.</p>";
+    const data = await res.json();
+    if (!Array.isArray(data)) {
+      throw new Error("API did not return an array");
     }
+
+    // Filter to the specific prescriptionItemID
+    const records = data.filter(
+      (r) => Number(r.prescriptionItemID) === itemId
+    );
+
+    if (records.length === 0) {
+      container.innerHTML =
+        '<div class="empty-state"><p>No dispense history for this medication.</p></div>';
+      return;
+    }
+
+    container.innerHTML = renderTable(records);
+  } catch (err) {
+    console.error("Failed to load dispense history:", err);
+    container.innerHTML =
+      "<p>Failed to load dispense history. Please try again later.</p>";
+  }
 }
 
-function renderPrescriptionGroup(rxID) {
-    const items = window.groupedData ? window.groupedData[rxID] : [];
-    const data = items[0];
+function renderTable(records) {
+  const rowsHtml = records.map(renderRow).join("");
 
-    const doctorFull = data.doctorName || "-";
-    const issueDate  = formatDate(data.issueDate);
-    const statusBadge =
-        data.status === "Active"
-            ? "<span style='color:#155724;background:#d4edda;padding:1px 4px;border-radius:4px;'>Active</span>"
-            : "<span style='color:#721c24;background:#f8d7da;padding:1px 4px;border-radius:4px;'>Expired</span>";
-
-    return `
-    <div class="prescription-group">
-        <h3>Prescription RX-${String(rxID).padStart(2, '0')} (${statusBadge})</h3>
-        <p>Doctor: ${doctorFull} | Issued: ${issueDate}</p>
-        <table class="table-base">
-            <thead>
-                <tr>
-                    <th>Medicine</th>
-                    <th>Brand</th>
-                    <th>Dosage</th>
-                    <th>Frequency</th>
-                    <th>Duration</th>
-                    <th>Amount</th>
-                    <th>Refills</th>
-                    <th>Instructions</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${items.map(renderItemRow).join("")}
-            </tbody>
-        </table>
+  return `
+    <div class="table-frame">
+      <table class="table-base">
+        <thead>
+          <tr>
+            <th>Dispense ID</th>
+            <th>Pharmacy ID</th>
+            <th>Quantity Dispensed</th>
+            <th>Date Dispensed</th>
+            <th>Pharmacist</th>
+            <th>Status</th>
+            <th>Next Available Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
     </div>
-    `;
+  `;
 }
 
-function renderItemRow(row) {
-    return `
+function renderRow(row) {
+  const dateDispensed = formatDate(row.dateDispensed);
+  const nextDate = formatDate(row.nextAvailableDates);
+
+  return `
     <tr>
-        <td>${escapeHtml(row.medicine ?? "-")}</td>
-        <td>${escapeHtml(row.brand ?? "-")}</td>
-        <td>${escapeHtml(row.dosage ?? "-")}</td>
-        <td>${escapeHtml(row.frequency ?? "-")}</td>
-        <td>${escapeHtml(row.duration ?? "-")}</td>
-        <td>${escapeHtml(row.prescribed_amount ?? "-")}</td>
-        <td>${escapeHtml(row.refill_count ?? "-")}</td>
-        <td>${escapeHtml(row.instructions ?? "-")}</td>
+      <td>${escapeHtml(row.dispenseID)}</td>
+      <td>${escapeHtml(row.pharmacyID)}</td>
+      <td>${escapeHtml(row.quantityDispensed)}</td>
+      <td>${escapeHtml(dateDispensed)}</td>
+      <td>${escapeHtml(row.pharmacistName ?? "-")}</td>
+      <td>${escapeHtml(row.status ?? "-")}</td>
+      <td>${escapeHtml(nextDate)}</td>
     </tr>
-    `;
+  `;
 }
 
-function formatDate(val) {
-    if (!val) return "-";
-    const d = new Date(val);
-    return d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+function formatDate(value) {
+  if (!value) return "-";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
 
 function escapeHtml(str) {
-    return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
