@@ -28,6 +28,7 @@ async function loadDashboard(page = 1) {
     }
 
     const data = await res.json();
+    console.log("API data sample:", data[0]); // temp line for data testing
 
     if (!Array.isArray(data)) {
       throw new Error("API did not return an array");

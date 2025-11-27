@@ -19,7 +19,7 @@ ob_start();
   <div id="patient-dashboard-root">
     <p>Loading dashboard...</p>
   </div>
-
+  
   <script>
     // Make patient name available to dashboard.js
     window.patientName = <?= json_encode($patientName, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;

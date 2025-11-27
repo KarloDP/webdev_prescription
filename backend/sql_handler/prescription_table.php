@@ -46,7 +46,38 @@ if ($method == 'GET') {
     //retun all prescription with a certain patients ID
     if ($role === 'patient') {
         $stmt = $conn->prepare(
-            'SELECT * FROM prescription WHERE patientID = ? ORDER BY prescriptionID'
+            '
+                SELECT
+                p.prescriptionID,
+                p.issueDate,
+                p.expirationDate,
+                p.status,
+
+                -- what the card shows as medicine
+                GROUP_CONCAT(DISTINCT m.brandName SEPARATOR ", ") AS medicine,
+
+                -- what the card shows as doctor name
+                CONCAT(d.firstName, " ", d.lastName) AS doctor_name,
+
+                -- notes / dosage for the card (you can tweak this)
+                GROUP_CONCAT(DISTINCT pi.dosage SEPARATOR "; ") AS dosage,
+                GROUP_CONCAT(DISTINCT pi.instructions SEPARATOR " | ") AS notes
+                FROM prescription p
+                JOIN doctor d
+                ON p.doctorID = d.doctorID
+                JOIN prescriptionitem pi
+                ON p.prescriptionID = pi.prescriptionID
+                JOIN medication m
+                ON pi.medicationID = m.medicationID
+                WHERE p.patientID = ?
+                GROUP BY
+                p.prescriptionID,
+                p.issueDate,
+                p.expirationDate,
+                p.status,
+                doctor_name
+                ORDER BY p.prescriptionID
+            '
         );
         $stmt->bind_param('i', $userID);
     //return all prescription with a certain doctors ID
