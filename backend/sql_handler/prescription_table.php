@@ -18,6 +18,53 @@ $userID = (int)$user['id'];
 
 if ($method == 'GET') {
     //return a specific prescription based on an ID
+
+    if (isset($_GET['patientID']) && isset($_GET['grouped'])) {
+
+        $patientID = (int)$_GET['patientID'];
+
+        // Ensure only the logged-in patient can get their own data
+        if ($role === 'patient' && $patientID !== $userID) {
+            respond(['error' => 'Not allowed'], 403);
+        }
+
+        // SQL for grouped items per prescription
+        $stmt = $conn->prepare("
+            SELECT
+                p.prescriptionID,
+                p.status,
+                p.issueDate,
+                CONCAT('Dr ', d.firstName, ' ', d.lastName) AS doctorName,
+                
+                m.genericName AS medicine,
+                m.brandName AS brand,
+                pi.dosage,
+                pi.frequency,
+                pi.duration,
+                pi.prescribed_amount,
+                pi.refill_count,
+                pi.instructions
+
+            FROM prescription p
+            JOIN prescriptionitem pi ON p.prescriptionID = pi.prescriptionID
+            JOIN medication m ON pi.medicationID = m.medicationID
+            JOIN doctor d ON p.doctorID = d.doctorID
+            WHERE p.patientID = ?
+            ORDER BY p.prescriptionID DESC, pi.prescriptionItemID ASC
+        ");
+        
+        $stmt->bind_param("i", $patientID);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+
+        respond($data);
+    }
+
     if (isset($_GET['prescriptionID'])) {
         $prescriptionID = (int)$_GET['prescriptionID'];
 

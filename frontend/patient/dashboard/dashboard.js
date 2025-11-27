@@ -179,7 +179,7 @@ function renderPrescriptionCard(p) {
       </div>
       <div class="card-right">
         <p class="note">${escapeHtml(notes)}</p>
-        <a class="details-link" href="../view_prescription.php?id=${id}">
+        <a class="details-link" href="../prescription_Details/original_prescription.php?prescriptionID=${id}">
           Medicine Details &gt;&gt;
         </a>
       </div>

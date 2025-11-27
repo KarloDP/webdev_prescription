@@ -19,6 +19,7 @@ $activePage = $activePage ?? 'dashboard';
 $sidebarItems = $sidebarItems ?? [
     'dashboard'     => 'Dashboard',
     'patient'       => 'History',
+    'prescription'  => 'Prescriptions',
     'medication'    => 'Medications',
     'pharmacies'    => 'Pharmacies',
 ];
