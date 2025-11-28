@@ -72,7 +72,7 @@ $imgBase = $baseUrl . '/assets/images';
         echo "<li class='$activeClass'><a href='$url'>$label</a></li>";
       }
     ?>
-    <li><a href="<?php echo $baseUrl . '/frontend/patient/testlogout.php'; ?>">Logout</a></li>
+    <li><a href="<?php echo $baseUrl . '/logout.php'; ?>">Logout</a></li>
   </ul>
 </aside>
 
