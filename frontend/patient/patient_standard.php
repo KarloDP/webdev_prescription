@@ -62,19 +62,27 @@ $imgBase = $baseUrl . '/assets/images';
   </header>
 
   <!-- Sidebar Navigation -->
- <aside class="sidebar">
-  <ul>
-    <?php
-      foreach ($sidebarItems as $key => $label) {
-        // Build the URL properly:
-        $url = $baseUrl . '/frontend/patient/' . $key .'/'. $key . '.php';
-        $activeClass = ($activePage === $key) ? 'active' : '';
-        echo "<li class='$activeClass'><a href='$url'>$label</a></li>";
-      }
-    ?>
-    <li><a href="<?php echo $baseUrl . '/logout.php'; ?>">Logout</a></li>
-  </ul>
-</aside>
+  <aside class="sidebar">
+    <ul>
+      <?php
+        foreach ($sidebarItems as $key => $label) {
+          // Build the URL properly:
+          $url = $baseUrl . '/frontend/patient/' . $key . '/' . $key . '.php';
+          $activeClass = ($activePage === $key) ? 'active' : '';
+          echo "<li class='$activeClass'><a href='$url'>$label</a></li>";
+        }
+      ?>
+
+      <!-- View Profile link -->
+      <?php
+        $profileActive = ($activePage === 'profile') ? 'active' : '';
+        echo "<li class='$profileActive'><a href='$baseUrl/frontend/patient/profile/profile.php'>View Profile</a></li>";
+      ?>
+
+      <!-- Logout link -->
+      <li><a href="<?php echo $baseUrl . '/logout.php'; ?>">Logout</a></li>
+    </ul>
+  </aside>
 
   <!-- Main Page Content -->
   <main class="content">
