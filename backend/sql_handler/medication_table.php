@@ -1,7 +1,4 @@
 <?php
-// handles add data retrieval and insertion to the database
-
-
 include(__DIR__ . '/../includes/db_connect.php');
 include(__DIR__ . '/../includes/auth.php');
 
@@ -14,92 +11,48 @@ function respond($data, $statusCode = 200) {
 }
 
 $method = $_SERVER['REQUEST_METHOD'];
-
-$user  = require_user();   // from auth.php
-$role  = $user['role'];
+$user   = require_user();
+$role   = $user['role'];
 $userID = (int)$user['id'];
 
-//GET method retieves information from database tables
 if ($method === 'GET') {
+    $patientID = isset($_GET['patientID']) ? (int) $_GET['patientID'] : 0;
 
-    //return a specific medication based on an ID
-    if (isset($_GET['medicaionID'])) {
-        $medicationID = (int)$_GET['medicationID'];
+    if ($patientID <= 0) {
+        respond([]); // invalid patientID
+        exit;
+    }
 
-        $stmt = $conn->prepare(
-                'SELECT * FROM prescription WHERE prescriptionID = ?'
-            );
-        $stmt->bind_param('i', $prescriptionID);
+    $sql = "
+        SELECT
+            p.prescriptionID,
+            m.genericName AS medicine,
+            m.brandName,
+            pi.dosage,
+            pi.frequency,
+            pi.duration
+        FROM prescriptionitem pi
+        JOIN prescription p ON pi.prescriptionID = p.prescriptionID
+        JOIN medication m ON pi.medicationID = m.medicationID
+        WHERE p.patientID = ?
+        ORDER BY p.prescriptionID DESC
+    ";
+
+    $stmt = $conn->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param("i", $patientID);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $rows = [];
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+
+        respond($rows);
+        $stmt->close();
     } else {
-         $stmt = $conn->prepare(
-            'SELECT * FROM prescription ORDER BY prescriptionID'
-        );
-    }
-
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-}
-
-//POST method add entries to database tables
-else if ($method === 'POST') { //admins and pharmacies should be able to add and edit entries to this table
-    if (in_array($role, ['admin', 'pharmacist'],true)){
-        $raw = file_get_contents("php://input");
-        $data = json_decode($raw, true);
-
-        $medicationID = trim($data['medicationID']);
-        $genericName = trim($data['genericName']);
-        $brandName = trim($data['brandName']);
-        $form = trim($data['form']);
-        $strength = trim($data['strength']);
-        $manufacturer = trim($data['manufacturer']);
-        $stock = trim($data['stock']);
-    }
-
-    $stmt = $conn->prepare('INSERT INTO medicaion (medicaionID, genericName, brandName, form, strength, manufacturer, stock) VALUES (?, ?, ?, ?, ?)');
-    $stmt->bind_param('isssisi', $patientID,$issueDate,$expirationDate,$status,$doctorID);
-
-    if ($stmt->execute()) {
-        respond([
-            'staus'=> 'success',
-            'message' => 'New Medication Added',
-            'insert_ID' => $stmt->insert_id
-        ], 201);
-    } else {
-        respond(['error'=> 'Insert Failed: ' . $stmt->error], 500);
-    }
-}
-
-//DELETE method removes entries from database tables
-else if ($method === 'DELETE') {    //only admins should be able to remove entries from this table
-    // Only admin can delete medications
-    if ($role !== 'admin') {
-        respond(['error' => 'You are not allowed to delete prescriptions'], 403);
-    }
-
-    if (!isset($_GET['medicationID'])) {
-        respond(['error' => 'medicationID is required'], 400);
-    }
-
-    $medicationID = (int)$_GET['medicationID'];
-
-    $stmt = $conn->prepare(
-        'DELETE FROM medication WHERE medicationID = ?'
-    );
-    if (!$stmt) {
-            respond(['error' => 'Prepare failed: ' . $conn->error], 500);
-    }
-    $stmt->bind_param('i', $medicationID);
-    $stmt->execute();
-
-    if ($stmt->affected_rows > 0) {
-        respond([
-            'status'  => 'success',
-            'message' => 'Medicattion deleted'
-        ]);
-    } else {
-        // Either not found, or doctor tried to delete someone else's prescription
-        respond(['error' => 'Medication not found or not allowed to delete'], 404);
+        respond(['error' => 'Query preparation failed: ' . $conn->error], 500);
     }
 }
 ?>
