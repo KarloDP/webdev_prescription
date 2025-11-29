@@ -12,7 +12,7 @@ function respond($data, $statusCode = 200) {
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-$user = require_user(); //if exists in a helper, use to make sure user is logged in should be implemented in auth.php and session.php
+$user = require_user(); // double check if the user is logged in
 $role = $user['role'];
 $userID = (int)$user['id'];
 

@@ -4,7 +4,7 @@
 require_once __DIR__ . '/../../../backend/includes/auth.php';
 
 // Only allow logged-in patients
-require_login();
+require_login('/webdev_prescription/login.php', ['patient']);
 
 // Sidebar active key for patient_standard.php
 $activePage = 'dashboard';
