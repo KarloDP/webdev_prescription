@@ -1,16 +1,16 @@
 <?php
 // frontend/patient/profile/profile.php
 
+ob_start();
 session_start();
+
 include(__DIR__ . '/../../../backend/includes/auth.php');
 include(__DIR__ . '/../../../backend/includes/db_connect.php');
-
-if (!isset($_SESSION['patientID'])) {
-    header("Location: ../TestLoginPatient.php");
-    exit();
-}
+require_login();
 
 $patientID = $_SESSION['patientID'];
+
+// Fetch patient details from database
 $stmt = $conn->prepare("SELECT firstName, lastName, email, patientID, birthDate, contactNumber, address
                         FROM patient WHERE patientID = ?");
 $stmt->bind_param("i", $patientID);
@@ -18,17 +18,20 @@ $stmt->execute();
 $result = $stmt->get_result();
 $patient = $result->fetch_assoc();
 
-ob_start();
 ?>
 <div id="profile-root" class="profile-page">
   <h1>Patient Profile</h1>
   <div class="profile-card">
-    <p><strong>Name:</strong> <?= htmlspecialchars($patient['firstName'] . ' ' . $patient['lastName']) ?></p>
-    <p><strong>Email:</strong> <?= htmlspecialchars($patient['email']) ?></p>
-    <p><strong>Patient ID:</strong> <?= htmlspecialchars($patient['patientID']) ?></p>
-    <p><strong>Birthdate:</strong> <?= htmlspecialchars($patient['birthDate']) ?></p>
-    <p><strong>Contact Number:</strong> <?= htmlspecialchars($patient['contactNumber']) ?></p>
-    <p><strong>Address:</strong> <?= htmlspecialchars($patient['address']) ?></p>
+    <?php if ($patient): ?>
+      <p><strong>Name:</strong> <?= htmlspecialchars($patient['firstName'] . ' ' . $patient['lastName']) ?></p>
+      <p><strong>Email:</strong> <?= htmlspecialchars($patient['email']) ?></p>
+      <p><strong>Patient ID:</strong> <?= htmlspecialchars($patient['patientID']) ?></p>
+      <p><strong>Birthdate:</strong> <?= htmlspecialchars($patient['birthDate']) ?></p>
+      <p><strong>Contact Number:</strong> <?= htmlspecialchars($patient['contactNumber']) ?></p>
+      <p><strong>Address:</strong> <?= htmlspecialchars($patient['address']) ?></p>
+    <?php else: ?>
+      <p>No patient data found.</p>
+    <?php endif; ?>
   </div>
 
   <div class="profile-actions">

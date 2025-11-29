@@ -1,6 +1,6 @@
 <?php
 // frontend/patient/profile/edit_profile.php
-
+ob_start();
 session_start();
 include(__DIR__ . '/../../../backend/includes/auth.php');
 include(__DIR__ . '/../../../backend/includes/db_connect.php');
@@ -27,9 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $error = "All fields must be filled out.";
   } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $error = "Invalid email format.";
-  } elseif (!preg_match("/^[0-9]{10,15}$/", $contactNumber)) {
-    $error = "Contact number must be 10–15 digits.";
-  } elseif (
+  } elseif (!preg_match("/^[0-9]{10}$/", $contactNumber)) {
+    $error = "Contact number must be exactly 10 digits.";
+  }elseif (
     $contactNumber === $patient['contactNumber'] &&
     $email === $patient['email'] &&
     $address === $patient['address']
