@@ -31,8 +31,8 @@ ob_start();
 
 <!-- CSS files -->
 <link rel="stylesheet" href="../../css/patient/patient_standard.css">
-<link rel="stylesheet" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/../assets/css/table.css">
-<link rel="stylesheet" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/../assets/css/pharmacies_patient.css">
+<link rel="stylesheet" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/../../css/patient/table.css">
+<link rel="stylesheet" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/../../css/pharmacies_patient.css">
 
 <!-- Page container -->
 <div class="patient-dashboard">

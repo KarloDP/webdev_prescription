@@ -28,7 +28,18 @@ $sidebarItems = $sidebarItems ?? [
  * Base URL of your project as seen in the browser.
  * Adjust "webdev_prescription" if your folder name is different.
  */
-$baseUrl = '/webdev_prescription';
+// Automatically detect the base URL no matter where hosted
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    ? "https://" : "http://";
+
+$host = $_SERVER['HTTP_HOST']; // e.g. localhost OR yourdomain.com
+
+// Detect if inside a folder (like /webdev_prescription) or inside root
+$projectFolder = dirname($_SERVER['SCRIPT_NAME']); // e.g. /webdev_prescription/frontend/patient
+$projectFolder = explode('/frontend', $projectFolder)[0]; // keep only root folder
+
+$baseUrl = rtrim($protocol . $host . $projectFolder, '/');
+
 $cssBase = $baseUrl . '/frontend/css/patient';
 $imgBase = $baseUrl . '/assets/images';
 ?>

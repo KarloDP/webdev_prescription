@@ -26,8 +26,8 @@ ob_start();
 
 <!-- CSS files -->
 <link rel="stylesheet" href="../../css/patient/patient_standard.css">
-<link rel="stylesheet" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/../assets/css/table.css">
-<link rel="stylesheet" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/../assets/css/history_patient.css">
+<link rel="stylesheet" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/../../css/patient/table.css">
+<link rel="stylesheet" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/../../css/patient/history_patient.css">
 
 <div class="history-page">
   <h2>History</h2>
