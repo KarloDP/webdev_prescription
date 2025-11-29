@@ -1,0 +1,127 @@
+/* PAGE WRAPPER */
+.edit-stock-page {
+    padding: 25px;
+    max-width: 900px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    color: #1e3d2f;
+}
+
+.edit-stock-page h2 {
+    margin-bottom: 10px;
+}
+
+.edit-stock-page p {
+    margin-bottom: 20px;
+    font-size: 15px;
+    color: #2f4d3f;
+}
+
+/* CARD CONTAINER */
+.edit-stock-container {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.10);
+}
+
+/* TABLE ROWS */
+.table-base {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-base tr {
+    border-bottom: 1px solid #e1e1e1;
+}
+
+.table-base tr:last-child {
+    border-bottom: none;
+}
+
+/* LEFT COLUMN LABEL */
+.table-base th {
+    width: 30%;
+    background: #254734;   /* lighter dark green */
+    color: #ffffff;
+    font-weight: bold;
+    padding: 12px 14px;
+    vertical-align: top;
+    border-right: 1px solid #1e3d2f;
+    border-radius: 4px 0 0 4px;
+}
+
+/* RIGHT COLUMN VALUE */
+.value-cell {
+    width: 70%;
+    background: #f6faf7;
+    padding: 12px 14px;
+    border-radius: 0 4px 4px 0;
+}
+
+.value-cell input[type="number"] {
+    width: 140px;
+    padding: 8px 10px;
+    border: 1px solid #b5c9bc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* BUTTONS */
+.btn-save {
+    padding: 10px 16px;
+    background: #1e3d2f;
+    color: #fff !important;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-save:hover {
+    background: #294f3e;
+}
+
+.btn-cancel {
+    padding: 10px 16px;
+    background: #6c757d;
+    color: #fff !important;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+.btn-cancel:hover {
+    background: #5a6268;
+}
+
+/* OUTLINED BACK BUTTON */
+.btn-back-outline {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 16px;
+    border: 2px solid #1e3d2f;
+    color: #1e3d2f;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-back-outline:hover {
+    background: #1e3d2f;
+    color: #fff;
+}
+
+/* ERROR TEXT */
+.error-text {
+    color: #a40000;
+    font-size: 13px;
+    margin-top: 4px;
+    display: block;
+}
+
+input.error {
+    border-color: #a40000 !important;
+    background: #ffeaea !important;
+}
