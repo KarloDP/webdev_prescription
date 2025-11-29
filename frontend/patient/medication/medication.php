@@ -39,6 +39,9 @@ ob_start();
   <div id="medications-root">
     <p>Loading medications...</p>
   </div>
+  <div class="actions">
+     <a href="../prescription/prescription.php" class="btn btn-primary">View Prescription</a>
+   </div>
 </div>
 
 <script>
