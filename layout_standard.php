@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
+//layout_standard.php
 // Determine user name from session (admin, doctor, etc.)
 $user_name = $_SESSION['admin_name']
     ?? $_SESSION['doctor_name']

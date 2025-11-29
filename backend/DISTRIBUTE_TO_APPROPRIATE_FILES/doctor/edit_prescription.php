@@ -3,7 +3,7 @@
 session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
+//backend\DISTRIBUTE_TO_APPROPRIATE_FILES\doctor\edit_prescription.php
 include('../includes/db_connect.php'); // expects $conn (mysqli)
 $activePage = 'prescriptions';
 

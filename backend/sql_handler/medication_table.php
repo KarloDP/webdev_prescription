@@ -1,7 +1,7 @@
 <?php
 include(__DIR__ . '/../includes/db_connect.php');
 include(__DIR__ . '/../includes/auth.php');
-
+//backend\sql_handler\medication_table.php
 header('Content-Type: application/json; charset=utf-8');
 
 function respond($data, $statusCode = 200) {

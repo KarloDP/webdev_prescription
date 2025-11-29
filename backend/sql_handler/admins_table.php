@@ -1,4 +1,5 @@
 <?php
+//backend\sql_handler\admins_table.php
 // handles add data retrieval and insertion to the database
 session_start();
 include(__DIR__ . '/../includes/db_connect.php');

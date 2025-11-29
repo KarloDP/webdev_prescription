@@ -1,9 +1,10 @@
 <?php
 // add_prescription.php
+//backend\DISTRIBUTE_TO_APPROPRIATE_FILES\doctor\add_prescription.php
 session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
+//frontend/css/doctor/patients.css
 include('../includes/db_connect.php'); // expects $conn (mysqli)
 $activePage = 'prescriptions';
 

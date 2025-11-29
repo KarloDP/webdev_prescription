@@ -3,7 +3,7 @@ include('../includes/db_connect.php');
 
 // Get Prescription ID from URL
 $prescriptionID = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
+//backend\DISTRIBUTE_TO_APPROPRIATE_FILES\doctor\prescription_history.php
 if ($prescriptionID <= 0) {
     echo "<div class='main-content'><p>Invalid Prescription ID provided.</p></div>";
     exit;

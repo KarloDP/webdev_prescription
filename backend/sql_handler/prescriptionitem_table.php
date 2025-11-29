@@ -1,6 +1,6 @@
 <?php
 //CODE BELOW IS CHATGPT GENERATED. NEEDS TO BE REVIEWED AND REFINED
-
+//backend\sql_handler\prescriptionitem_table.php
 // handles add, retrieval, and deletion for prescriptionitem table
 
 include(__DIR__ . '/../includes/db_connect.php');

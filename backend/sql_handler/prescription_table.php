@@ -3,7 +3,7 @@
 include(__DIR__ . '/../includes/db_connect.php');
 include(__DIR__.'/../includes/auth.php');
 
-
+//backend\sql_handler\prescription_table.php
 function respond($data, $statusCode = 200) {
     http_response_code($statusCode);
     echo json_encode($data);

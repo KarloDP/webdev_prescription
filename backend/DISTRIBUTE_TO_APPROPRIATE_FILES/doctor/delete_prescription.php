@@ -1,7 +1,7 @@
 <?php
 include('../includes/db_connect.php');
 session_start();
-
+//backend\DISTRIBUTE_TO_APPROPRIATE_FILES\doctor\delete_prescription.php
 $id = intval($_GET['id'] ?? 0);
 
 if ($id > 0) {

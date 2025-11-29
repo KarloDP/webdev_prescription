@@ -2,10 +2,10 @@
 // add_patient.php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
+//backend\DISTRIBUTE_TO_APPROPRIATE_FILES\doctor\add_patient.php
 session_start();
 include('../includes/db_connect.php');
-
+//frontend/css/doctor/patients.css
 $activePage = 'patients';
 
 $doctors = $conn->query("SELECT doctorID, firstName, lastName FROM doctor ORDER BY firstName");

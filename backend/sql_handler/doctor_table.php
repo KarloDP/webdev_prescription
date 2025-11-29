@@ -1,6 +1,6 @@
 <?php
 //CODE BELOW IS CHATGPT GENERATED. NEEDS TO BE REVIEWED AND REFINED
-
+//backend\sql_handler\doctor_table.php  
 include(__DIR__ . '/../includes/db_connect.php');
 include(__DIR__ . '/../includes/auth.php');
 

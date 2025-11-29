@@ -1,7 +1,7 @@
 <?php
 include('../includes/db_connect.php');
 $activePage = 'profile';
-
+//backend\DISTRIBUTE_TO_APPROPRIATE_FILES\doctor\profile.php
 // For demo show doctor 1
 $doc = $conn->query("SELECT * FROM doctor WHERE doctorID = 1")->fetch_assoc();
 

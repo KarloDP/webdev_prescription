@@ -12,7 +12,7 @@
 
     <!-- LEFT IMAGE SIDE -->
     <div class="left-panel">
-        <img src="../assets/images/sign-login.png" alt="Pharmacy" class="hero-img">
+        <img src="../assets/images/siiiiiiiign-login.png" alt="Pharmacy" class="hero-img">
     </div>
 
     <!-- RIGHT FORM SIDE -->

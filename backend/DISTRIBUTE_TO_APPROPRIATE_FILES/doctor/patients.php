@@ -2,7 +2,7 @@
 // patients.php
 include('../includes/db_connect.php');
 
-
+//backend\DISTRIBUTE_TO_APPROPRIATE_FILES\doctor\patients.php
 $activePage = 'patients';
 
 // Use the correct table name and join doctor for display

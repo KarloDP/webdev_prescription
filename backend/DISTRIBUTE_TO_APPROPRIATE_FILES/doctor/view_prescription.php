@@ -5,7 +5,7 @@ session_start();
 include('../includes/db_connect.php');
 
 $activePage = 'prescriptions';
-
+//backend\DISTRIBUTE_TO_APPROPRIATE_FILES\doctor\view_prescription.php
 // Fetch all prescriptions with patient + doctor names
 $sql = "
     SELECT 

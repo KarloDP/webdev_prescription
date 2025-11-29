@@ -3,7 +3,7 @@ require_once __DIR__ . '/../includes/db_connect.php';
 require_once __DIR__ . '/../includes/auth.php';
 
 header('Content-Type: application/json; charset=utf-8');
-
+//backend\sql_handler\doctor_table.php
 // Define respond() here since you don't have respond.php
 function respond($data, $statusCode = 200) {
     http_response_code($statusCode);

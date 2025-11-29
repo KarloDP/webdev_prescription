@@ -13,7 +13,7 @@ if ($prescriptionID <= 0) {
     include('doctor_standard.php');
     exit;
 }
-
+//backend\DISTRIBUTE_TO_APPROPRIATE_FILES\doctor\view_patient_prescription.php
 // Fetch prescription header
 $sql = "
     SELECT p.*, 

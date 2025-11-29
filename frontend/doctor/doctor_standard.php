@@ -1,130 +1,109 @@
 <?php
-// doctor_standard.php - layout wrapper
-if (!isset($activePage)) $activePage = '';
-if (!isset($content)) $content = '';
+// frontend/doctor/doctor_standard.php
+//
+// Shared layout for doctor pages. Expects pages to set:
+//   - $activePage (string)   e.g. 'dashboard' or 'patients'
+//   - $sidebarItems (array)  optional override for sidebar links
+//   - $content (string)      HTML content captured by the page
+//
+// This file is self-contained and uses relative paths that work when
+// included from files inside the doctor/ directory.
+
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+$user_name = $_SESSION['doctor_name']
+    ?? $_SESSION['user_name']
+    ?? 'Doctor';
+
+$activePage = $activePage ?? 'dashboard';
+$sidebarItems = $sidebarItems ?? [
+    'dashboard'     => 'Dashboard',
+    'patients'      => 'Patients',
+    'prescriptions' => 'Prescriptions',
+    'profile'       => 'Profile',
+];
+
+/**
+ * Compute base URL so CSS and image paths work regardless of hosting.
+ * This keeps links consistent whether pages are served from PHP wrappers
+ * or static HTML under /frontend/doctor/...
+ */
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+$host = $_SERVER['HTTP_HOST'];
+
+// Example SCRIPT_NAME: /webdev_prescription/frontend/doctor/dashboard/index.html
+$projectFolder = dirname($_SERVER['SCRIPT_NAME']);            // e.g. /webdev_prescription/frontend/doctor
+$projectFolder = explode('/frontend', $projectFolder)[0];     // keep only root folder
+$baseUrl = rtrim($protocol . $host . $projectFolder, '/');
+
+$cssDoctorBase = rtrim($baseUrl, '/') . '/frontend/css/doctor';
+$cssPatientBase = rtrim($baseUrl, '/') . '/frontend/css/patient';
+$imgBase = rtrim($baseUrl, '/') . '/assets/images';
 ?>
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>MediSync Wellness - Doctor</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title><?php echo htmlspecialchars(ucfirst($activePage) . ' | MediSync', ENT_QUOTES, 'UTF-8'); ?></title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background:#f6f6f6;
-        }
+  <!-- Core/shared styles (use patient folder for shared table/layout files that exist in your tree) -->
+  <link rel="stylesheet" href="<?php echo $cssPatientBase; ?>/table.css">
+  <link rel="stylesheet" href="<?php echo $cssPatientBase; ?>/layout_standard.css">
 
-        /* SIDEBAR */
-        .sidebar {
-            width: 230px;
-            background: #16482f;
-            color: #fff;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            padding: 20px 10px;
-            box-sizing:border-box;
-        }
-
-        .sidebar h3 { margin-left: 8px; margin-bottom:20px; }
-
-        .sidebar a {
-            color: #fff;
-            text-decoration: none;
-            padding: 10px;
-            display: block;
-            border-radius: 6px;
-            margin-bottom: 5px;
-        }
-        .sidebar a.active {
-            background: #2a6b48;
-            font-weight: bold;
-        }
-
-        /* TOPBAR */
-        .topbar {
-            height: 60px;
-            background: #214d39;
-            color: #fff;
-            padding: 15px 20px;
-            margin-left: 230px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-sizing:border-box;
-        }
-
-        /* PAGE CONTENT */
-        .content {
-            margin-left: 230px;
-            padding: 25px;
-            padding-top: 20px;
-            min-height: calc(100vh - 60px);
-            box-sizing: border-box;
-        }
-
-        .card {
-            background: #fff;
-            border-radius: 8px;
-            padding: 18px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            text-align: left;
-        }
-        th { background: #f3f3f3; }
-
-        .btn {
-            background: #28a745;
-            padding: 8px 12px;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            margin-right: 6px;
-            display:inline-block;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-        }
-    </style>
+  <!-- Doctor-specific styles -->
+  <link rel="stylesheet" href="<?php echo $cssDoctorBase; ?>/doctor_standard.css">
 </head>
-
 <body>
 
-<div class="sidebar">
-    <h3>MediSync Wellness</h3>
-
-    <a href="dashboard.php" class="<?= $activePage === 'dashboard' ? 'active' : '' ?>">Dashboard</a>
-    <a href="patients.php" class="<?= $activePage === 'patients' ? 'active' : '' ?>">Patients</a>
-    <a href="view_prescription.php" class="<?= $activePage === 'prescriptions' ? 'active' : '' ?>">Prescriptions</a>
-    <a href="profile.php" class="<?= $activePage === 'profile' ? 'active' : '' ?>">Profile</a>
-    <a href="../logout.php" style="margin-top: 20px;">Logout</a>
-</div>
-
-<div class="topbar">
-    <strong>Doctor Dashboard</strong>
-    <div style="display:flex;align-items:center;">
-        <span style="margin-right:10px;">Doctor</span>
-        <div style="width:36px;height:36px;border-radius:50%;background:#e74c3c;"></div>
+  <!-- Top Navigation Bar -->
+  <header class="top-navbar">
+    <div class="logo">
+      <img src="<?php echo $imgBase; ?>/orange_logo.png" alt="Logo" />
+      <span>MediSync Wellness</span>
     </div>
-</div>
 
-<div class="content">
-    <?= $content ?>
-</div>
+    <div class="profile">
+      <span><?php echo htmlspecialchars($user_name, ENT_QUOTES, 'UTF-8'); ?></span>
+      <img src="<?php echo $imgBase; ?>/user.png" class="avatar" alt="Profile" />
+      <div class="menu-icon">⋮</div>
+    </div>
+  </header>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <ul>
+      <?php
+        foreach ($sidebarItems as $key => $label) {
+          // Link to the frontend doctor pages (static HTML index files)
+          $url = $baseUrl . '/frontend/doctor/' . $key . '/index.html';
+          $activeClass = ($activePage === $key) ? 'active' : '';
+          echo "<li class='" . htmlspecialchars($activeClass, ENT_QUOTES, 'UTF-8') . "'>";
+          echo "<a href='" . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . "</a>";
+          echo "</li>";
+        }
+      ?>
+
+      <!-- Profile (explicit link) -->
+      <?php
+        $profileActive = ($activePage === 'profile') ? 'active' : '';
+        $profileUrl = $baseUrl . '/frontend/doctor/profile/index.html';
+        echo "<li class='" . htmlspecialchars($profileActive, ENT_QUOTES, 'UTF-8') . "'>";
+        echo "<a href='" . htmlspecialchars($profileUrl, ENT_QUOTES, 'UTF-8') . "'>View Profile</a>";
+        echo "</li>";
+      ?>
+
+      <!-- Logout -->
+      <li><a href="<?php echo $baseUrl . '/logout.php'; ?>">Logout</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main Page Content -->
+  <main class="content">
+    <?php
+      echo $content ?? '<h1>Welcome</h1><p>Select an option from the sidebar.</p>';
+    ?>
+  </main>
 
 </body>
 </html>
