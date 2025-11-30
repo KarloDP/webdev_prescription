@@ -20,23 +20,21 @@ function auth_id_field_for_role(string $role): ?string
 }
 
 function redirect_based_on_role(string $role): void {
-    // Make sure this base path is correct for your project setup
-    $basePath = '/WebDev_Prescription';
 
     switch ($role) {
         case 'patient':
-            header("Location: {$basePath}/frontend/patient/dashboard/dashboard.php");
+            header("Location: /frontend/patient/dashboard/dashboard.php");
             break;
         case 'doctor':
-            header("Location: {$basePath}/frontend/doctor/dashboard/dashboard.php");
+            header("Location: /frontend/doctor/dashboard/dashboard.php");
             break;
         case 'pharmacist': // Added: Redirect for pharmacist role
-            header("Location: {$basePath}/frontend/pharmacist/index.php");
+            header("Location: /frontend/pharmacist/index.php");
             break;
         // Add other roles as needed
         default:
             // Fallback to the main login page
-            header("Location: {$basePath}/login.php");
+            header("Location: /login.php");
             break;
     }
     exit;
