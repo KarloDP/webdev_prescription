@@ -3,6 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
 /**
  * Map a role name to its primary ID field in the corresponding table.
  * E.g. 'patient' => 'patientID', 'admin' => 'adminID', etc.
@@ -21,20 +22,32 @@ function auth_id_field_for_role(string $role): ?string
 
 function redirect_based_on_role(string $role): void {
 
+
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    ? "https://" : "http://";
+
+    $host = $_SERVER['HTTP_HOST']; // e.g. localhost OR yourdomain.com
+
+    // Detect if inside a folder (like /webdev_prescription) or inside root
+    $projectFolder = dirname($_SERVER['SCRIPT_NAME']); // e.g. /webdev_prescription/frontend/patient
+    $projectFolder = explode('/frontend', $projectFolder)[0]; // keep only root folder
+
+    $basePath = rtrim($protocol . $host . $projectFolder, '/');
+
     switch ($role) {
         case 'patient':
-            header("Location: /frontend/patient/dashboard/dashboard.php");
+            header("Location: {$basePath}/frontend/patient/dashboard/dashboard.php");
             break;
         case 'doctor':
-            header("Location: /frontend/doctor/dashboard/dashboard.php");
+            header("Location: {$basePath}/frontend/doctor/dashboard/dashboard.php");
             break;
         case 'pharmacist': // Added: Redirect for pharmacist role
-            header("Location: /frontend/pharmacist/index.php");
+            header("Location: {$basePath}/frontend/pharmacist/index.php");
             break;
         // Add other roles as needed
         default:
             // Fallback to the main login page
-            header("Location: /login.php");
+            header("Location: {$basePath}/login.php");
             break;
     }
     exit;
