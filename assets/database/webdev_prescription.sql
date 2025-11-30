@@ -2,9 +2,9 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3307
--- Generation Time: Nov 29, 2025 at 05:18 AM
--- Server version: 11.5.2-MariaDB
+-- Host: 127.0.0.1:3306
+-- Generation Time: Nov 30, 2025 at 02:32 AM
+-- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -29,22 +29,24 @@ SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `admins`;
 CREATE TABLE IF NOT EXISTS `admins` (
-  `adminID` int(11) NOT NULL AUTO_INCREMENT,
-  `firstName` text NOT NULL,
-  `lastName` text NOT NULL,
+  `adminID` int NOT NULL AUTO_INCREMENT,
+  `firstName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `lastName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`adminID`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `admins`
 --
 
-INSERT INTO `admins` (`adminID`, `firstName`, `lastName`) VALUES
-(1, 'Alice', 'Johnson'),
-(2, 'Benjamin', 'Lopez'),
-(3, 'Clara', 'Hughes'),
-(4, 'Daniel', 'Parker'),
-(5, 'Elena', 'Mitchell');
+INSERT INTO `admins` (`adminID`, `firstName`, `lastName`, `password`) VALUES
+(1, 'Alice', 'Johnson', 'alice'),
+(2, 'Benjamin', 'Lopez', 'benjamin'),
+(3, 'Clara', 'Hughes', 'clara'),
+(4, 'Daniel', 'Parker', 'daniel'),
+(5, 'Elena', 'Mitchell', 'elena'),
+(6, 'Clara', 'Hughes', 'clara');
 
 -- --------------------------------------------------------
 
@@ -54,13 +56,13 @@ INSERT INTO `admins` (`adminID`, `firstName`, `lastName`) VALUES
 
 DROP TABLE IF EXISTS `dispenserecord`;
 CREATE TABLE IF NOT EXISTS `dispenserecord` (
-  `prescriptionItemID` int(11) NOT NULL,
-  `pharmacyID` int(11) NOT NULL,
-  `dispenseID` int(11) NOT NULL,
-  `quantityDispensed` int(11) NOT NULL,
+  `prescriptionItemID` int NOT NULL,
+  `pharmacyID` int NOT NULL,
+  `dispenseID` int NOT NULL,
+  `quantityDispensed` int NOT NULL,
   `dateDispensed` date NOT NULL,
-  `pharmacistName` text NOT NULL,
-  `status` text NOT NULL,
+  `pharmacistName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `status` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `nextAvailableDates` date NOT NULL,
   PRIMARY KEY (`dispenseID`),
   KEY `PrescItemID` (`prescriptionItemID`),
@@ -92,14 +94,15 @@ INSERT INTO `dispenserecord` (`prescriptionItemID`, `pharmacyID`, `dispenseID`, 
 
 DROP TABLE IF EXISTS `doctor`;
 CREATE TABLE IF NOT EXISTS `doctor` (
-  `doctorID` int(11) NOT NULL AUTO_INCREMENT,
-  `firstName` text NOT NULL,
-  `lastName` text NOT NULL,
-  `specialization` text NOT NULL,
-  `licenseNumber` int(11) NOT NULL,
-  `email` text NOT NULL,
-  `clinicAddress` text NOT NULL,
-  `status` enum('active','pending') NOT NULL DEFAULT 'pending',
+  `doctorID` int NOT NULL AUTO_INCREMENT,
+  `firstName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `lastName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `specialization` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `licenseNumber` int NOT NULL,
+  `email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `clinicAddress` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `status` enum('active','pending') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pending',
   PRIMARY KEY (`doctorID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -107,17 +110,17 @@ CREATE TABLE IF NOT EXISTS `doctor` (
 -- Dumping data for table `doctor`
 --
 
-INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `specialization`, `licenseNumber`, `email`, `clinicAddress`, `status`) VALUES
-(1, 'Antonio', 'Santos', 'Cardiology', 12345, 'antonio.santos@medph.com', 'St. Luke\'s Medical Center, Quezon City', 'active'),
-(2, 'Maria', 'Reyes', 'Pediatrics', 23456, 'maria.reyes@childcareph.com', 'The Medical City, Pasig', 'active'),
-(3, 'Jose', 'Ramos', 'Dermatology', 34567, 'jose.ramos@skincareph.com', 'Makati Medical Center, Makati', 'active'),
-(4, 'Ana', 'Garcia', 'Neurology', 45678, 'ana.garcia@neuroph.com', 'Cardinal Santos Hospital, San Juan', 'active'),
-(5, 'Carlo', 'Lim', 'Orthopedics', 56789, 'carlo.lim@orthohealth.com', 'Asian Hospital and Medical Center, Alabang', 'active'),
-(6, 'Liza', 'Mendoza', 'Internal Medicine', 67890, 'liza.mendoza@medcenter.com', 'Perpetual Help Medical Center, Las Piñas', 'active'),
-(7, 'Mark', 'De Guzman', 'Ophthalmology', 78901, 'mark.deguzman@visioncare.com', 'Manila Doctors Hospital, Manila', 'active'),
-(8, 'Patricia', 'Lopez', 'Obstetrics', 89012, 'patricia.lopez@womenhealth.com', 'UERM Medical Center, Sta. Mesa', 'active'),
-(9, 'David', 'Chua', 'ENT', 90123, 'david.chua@earnoseph.com', 'Chinese General Hospital, Manila', 'active'),
-(10, 'Sophia', 'Del Rosario', 'Psychiatry', 10123, 'sophia.delrosario@mindhealth.com', 'National Center for Mental Health, Mandaluyong', 'active');
+INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `password`, `specialization`, `licenseNumber`, `email`, `clinicAddress`, `status`) VALUES
+(1, 'Antonio', 'Santos', 'doctor', 'Cardiology', 12345, 'antonio.santos@medph.com', 'St. Luke\'s Medical Center, Quezon City', 'active'),
+(2, 'Maria', 'Reyes', 'doctor', 'Pediatrics', 23456, 'maria.reyes@childcareph.com', 'The Medical City, Pasig', 'active'),
+(3, 'Jose', 'Ramos', 'doctor', 'Dermatology', 34567, 'jose.ramos@skincareph.com', 'Makati Medical Center, Makati', 'active'),
+(4, 'Ana', 'Garcia', 'doctor', 'Neurology', 45678, 'ana.garcia@neuroph.com', 'Cardinal Santos Hospital, San Juan', 'active'),
+(5, 'Carlo', 'Lim', 'doctor', 'Orthopedics', 56789, 'carlo.lim@orthohealth.com', 'Asian Hospital and Medical Center, Alabang', 'active'),
+(6, 'Liza', 'Mendoza', 'doctor', 'Internal Medicine', 67890, 'liza.mendoza@medcenter.com', 'Perpetual Help Medical Center, Las Piñas', 'active'),
+(7, 'Mark', 'De Guzman', 'doctor', 'Ophthalmology', 78901, 'mark.deguzman@visioncare.com', 'Manila Doctors Hospital, Manila', 'active'),
+(8, 'Patricia', 'Lopez', 'doctor', 'Obstetrics', 89012, 'patricia.lopez@womenhealth.com', 'UERM Medical Center, Sta. Mesa', 'active'),
+(9, 'David', 'Chua', 'doctor', 'ENT', 90123, 'david.chua@earnoseph.com', 'Chinese General Hospital, Manila', 'active'),
+(10, 'Sophia', 'Del Rosario', 'doctor', 'Psychiatry', 10123, 'sophia.delrosario@mindhealth.com', 'National Center for Mental Health, Mandaluyong', 'active');
 
 -- --------------------------------------------------------
 
@@ -127,13 +130,13 @@ INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `specialization`, `li
 
 DROP TABLE IF EXISTS `medication`;
 CREATE TABLE IF NOT EXISTS `medication` (
-  `medicationID` int(10) UNSIGNED NOT NULL,
-  `genericName` text NOT NULL,
-  `brandName` text NOT NULL,
-  `form` text NOT NULL,
-  `strength` int(11) NOT NULL,
-  `manufacturer` text NOT NULL,
-  `stock` int(11) DEFAULT NULL,
+  `medicationID` int UNSIGNED NOT NULL,
+  `genericName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `brandName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `form` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `strength` int NOT NULL,
+  `manufacturer` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `stock` int DEFAULT NULL,
   PRIMARY KEY (`medicationID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -160,19 +163,20 @@ INSERT INTO `medication` (`medicationID`, `genericName`, `brandName`, `form`, `s
 
 DROP TABLE IF EXISTS `patient`;
 CREATE TABLE IF NOT EXISTS `patient` (
-  `patientID` int(11) NOT NULL AUTO_INCREMENT,
-  `firstName` text NOT NULL,
-  `lastName` text NOT NULL,
+  `patientID` int NOT NULL AUTO_INCREMENT,
+  `firstName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `lastName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `birthDate` date NOT NULL,
-  `gender` text NOT NULL,
-  `contactNumber` varchar(10) DEFAULT NULL,
-  `address` text NOT NULL,
-  `email` text NOT NULL,
-  `doctorID` int(11) DEFAULT NULL,
-  `healthCondition` text DEFAULT NULL,
-  `allergies` text DEFAULT NULL,
-  `currentMedication` text DEFAULT NULL,
-  `knownDiseases` text DEFAULT NULL,
+  `gender` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `contactNumber` int NOT NULL,
+  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `doctorID` int DEFAULT NULL,
+  `healthCondition` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `allergies` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `currentMedication` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `knownDiseases` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`patientID`),
   KEY `fk_patient_doctor` (`doctorID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -181,17 +185,17 @@ CREATE TABLE IF NOT EXISTS `patient` (
 -- Dumping data for table `patient`
 --
 
-INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `birthDate`, `gender`, `contactNumber`, `address`, `email`, `doctorID`, `healthCondition`, `allergies`, `currentMedication`, `knownDiseases`) VALUES
-(1, 'Juan', 'Dela Cruz', '1990-05-12', 'Male', '912345678', 'Batangas City', 'juan.delacruz@example.com', 1, NULL, NULL, NULL, NULL),
-(2, 'Maria', 'Santos', '1988-09-23', 'Female', '9234567893', 'Qdawdsa', 'maria.santos@example.com', 2, NULL, NULL, NULL, NULL),
-(3, 'Jose', 'Reyes', '1975-02-10', 'Male', '934567890', 'Cebu City', 'jose.reyes@example.com', 3, NULL, NULL, NULL, NULL),
-(4, 'Ana', 'Ramos', '1995-11-30', 'Female', '945678901', 'Davao City', 'ana.ramos@example.com', 4, NULL, NULL, NULL, NULL),
-(5, 'Carlos', 'Garcia', '1982-03-15', 'Male', '956789012', 'Pasig City', 'carlos.garcia@example.com', 5, NULL, NULL, NULL, NULL),
-(6, 'Liza', 'Torres', '2000-07-08', 'Female', '967890123', 'Iloilo City', 'liza.torres@example.com', 6, NULL, NULL, NULL, NULL),
-(7, 'Mark', 'Lim', '1998-04-25', 'Male', '978901234', 'Makati City', 'mark.lim@example.com', 7, NULL, NULL, NULL, NULL),
-(8, 'Patricia', 'Mendoza', '1993-06-18', 'Female', '989012345', 'Taguig City', 'patricia.mendoza@example.com', 8, NULL, NULL, NULL, NULL),
-(9, 'Andrew', 'Lopez', '1987-12-01', 'Male', '990123456', 'Manila', 'andrew.lopez@example.com', 9, NULL, NULL, NULL, NULL),
-(10, 'Sophia', 'De Guzman', '1999-10-05', 'Female', '901234567', 'Cavite', 'sophia.deguzman@example.com', 10, NULL, NULL, NULL, NULL);
+INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `password`, `birthDate`, `gender`, `contactNumber`, `address`, `email`, `doctorID`, `healthCondition`, `allergies`, `currentMedication`, `knownDiseases`) VALUES
+(1, 'Juan', 'Dela Cruz', 'patient', '1990-05-12', 'Male', 912345678, 'Batangas City', 'juan.delacruz@example.com', 1, NULL, NULL, NULL, NULL),
+(2, 'Maria', 'Santos', 'patient', '1988-09-23', 'Female', 923456789, 'Quezon City', 'maria.santos@example.com', 2, NULL, NULL, NULL, NULL),
+(3, 'Jose', 'Reyes', 'patient', '1975-02-10', 'Male', 934567890, 'Cebu City', 'jose.reyes@example.com', 3, NULL, NULL, NULL, NULL),
+(4, 'Ana', 'Ramos', 'patient', '1995-11-30', 'Female', 945678901, 'Davao City', 'ana.ramos@example.com', 4, NULL, NULL, NULL, NULL),
+(5, 'Carlos', 'Garcia', 'patient', '1982-03-15', 'Male', 956789012, 'Pasig City', 'carlos.garcia@example.com', 5, NULL, NULL, NULL, NULL),
+(6, 'Liza', 'Torres', 'patient', '2000-07-08', 'Female', 967890123, 'Iloilo City', 'liza.torres@example.com', 6, NULL, NULL, NULL, NULL),
+(7, 'Mark', 'Lim', 'patient', '1998-04-25', 'Male', 978901234, 'Makati City', 'mark.lim@example.com', 7, NULL, NULL, NULL, NULL),
+(8, 'Patricia', 'Mendoza', 'patient', '1993-06-18', 'Female', 989012345, 'Taguig City', 'patricia.mendoza@example.com', 8, NULL, NULL, NULL, NULL),
+(9, 'Andrew', 'Lopez', 'patient', '1987-12-01', 'Male', 990123456, 'Manila', 'andrew.lopez@example.com', 9, NULL, NULL, NULL, NULL),
+(10, 'Sophia', 'De Guzman', 'patient', '1999-10-05', 'Female', 901234567, 'Cavite', 'sophia.deguzman@example.com', 10, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -201,13 +205,14 @@ INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `birthDate`, `gende
 
 DROP TABLE IF EXISTS `pharmacy`;
 CREATE TABLE IF NOT EXISTS `pharmacy` (
-  `pharmacyID` int(11) NOT NULL,
-  `name` text NOT NULL,
-  `address` text NOT NULL,
-  `contactNumber` varchar(20) NOT NULL,
-  `email` text NOT NULL,
-  `clinicAddress` text NOT NULL,
-  `status` enum('active','inactive','pending') NOT NULL DEFAULT 'pending',
+  `pharmacyID` int NOT NULL,
+  `name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `contactNumber` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `clinicAddress` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `status` enum('active','inactive','pending') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pending',
   PRIMARY KEY (`pharmacyID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -215,13 +220,13 @@ CREATE TABLE IF NOT EXISTS `pharmacy` (
 -- Dumping data for table `pharmacy`
 --
 
-INSERT INTO `pharmacy` (`pharmacyID`, `name`, `address`, `contactNumber`, `email`, `clinicAddress`, `status`) VALUES
-(1, 'HealthPlus Pharmacy', '123 Rizal St', '09171234567', 'healthplus@example.com', 'Unit 5 Medical Plaza Baguio', 'active'),
-(2, 'CareWell Pharmacy', '45 Session Road', '09182345678', 'carewell@example.com', 'Room 204 Saint Louis Hospital', 'active'),
-(3, 'MediServe Pharmacy', '88 Aurora Hill', '09273456789', 'mediserve@example.com', '2F Pines Doctors Clinic', 'active'),
-(4, 'WellLife Pharmacy', '21 Legarda Road', '09384567890', 'welllife@example.com', 'G5 University Clinic Center', 'active'),
-(5, 'GreenCare Pharmacy', '67 Marcos Highway', '09495678901', 'greencare@example.com', 'Health Wing - Baguio General Hospital', 'pending'),
-(6, 'CityMeds Pharmacy', '34 Bonifacio St', '09771234098', 'citymeds@example.com', 'Room 12 Baguio Medical Center', 'pending');
+INSERT INTO `pharmacy` (`pharmacyID`, `name`, `password`, `address`, `contactNumber`, `email`, `clinicAddress`, `status`) VALUES
+(1, 'HealthPlus Pharmacy', 'pharmacy', '123 Rizal St', '09171234567', 'healthplus@example.com', 'Unit 5 Medical Plaza Baguio', 'active'),
+(2, 'CareWell Pharmacy', 'pharmacy', '45 Session Road', '09182345678', 'carewell@example.com', 'Room 204 Saint Louis Hospital', 'active'),
+(3, 'MediServe Pharmacy', 'pharmacy', '88 Aurora Hill', '09273456789', 'mediserve@example.com', '2F Pines Doctors Clinic', 'active'),
+(4, 'WellLife Pharmacy', 'pharmacy', '21 Legarda Road', '09384567890', 'welllife@example.com', 'G5 University Clinic Center', 'active'),
+(5, 'GreenCare Pharmacy', 'pharmacy', '67 Marcos Highway', '09495678901', 'greencare@example.com', 'Health Wing - Baguio General Hospital', 'pending'),
+(6, 'CityMeds Pharmacy', 'pharmacy', '34 Bonifacio St', '09771234098', 'citymeds@example.com', 'Room 12 Baguio Medical Center', 'pending');
 
 -- --------------------------------------------------------
 
@@ -231,12 +236,12 @@ INSERT INTO `pharmacy` (`pharmacyID`, `name`, `address`, `contactNumber`, `email
 
 DROP TABLE IF EXISTS `prescription`;
 CREATE TABLE IF NOT EXISTS `prescription` (
-  `prescriptionID` int(11) NOT NULL AUTO_INCREMENT,
-  `patientID` int(11) NOT NULL,
+  `prescriptionID` int NOT NULL AUTO_INCREMENT,
+  `patientID` int NOT NULL,
   `issueDate` date NOT NULL,
   `expirationDate` date NOT NULL,
-  `status` text NOT NULL,
-  `doctorID` int(11) NOT NULL,
+  `status` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `doctorID` int NOT NULL,
   PRIMARY KEY (`prescriptionID`),
   KEY `patientID` (`patientID`),
   KEY `fk_prescription_doctor` (`doctorID`)
@@ -265,17 +270,17 @@ INSERT INTO `prescription` (`prescriptionID`, `patientID`, `issueDate`, `expirat
 
 DROP TABLE IF EXISTS `prescriptionitem`;
 CREATE TABLE IF NOT EXISTS `prescriptionitem` (
-  `doctorID` int(11) NOT NULL,
-  `prescriptionItemID` int(11) NOT NULL AUTO_INCREMENT,
-  `prescriptionID` int(11) NOT NULL,
-  `medicationID` int(10) UNSIGNED NOT NULL,
-  `dosage` text NOT NULL,
-  `frequency` text NOT NULL,
-  `duration` text NOT NULL,
-  `prescribed_amount` int(11) NOT NULL,
-  `refill_count` int(11) NOT NULL,
+  `doctorID` int NOT NULL,
+  `prescriptionItemID` int NOT NULL AUTO_INCREMENT,
+  `prescriptionID` int NOT NULL,
+  `medicationID` int UNSIGNED NOT NULL,
+  `dosage` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `frequency` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `duration` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `prescribed_amount` int NOT NULL,
+  `refill_count` int NOT NULL,
   `refillInterval` date NOT NULL,
-  `instructions` text NOT NULL,
+  `instructions` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`prescriptionItemID`),
   KEY `fk_medicationID` (`medicationID`),
   KEY `fk_prescriptionID` (`prescriptionID`),
@@ -331,13 +336,13 @@ ALTER TABLE `patient`
 -- Constraints for table `prescription`
 --
 ALTER TABLE `prescription`
-  ADD CONSTRAINT `fk_prescription_doctor` FOREIGN KEY (`doctorID`) REFERENCES `patient` (`patientID`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_prescription_doctor` FOREIGN KEY (`doctorID`) REFERENCES `patient` (`patientID`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
 -- Constraints for table `prescriptionitem`
 --
 ALTER TABLE `prescriptionitem`
-  ADD CONSTRAINT `fk_doctorID` FOREIGN KEY (`doctorID`) REFERENCES `doctor` (`doctorID`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_doctorID` FOREIGN KEY (`doctorID`) REFERENCES `doctor` (`doctorID`) ON DELETE RESTRICT ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_medicationID` FOREIGN KEY (`medicationID`) REFERENCES `medication` (`medicationID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_prescriptionID` FOREIGN KEY (`prescriptionID`) REFERENCES `prescription` (`prescriptionID`) ON UPDATE CASCADE;
 COMMIT;
