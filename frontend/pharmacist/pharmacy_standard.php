@@ -13,9 +13,9 @@ $user = $_SESSION['user'];
 $userName = htmlspecialchars($user['name'] ?? 'Pharmacist', ENT_QUOTES, 'UTF-8');
 
 // Define base path for assets and determine the final avatar URL
-$basePath = '/WebDev_Prescription';
-$imgBase = $basePath . '/assets/images/pharmacistUser'; // Assuming your default images are here
-$defaultAvatar = $imgBase . '/Dr_Alwin.jp g'; // The default image from your snippet
+$basePath = '/assets/images/';
+$imgBase = $basePath . 'pharmacistUser'; // Assuming your default images are here
+$defaultAvatar = $imgBase . '/Dr_Alwin.jpg'; // The default image from your snippet
 
 // Use the user's custom avatar if it exists in the session, otherwise use the default
 $userAvatar = !empty($user['avatar_url']) ? $basePath . $user['avatar_url'] : $defaultAvatar;
