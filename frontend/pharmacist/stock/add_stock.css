@@ -1,0 +1,154 @@
+
+/* Page Wrapper */
+.add-stock-page {
+    max-width: 900px;
+    margin: 25px auto;
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.12);
+    font-family: Arial, sans-serif;
+}
+
+.add-stock-page h2 {
+    color: #1e3d2f;
+    margin-bottom: 5px;
+}
+
+.add-stock-page p {
+    color: #3a4b41;
+    margin-bottom: 20px;
+}
+
+/* Form Wrapper */
+.add-stock-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Form Rows */
+.form-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #1e3d2f;
+    font-size: 15px;
+}
+
+/* Input Fields */
+.add-stock-form input,
+.add-stock-form select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid #b5c9bc;
+    border-radius: 6px;
+    background: #f8faf8;
+    transition: 0.2s ease;
+}
+
+.add-stock-form input:focus,
+.add-stock-form select:focus {
+    border-color: #1e3d2f;
+    outline: none;
+    background: #ffffff;
+}
+
+/* Buttons Row */
+.button-row {
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+}
+
+/* Primary Button */
+.btn-save {
+    background: #1e3d2f;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-save:hover {
+    background: #163024;
+}
+
+.btn-save:disabled {
+    background: #8aa099;
+    cursor: not-allowed;
+}
+
+/* Cancel Button */
+.btn-cancel {
+    background: #6c757d;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-cancel:hover {
+    background: #5a6268;
+}
+
+/* Back Button */
+.btn-back-outline {
+    background: transparent;
+    border: 2px solid #1e3d2f;
+    color: #1e3d2f;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.btn-back-outline:hover {
+    background: #1e3d2f;
+    color: #ffffff;
+}
+
+/* Error / Success Messages */
+.error-message {
+    color: #a40000;
+    font-size: 14px;
+    margin-top: -10px;
+}
+
+.success-message {
+    color: #0a7b32;
+    font-size: 14px;
+    margin-top: -10px;
+}
+
+.info-box {
+    color: #4a5f52;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .add-stock-page {
+        padding: 20px;
+    }
+
+    .button-row {
+        flex-direction: column;
+    }
+}

@@ -1,8 +1,44 @@
 <?php
+//code below is chatGPT generated, based on script made by alwin and christian
+//needs to be review for issues***********
+
+
+
+// includes/auth.php
+//
+// Central authentication/session helper for all user types:
+//   - patient
+//   - admin
+//   - doctor
+//   - pharmacist
+//
+// Session shape (canonical):
+//   $_SESSION['user'] = [
+//       'role'  => 'patient' | 'admin' | 'doctor' | 'pharmacist',
+//       'id'    => 123,
+//       'name'  => 'Alice Johnson',
+//       'email' => 'alice@example.com' | null
+//   ];
+//
+// For backwards compatibility with older patient-only code, we still set:
+//   $_SESSION['patientID'], $_SESSION['patient_name'], $_SESSION['patient_email']
+// when the role is 'patient'.
+//
+// Typical usage in API scripts:
+//   require_once __DIR__ . '/auth.php';
+//   $user  = require_user();
+//   $role  = $user['role'];
+//   $userID = (int)$user['id'];
+//
+// Typical usage in normal page scripts:
+//   require_once __DIR__ . '/auth.php';
+//   require_login('../TestLoginPatient.php', ['patient']); // optional role restriction
+//
+// This file does NOT create DB connections. Use includes/db_connect.php where needed.
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
 
 /**
  * Map a role name to its primary ID field in the corresponding table.
@@ -12,97 +48,30 @@ function auth_id_field_for_role(string $role): ?string
 {
     static $map = [
         'patient'    => 'patientID',
-        'doctor'     => 'doctorID',
-        'pharmacist' => 'pharmacyID', // Corrected: Match the likely 'pharmacy' table PK
         'admin'      => 'adminID',
+        'doctor'     => 'doctorID',
+        'pharmacist' => 'pharmacistID',
     ];
 
     return $map[$role] ?? null;
 }
 
 function redirect_based_on_role(string $role): void {
-
-
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-    ? "https://" : "http://";
-
-    $host = $_SERVER['HTTP_HOST']; // e.g. localhost OR yourdomain.com
-
-    // Detect if inside a folder (like /webdev_prescription) or inside root
-    $projectFolder = dirname($_SERVER['SCRIPT_NAME']); // e.g. /webdev_prescription/frontend/patient
-    $projectFolder = explode('/frontend', $projectFolder)[0]; // keep only root folder
-
-    $basePath = rtrim($protocol . $host . $projectFolder, '/');
-
     switch ($role) {
         case 'patient':
-            header("Location: {$basePath}/frontend/patient/dashboard/dashboard.php");
+            header("Location: ../patient/dashboard/dashboard.php");
             break;
         case 'doctor':
-            header("Location: {$basePath}/frontend/doctor/dashboard/dashboard.php");
+            header("Location: ../doctor/dashboard.php");
             break;
-        case 'pharmacist': // Added: Redirect for pharmacist role
-            header("Location: {$basePath}/frontend/pharmacist/index.php");
+        case 'admin':
+            header("Location: ../admin/dashboard.php");
             break;
-        // Add other roles as needed
-        default:
-            // Fallback to the main login page
-            header("Location: {$basePath}/login.php");
+        case 'pharmacist':
+            header("Location: ../pharmacist/dashboard.php");
             break;
     }
     exit;
-}
-
-/**
- * Authenticates a user against the database.
- *
- * @param mysqli $conn The database connection.
- * @param string $role The user's role (e.g., 'patient').
- * @param string $identifier The user's identifier (e.g., email).
- * @param string $password The plaintext password to verify.
- * @return array|null The user's database row on success, null on failure.
- */
-function authenticate_user(mysqli $conn, string $role, string $identifier, string $password): ?array
-{
-    // Corrected: Use the role to determine the table name, with a special case for pharmacist
-    $table = $role;
-    if ($role === 'pharmacist') {
-        $table = 'pharmacy'; // Use the 'pharmacy' table for the 'pharmacist' role
-    }
-    $identifierColumn = 'email'; // Assumes login is via email
-
-    $sql = "SELECT * FROM `{$table}` WHERE `{$identifierColumn}` = ? LIMIT 1";
-
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        return null; // DB error
-    }
-
-    $stmt->bind_param('s', $identifier);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result && $result->num_rows === 1) {
-        $userRow = $result->fetch_assoc();
-        $stmt->close();
-
-        // !! INSECURE - FOR TESTING ONLY !!
-        // Compare password as plaintext.
-        if (isset($userRow['password']) && $password === $userRow['password']) {
-            unset($userRow['password']);
-            return $userRow;
-        }
-
-        /*
-        // SECURE HASHED PASSWORD CHECK (use this for production)
-        if (isset($userRow['password']) && password_verify($password, $userRow['password'])) {
-            unset($userRow['password']); // Don't keep the hash in the returned array
-            return $userRow;
-        }
-        */
-    }
-
-    return null; // User not found or password incorrect
 }
 
 /**
@@ -131,23 +100,21 @@ function set_user_session(string $role, array $row): void
     // Regenerate session ID on login to mitigate fixation
     session_regenerate_id(true);
 
-    // Canonical structure for new code
+    // Canonical structure
     $_SESSION['user'] = [
-        'id'    => $id,
         'role'  => $role,
-        'name'  => $name,
+        'id'    => $id,
+        'name'  => $name !== '' ? $name : ucfirst($role),
         'email' => $email,
     ];
 
     // Backwards compatibility for existing patient-only code
     if ($role === 'patient') {
-        $_SESSION['patientID'] = $id;
-        $_SESSION['patient_name'] = $name;
-    }
-    
-    // Backwards compatibility for pharmacist if needed
-    if ($role === 'pharmacist') {
-        // Add any old session variables your pharmacist pages might use
+        $_SESSION['patientID']    = $id;
+        $_SESSION['patient_name'] = $_SESSION['user']['name'];
+        if ($email !== null) {
+            $_SESSION['patient_email'] = $email;
+        }
     }
 }
 
