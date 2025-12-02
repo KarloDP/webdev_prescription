@@ -1,0 +1,25 @@
+.content {
+    padding: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px 15px;
+    background: #4CAF50;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #45a049;
+}

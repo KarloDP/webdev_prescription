@@ -9,7 +9,7 @@ include "../doctor_standard.php";
 ?>
 
 <div class="content">
-    <h2>Doctor Profile</h2>
+    <h2>Profile</h2>
 
     <p><strong>Name:</strong> <span id="doctor_name"></span></p>
 

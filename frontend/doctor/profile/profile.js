@@ -1,5 +1,9 @@
-// Load doctor profile
-fetch("../../../backend/doctor/get_profile.php")
+// Load profile info
+fetch("../../../backend/sql_handler/doctor_profile.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "get_doctor_profile" })
+})
     .then(res => res.json())
     .then(data => {
         if (data.success) {
@@ -9,7 +13,5 @@ fetch("../../../backend/doctor/get_profile.php")
 
 // Logout
 document.getElementById("logoutBtn").addEventListener("click", () => {
-    fetch("../../../logout.php")
-        .then(() => window.location.href = "../../../login.php")
-        .catch(err => console.log(err));
+    window.location.href = "../../../logout.php";
 });

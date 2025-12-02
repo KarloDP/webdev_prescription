@@ -4,19 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5e480325-aaa8-4eb3-ae15-400c2f6bfa35" name="Changes" comment="updated doctor backend&#10;&#10;# Conflicts:&#10;#&#9;backend/DISTRIBUTE_TO_APPROPRIATE_FILES/doctor/view_prescription.php&#10;#&#9;database/webdev_prescription.sql&#10;#&#9;doctor/add_patient.php&#10;#&#9;doctor/add_prescription.php&#10;#&#9;doctor/view_patient_prescription.php&#10;#&#9;includes/db_connect.php">
-      <change afterPath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/doctor/patients/patients_details.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/doctor/patients/patients_details.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/doctor/profile/profile.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/doctor/profile/profile.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_11_2025_5_26_PM_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_11_2025_5_26_PM__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" />
+    <list default="true" id="5e480325-aaa8-4eb3-ae15-400c2f6bfa35" name="Changes" comment="Doctor assigned part">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/patients.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/patients.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/patients.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/patients.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +36,10 @@
     &quot;accountId&quot;: &quot;7357d189-218f-4870-973c-034b0d50dce2&quot;
   }
 }</component>
+  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
+  <component name="KubernetesApiProvider"><![CDATA[{
+  "isMigrated": true
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 6
@@ -96,7 +90,7 @@
       <updated>1763283344951</updated>
       <workItem from="1763283641862" duration="10000" />
       <workItem from="1763283662973" duration="7415000" />
-      <workItem from="1764583723962" duration="10248000" />
+      <workItem from="1764583723962" duration="13477000" />
     </task>
     <task id="LOCAL-00001" summary="Updated database SQL file">
       <option name="closed" value="true" />
@@ -114,7 +108,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763643814884</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Doctor assigned part">
+      <option name="closed" value="true" />
+      <created>1764678633501</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1764678633502</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -123,6 +125,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Updated database SQL file" />
     <MESSAGE value="updated doctor backend&#10;&#10;# Conflicts:&#10;#&#9;backend/DISTRIBUTE_TO_APPROPRIATE_FILES/doctor/view_prescription.php&#10;#&#9;database/webdev_prescription.sql&#10;#&#9;doctor/add_patient.php&#10;#&#9;doctor/add_prescription.php&#10;#&#9;doctor/view_patient_prescription.php&#10;#&#9;includes/db_connect.php" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated doctor backend&#10;&#10;# Conflicts:&#10;#&#9;backend/DISTRIBUTE_TO_APPROPRIATE_FILES/doctor/view_prescription.php&#10;#&#9;database/webdev_prescription.sql&#10;#&#9;doctor/add_patient.php&#10;#&#9;doctor/add_prescription.php&#10;#&#9;doctor/view_patient_prescription.php&#10;#&#9;includes/db_connect.php" />
+    <MESSAGE value="Doctor assigned part" />
+    <option name="LAST_COMMIT_MESSAGE" value="Doctor assigned part" />
   </component>
 </project>

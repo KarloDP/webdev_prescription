@@ -20,7 +20,7 @@ include "../doctor_standard.php";
 
         <label>Gender:</label>
         <select id="gender" required>
-            <option value="">Select gender</option>
+            <option value="">Select</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
         </select>
@@ -28,7 +28,7 @@ include "../doctor_standard.php";
         <label>Address:</label>
         <input type="text" id="address" required>
 
-        <label>Contact Number:</label>
+        <label>Contact:</label>
         <input type="text" id="contact" required>
 
         <button type="submit">Add Patient</button>
