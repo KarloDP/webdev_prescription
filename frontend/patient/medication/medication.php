@@ -40,7 +40,7 @@ ob_start();
     <p>Loading medications...</p>
   </div>
   <div class="actions">
-     <a href="../prescription/prescription.php" class="btn btn-primary">View Prescription</a>
+     <a href="../prescription/prescription.php" class="btn btn-primary">Back</a>
    </div>
 </div>
 
