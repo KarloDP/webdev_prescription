@@ -4,10 +4,7 @@ session_start();
 require_once __DIR__ . '/../../../backend/includes/auth.php';
 require_once __DIR__ . '/../../../backend/includes/db_connect.php';
 
-if (!isset($_SESSION['patientID'])) {
-    header("Location: ../TestLoginPatient.php");
-    exit;
-}
+require_login('/webdev_prescription/login.php', ['patient']);
 
 $patientID = (int) $_SESSION['patientID'];
 $activePage = 'medications';

@@ -5,10 +5,7 @@ session_start();
 include(__DIR__ . '/../../../backend/includes/auth.php');
 include(__DIR__ . '/../../../backend/includes/db_connect.php');
 
-if (!isset($_SESSION['patientID'])) {
-  header("Location: ../TestLoginPatient.php");
-  exit;
-}
+require_login('/webdev_prescription/login.php', ['patient']);
 
 $patientID = $_SESSION['patientID'];
 $stmt = $conn->prepare("SELECT firstName, lastName, birthDate, contactNumber, email, address

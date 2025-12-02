@@ -4,10 +4,7 @@ require_once __DIR__ . '/../../../backend/includes/auth.php';
 //include(__DIR__ . '/../includes/db_connect.php');
 
 // Redirect if not logged in as patient
-if (!isset($_SESSION['patientID'])) {
-    header("Location: ../TestLoginPatient.php");
-    exit;
-}
+require_login('/webdev_prescription/login.php', ['patient']);
 
 $patientID   = (int) $_SESSION['patientID'];
 $activePage  = 'medications';
