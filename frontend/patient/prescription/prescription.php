@@ -39,7 +39,7 @@ ob_start();
   <div style="margin-bottom: 20px;">
     <a href="../medication/medication.php" class="btn-view"
        style="display:inline-block;padding:10px 15px;background:#1e3d2f;color:#fff;border-radius:4px;text-decoration:none;">
-      Go to Medications
+      Show All Medications
     </a>
   </div>
 

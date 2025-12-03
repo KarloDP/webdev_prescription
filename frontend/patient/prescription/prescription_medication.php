@@ -23,6 +23,11 @@ $prescriptionItemID = isset($_GET['prescriptionItemID'])
     ? (int) $_GET['prescriptionItemID']
     : 0;
 
+// NEW: Which prescription are we showing all medications for?
+$prescriptionID = isset($_GET['prescriptionID'])
+    ? (int) $_GET['prescriptionID']
+    : 0;
+
 // Fetch patient name
 $patientName = 'Patient';
 $stmt = $conn->prepare("SELECT firstName, lastName FROM patient WHERE patientID = ?");
@@ -71,26 +76,109 @@ if ($prescriptionItemID > 0) {
     }
 }
 
+// NEW: fetch prescription header info if prescriptionID is passed
+$header = null;
+if ($prescriptionID > 0) {
+    $sql = "
+        SELECT p.prescriptionID, p.issueDate, p.expirationDate, p.status,
+               d.firstName AS docFirst, d.lastName AS docLast
+        FROM prescription p
+        JOIN doctor d ON p.doctorID = d.doctorID
+        WHERE p.prescriptionID = ? AND p.patientID = ?
+        LIMIT 1
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $prescriptionID, $patientID);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    if ($res && $res->num_rows > 0) {
+        $header = $res->fetch_assoc();
+    }
+    $stmt->close();
+}
+
+// NEW: fetch all medications for a prescription
+$medications = [];
+if ($prescriptionID > 0) {
+    $sql = "
+        SELECT pi.prescriptionItemID, m.genericName, m.brandName, m.form, m.strength,
+               pi.dosage, pi.frequency, pi.duration, pi.prescribed_amount,
+               pi.refill_count, pi.refillInterval, pi.instructions
+        FROM prescriptionitem pi
+        JOIN medication m ON pi.medicationID = m.medicationID
+        WHERE pi.prescriptionID = ?
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $prescriptionID);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    while ($row = $res->fetch_assoc()) {
+        $medications[] = $row;
+    }
+    $stmt->close();
+}
+
 // --- PAGE CONTENT BEGINS ---
 ob_start();
 ?>
 
 <div class="medication-page">
-    <h2>Dispense History</h2>
+    <?php if ($header): ?>
+        <h2>Prescription <?= 'RX-' . str_pad($header['prescriptionID'], 2, '0', STR_PAD_LEFT) ?></h2>
+        <p>
+            Doctor: <?= htmlspecialchars($header['docFirst'] . ' ' . $header['docLast']) ?><br>
+            Issued: <?= htmlspecialchars($header['issueDate']) ?><br>
+            Expires: <?= htmlspecialchars($header['expirationDate']) ?><br>
+            Status: <?= htmlspecialchars($header['status']) ?><br>
+            Patient: <?= htmlspecialchars($patientName) ?>
+        </p>
+    <?php endif; ?>
 
-    <p>
-        Dispense history for
-        <strong><?= htmlspecialchars($medLabel ?: 'Selected Medication', ENT_QUOTES, 'UTF-8') ?></strong>
-        <?php if ($rxLabel): ?>
-            in prescription <strong><?= htmlspecialchars($rxLabel, ENT_QUOTES, 'UTF-8') ?></strong>
-        <?php endif; ?>
-        for <?= htmlspecialchars($patientName, ENT_QUOTES, 'UTF-8'); ?>.
-    </p>
+    <?php if ($prescriptionID > 0): ?>
+        <h3>Medications</h3>
+        <table class="table-base">
+            <thead>
+                <tr>
+                    <th>Medicine</th><th>Brand</th><th>Form</th><th>Strength</th>
+                    <th>Dosage</th><th>Frequency</th><th>Duration</th>
+                    <th>Amount</th><th>Refills</th><th>Instructions</th>
+                    <th>Refill Interval</th><th>History</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($medications): ?>
+                    <?php foreach ($medications as $m): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($m['genericName']) ?></td>
+                            <td><?= htmlspecialchars($m['brandName']) ?></td>
+                            <td><?= htmlspecialchars($m['form']) ?></td>
+                            <td><?= htmlspecialchars($m['strength']) ?></td>
+                            <td><?= htmlspecialchars($m['dosage']) ?></td>
+                            <td><?= htmlspecialchars($m['frequency']) ?></td>
+                            <td><?= htmlspecialchars($m['duration']) ?></td>
+                            <td><?= htmlspecialchars($m['prescribed_amount']) ?></td>
+                            <td><?= htmlspecialchars($m['refill_count']) ?></td>
+                            <td><?= htmlspecialchars($m['instructions']) ?></td>
+                            <td><?= htmlspecialchars($m['refillInterval']) ?></td>
+                            <td>
+                                <a href="prescription_medication.php?prescriptionItemID=<?= $m['prescriptionItemID'] ?>"
+                                   class="btn-view">View History</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="12">No medications found.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
 
-    <!-- Container where JS will render the history table -->
-    <div id="dispense-history-container">
-        <p>Loading dispense history...</p>
-    </div>
+    <?php if ($prescriptionItemID > 0): ?>
+        <h3>Dispense History</h3>
+        <div id="dispense-history-container">
+            <p>Loading dispense history...</p>
+        </div>
+    <?php endif; ?>
 
     <!-- Back Button -->
     <div style="margin-top:20px;">
@@ -108,6 +196,7 @@ ob_start();
         name: <?= json_encode($patientName) ?>
     };
     window.currentPrescriptionItemID = <?= json_encode($prescriptionItemID) ?>;
+    window.currentPrescriptionID = <?= json_encode($prescriptionID) ?>;
 </script>
 
 <script src="prescription_medication.js?v=1"></script>
