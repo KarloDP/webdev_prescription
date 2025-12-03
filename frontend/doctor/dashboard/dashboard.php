@@ -1,5 +1,5 @@
 <?php
-include('../includes/db_connect.php');
+include('../../../backend/includes/db_connect.php');
 $activePage = 'dashboard';
 
 /* counts */
@@ -27,4 +27,4 @@ ob_start();
     </div>
 <?php
 $content = ob_get_clean();
-include('doctor_standard.php');
+include('../doctor_standard.php');

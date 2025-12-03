@@ -7,7 +7,7 @@ session_start();
 require_once __DIR__ . '/../../../backend/includes/auth.php';
 require_once __DIR__ . '/../../../backend/includes/db_connect.php';
 
-require_login();
+require_login('/webdev_prescription/login.php', ['patient']);
 
 // Must be logged in as patient
 if (!isset($_SESSION['patientID'])) {

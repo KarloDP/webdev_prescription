@@ -5,14 +5,11 @@ session_start();
 include(__DIR__ . '/../../../backend/includes/auth.php');
 include(__DIR__ . '/../../../backend/includes/db_connect.php');
 
-if (!isset($_SESSION['patientID'])) {
-  header("Location: ../TestLoginPatient.php");
-  exit;
-}
+require_login('/webdev_prescription/login.php', ['patient']);
 
 $patientID = $_SESSION['patientID'];
 $stmt = $conn->prepare("SELECT firstName, lastName, birthDate, contactNumber, email, address
-                        FROM patient WHERE patientID = ?");
+                       FROM patient WHERE patientID = ?");
 $stmt->bind_param("i", $patientID);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -27,9 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $error = "All fields must be filled out.";
   } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $error = "Invalid email format.";
-  } elseif (!preg_match("/^[0-9]{10}$/", $contactNumber)) {
+  } elseif (!ctype_digit($contactNumber)) {
+    // ensures only numeric characters
+    $error = "Contact number must contain digits only.";
+  } elseif (strlen($contactNumber) !== 10) {
+    // ensures exactly 10 digits
     $error = "Contact number must be exactly 10 digits.";
-  }elseif (
+  } elseif (
     $contactNumber === $patient['contactNumber'] &&
     $email === $patient['email'] &&
     $address === $patient['address']
@@ -77,7 +78,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <p><strong>Birthdate:</strong> <?= htmlspecialchars($patient['birthDate']) ?></p>
 
     <label>Contact Number:</label>
-    <input type="text" name="contactNumber" value="<?= htmlspecialchars($patient['contactNumber']) ?>" required>
+    <input type="text" name="contactNumber"
+           value="<?= htmlspecialchars($patient['contactNumber']) ?>"
+           required
+           pattern="\d{10}"
+           title="Contact number must be exactly 10 digits" />
 
     <label>Email:</label>
     <input type="email" name="email" value="<?= htmlspecialchars($patient['email']) ?>" required>
