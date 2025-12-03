@@ -1,6 +1,5 @@
 //default landing page. redirect to login page if user session is not started.
 document.addEventListener('DOMContentLoaded', function() {
-    // Fetch dashboard statistics
 fetch('/WebDev_Prescription/backend/sql_handler/get_dashboard_stats.php')
         .then(response => {
             if (!response.ok) {

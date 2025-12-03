@@ -1,0 +1,141 @@
+/* Page + layout */
+.prescriptions-page {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
+    background: #f6f7f6;
+}
+
+/* Header */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+.page-title {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: #133321;
+    margin: 0;
+}
+
+#add-prescription-btn {
+    background-color: #2e7d32;
+    color: #fff;
+    border: 0;
+    border-radius: 6px;
+    padding: 0.4rem 0.7rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+}
+#add-prescription-btn:hover { background-color: #27692c; }
+
+/* Section title */
+.section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0; 
+    color: #14351f;
+}
+.table-frame {
+    background: #fff;
+    border-radius: 8px;
+    padding: 0;
+    border: 1px solid #e6e6e6;
+    box-shadow: 0 6px 18px rgba(11,28,18,0.03);
+    overflow: hidden;
+    min-height: 0;
+    margin-bottom: 1.6rem;  
+}
+
+.table-frame {
+    background: #fff;
+    border-radius: 8px;
+    padding: 0;
+    border: 1px solid #e6e6e6;
+    box-shadow: 0 6px 18px rgba(11,28,18,0.03);
+    overflow: hidden;
+    min-height: 0; 
+}
+
+.table-base {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    color: #23332b;
+}
+
+.table-base thead th {
+    background: #eaf6ee;
+    color: #0f5b33;
+    font-weight: 700;
+    padding: 0.85rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(15,91,51,0.06);
+}
+
+.table-base tbody td {
+    padding: 0.95rem 1.25rem;
+    border-bottom: 1px solid rgba(20,53,31,0.06);
+    background: #fff;
+}
+.table-base tbody tr:nth-child(odd) td { background: rgba(237,250,241,0.45); }
+
+.prescriptions-page .table-frame {
+    padding: 0;         
+    min-height: 0;       
+}
+
+.table-base thead th:first-child,
+.table-base tbody td:first-child,
+.table-base thead th:last-child,
+.table-base tbody td:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.table-base tbody td {
+    padding: 0.6rem 1rem;  
+}
+
+.table-base thead th,
+.table-base tbody td {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.table-frame { overflow: hidden; }
+
+.table-base tbody tr:hover td { background: rgba(56,142,60,0.03); }
+
+.loading-cell, .no-data-cell, .error-cell {
+    padding: 1.1rem;
+    color: #63756a;
+    font-style: italic;
+}
+
+.status-badge { display:inline-block; padding:0.25rem 0.5rem; border-radius:12px; font-weight:700; color:#fff; font-size:0.82rem; text-transform:capitalize; }
+.status-completed { background:#2e7d32; } .status-discontinued { background:#c0392b; } .status-pending { background:#f39c12; }
+
+.prescriptions-page .table-frame { 
+    padding: 0;
+}
+
+.table-base thead th, .table-base tbody td { padding-left: 1.5rem; padding-right: 1.5rem; }
+
+@media (max-width: 900px) {
+    .prescriptions-page { padding: 0 0.75rem; max-width: 100%; }
+    .table-base thead { display: none; }
+    .table-frame { min-height: 160px; }
+    .table-base, .table-base tbody, .table-base tr, .table-base td { display: block; width: 100%; }
+    .table-base td { display:flex; justify-content:space-between; padding:0.7rem 1rem; }
+    .table-base td::before { content: attr(data-label); font-weight:700; color:#254f3b; margin-right:0.6rem; }
+}
+
+.table-small { font-size: .9rem; color: #39503f; }

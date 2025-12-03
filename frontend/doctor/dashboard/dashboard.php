@@ -3,7 +3,6 @@ session_start(); // Start the session to access user data
 
 $activePage = 'dashboard';
 
-// Get doctor's name from the session for a personalized welcome message.
 $doctorName = "Doctor"; // Default value
 if (isset($_SESSION['user']['name'])) {
     // Sanitize output to prevent XSS
