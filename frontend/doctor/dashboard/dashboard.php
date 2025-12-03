@@ -1,30 +1,68 @@
 <?php
-include('../../../backend/includes/db_connect.php');
+session_start(); // Start the session to access user data
+
 $activePage = 'dashboard';
 
-/* counts */
-$totPatients = (int) ($conn->query("SELECT COUNT(*) as c FROM patient")->fetch_assoc()['c'] ?? 0);
-$totPrescriptions = (int) ($conn->query("SELECT COUNT(*) as c FROM prescription")->fetch_assoc()['c'] ?? 0);
-
+// Get doctor's name from the session for a personalized welcome message.
+$doctorName = "Doctor"; // Default value
+if (isset($_SESSION['user']['name'])) {
+    // Sanitize output to prevent XSS
+    $fullName = htmlspecialchars($_SESSION['user']['name']);
+    $doctorName = "Dr. {$fullName}!";
+}
 ob_start();
 ?>
-    <div class="card">
-        <h2>Doctor Dashboard</h2>
-    </div>
 
-    <div style="display:flex; gap:18px;">
-        <div class="card" style="flex:1;">
-            <h3>Total Patients</h3>
-            <p style="font-size:22px; font-weight:bold;"><?= $totPatients ?></p>
-            <a href="patients.php">Manage patients →</a>
+<div class="doctor-dashboard">
+    <!-- Welcome Row -->
+    <div class="welcome-row">
+        <div class="welcome-card">
+            <div>
+                <h1>Welcome back, <span class="name"><?= $doctorName ?></span></h1>
+                <p class="subtitle">Here is a summary of your activity.</p>
+            </div>
         </div>
 
-        <div class="card" style="flex:1;">
-            <h3>Total Prescriptions</h3>
-            <p style="font-size:22px; font-weight:bold;"><?= $totPrescriptions ?></p>
-            <a href="view_prescription.php">Manage prescriptions →</a>
+<div class="stats-card">
+            <div class="stats-row">
+                <div class="stat">
+                    <div id="patients-count" class="stat-number">...</div>
+                    <div class="stat-label">Total Patients</div>
+                </div>
+                <div class="stat">
+                    <div id="active-prescriptions-count" class="stat-number">...</div>
+                    <div class="stat-label">Active Prescriptions</div>
+                </div>
+                <div class="stat">
+                    <div id="meds-prescribed-count" class="stat-number">...</div>
+                    <div class="stat-label">Medications Prescribed</div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Patients Table Section -->
+    <h2 class="section-title">Recent Patients</h2>
+    <div class="table-frame">
+        <table class="table-base">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Date of Birth</th>
+                </tr>
+            </thead>
+            <tbody id="patients-table-body">
+                <tr><td colspan="4">Loading patients...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="dashboard.js"></script>
+
 <?php
 $content = ob_get_clean();
-include('../doctor_standard.php');
+include(__DIR__ . '/../doctor_standard.php');
+?>
