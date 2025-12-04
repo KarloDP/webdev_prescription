@@ -2,6 +2,12 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Add cache control headers to prevent caching of sensitive pages
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // A date in the past
+
 // This should be the path to your auth.php file
 require_once __DIR__ . '/../../backend/includes/auth.php';
 
@@ -35,6 +41,7 @@ $pageContent = $pageContent ?? '';
     <title>Pharmacist Dashboard</title>
     <!-- Link to your new CSS files -->
     <link rel="stylesheet" href="../css/pharmacist/pharmacy_standard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <?= $pageStyles ?? '' ?>
 </head>
 <body>
@@ -54,19 +61,19 @@ $pageContent = $pageContent ?? '';
             <nav class="sidebar-nav">
                 <ul>
                     <li class="<?= $activePage === 'dashboard' ? 'active' : '' ?>">
-                        <a href="index.php">Dashboard</a>
+                        <a href="index.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                     </li>
                     <li class="<?= $activePage === 'patients' ? 'active' : '' ?>">
-                        <a href="#">Patients</a>
+                        <a href="patients.php"><i class="fas fa-users"></i> Patients</a>
                     </li>
                     <li class="<?= $activePage === 'prescription' ? 'active' : '' ?>">
-                        <a href="#">Prescription</a>
+                        <a href="prescription.php"><i class="fas fa-file-prescription"></i> Prescription</a>
                     </li>
                     <li class="<?= $activePage === 'dispense' ? 'active' : '' ?>">
-                        <a href="#">Dispense Medication</a>
+                        <a href="dispense.php"><i class="fas fa-pills"></i> Dispense Medication</a>
                     </li>
                      <li class="<?= $activePage === 'logs' ? 'active' : '' ?>">
-                        <a href="#">Audit Logs</a>
+                        <a href="#"><i class="fas fa-clipboard-list"></i> Audit Logs</a>
                     </li>
                 </ul>
             </nav>
@@ -79,5 +86,25 @@ $pageContent = $pageContent ?? '';
             <?= $pageContent ?>
         </main>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownToggle = document.querySelector('.profile-actions-dropdown .dropdown-toggle');
+            const dropdown = document.querySelector('.profile-actions-dropdown');
+
+            if (dropdownToggle && dropdown) {
+                dropdownToggle.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Prevent immediate closing by document click
+                    dropdown.classList.toggle('active');
+                });
+
+                // Close the dropdown if the user clicks outside of it
+                document.addEventListener('click', function(event) {
+                    if (!dropdown.contains(event.target)) {
+                        dropdown.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

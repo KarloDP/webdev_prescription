@@ -44,33 +44,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="frontend/css/login.css">
 </head>
 <body>
 
-<h2>Login</h2>
+<div class="login-container">
+    <div class="logo">
+        <!-- Assuming you have a logo image, replace 'path/to/your/logo.png' with the actual path -->
+        <img src="assets/images/Integrative-Medicine-Logo.png" alt="Integrative Medicine Logo">
+    </div>
+    <h2>Login</h2>
 
-<?php if ($error): ?>
-    <p style="color:red;"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></p>
-<?php endif; ?>
+    <?php if ($error): ?>
+        <p class="error-message"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></p>
+    <?php endif; ?>
 
-<form method="POST" action="">
-    <label for="role">Login as:</label>
-    <select name="role" id="role" required>
-        <option value="patient" <?= $selectedRole === 'patient' ? 'selected' : '' ?>>Patient</option>
-        <option value="doctor" <?= $selectedRole === 'doctor' ? 'selected' : '' ?>>Doctor</option>
-        <option value="pharmacist" <?= $selectedRole === 'pharmacist' ? 'selected' : '' ?>>Pharmacist</option>
-        <option value="admin" <?= $selectedRole === 'admin' ? 'selected' : '' ?>>Admin</option>
-    </select>
-    <br><br>
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required placeholder="Enter your email" value="<?= htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES) ?>">
-    <br><br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required placeholder="Enter your password">
-    <br><br>
-    <button type="submit">Continue</button>
-</form>
+    <form method="POST" action="">
+        <div class="form-group">
+            <label for="role">Login as:</label>
+            <select name="role" id="role" required>
+                <option value="patient" <?= $selectedRole === 'patient' ? 'selected' : '' ?>>Patient</option>
+                <option value="doctor" <?= $selectedRole === 'doctor' ? 'selected' : '' ?>>Doctor</option>
+                <option value="pharmacist" <?= $selectedRole === 'pharmacist' ? 'selected' : '' ?>>Pharmacist</option>
+                <option value="admin" <?= $selectedRole === 'admin' ? 'selected' : '' ?>>Admin</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required placeholder="Enter your email" value="<?= htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES) ?>">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required placeholder="Enter your password">
+        </div>
+        <button type="submit">Continue</button>
+    </form>
+</div>
 
 </body>
 </html>

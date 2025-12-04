@@ -11,9 +11,7 @@
 
 if (session_status() === PHP_SESSION_NONE) session_start();
 
-$user_name = $_SESSION['doctor_name']
-    ?? $_SESSION['user_name']
-    ?? 'Doctor';
+$user_name = $_SESSION['user']['name'] ?? 'Doctor';
 
 $activePage = $activePage ?? 'dashboard';
 $sidebarItems = $sidebarItems ?? [
@@ -23,21 +21,15 @@ $sidebarItems = $sidebarItems ?? [
     'profile'       => 'Profile',
 ];
 
-/**
- * Compute base URL so CSS and image paths work regardless of hosting.
- * This keeps links consistent whether pages are served from PHP wrappers
- * or static HTML under /frontend/doctor/...
- */
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
 $host = $_SERVER['HTTP_HOST'];
 
-// Example SCRIPT_NAME: /webdev_prescription/frontend/doctor/dashboard/index.html
-$projectFolder = dirname($_SERVER['SCRIPT_NAME']);            // e.g. /webdev_prescription/frontend/doctor
-$projectFolder = explode('/frontend', $projectFolder)[0];     // keep only root folder
+$projectFolder = dirname($_SERVER['SCRIPT_NAME']);
+$projectFolder = explode('/frontend', $projectFolder)[0];
 $baseUrl = rtrim($protocol . $host . $projectFolder, '/');
 
 $cssDoctorBase = rtrim($baseUrl, '/') . '/frontend/css/doctor';
-$cssPatientBase = rtrim($baseUrl, '/') . '/frontend/css/patient';
+$cssPatientBase = rtrim($baseUrl, '/') . '/frontend/css/patient'; // Assuming shared files are here
 $imgBase = rtrim($baseUrl, '/') . '/assets/images';
 ?>
 <!DOCTYPE html>
@@ -47,12 +39,23 @@ $imgBase = rtrim($baseUrl, '/') . '/assets/images';
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title><?php echo htmlspecialchars(ucfirst($activePage) . ' | MediSync', ENT_QUOTES, 'UTF-8'); ?></title>
 
-  <!-- Core/shared styles (use patient folder for shared table/layout files that exist in your tree) -->
+  <!-- Core/shared styles -->
   <link rel="stylesheet" href="<?php echo $cssPatientBase; ?>/table.css">
   <link rel="stylesheet" href="<?php echo $cssPatientBase; ?>/layout_standard.css">
 
   <!-- Doctor-specific styles -->
   <link rel="stylesheet" href="<?php echo $cssDoctorBase; ?>/doctor_standard.css">
+
+  <?php if ($activePage === 'dashboard'): ?>
+    <link rel="stylesheet" href="<?php echo $cssDoctorBase; ?>/dashboard.css">
+  <?php endif; ?>
+<?php if ($activePage === 'prescriptions'): ?>
+    <link rel="stylesheet" href="<?php echo $cssDoctorBase; ?>/prescriptions.css">
+<?php endif; ?>
+  <?php if ($activePage === 'patients'): ?>
+    <link rel="stylesheet" href="<?php echo $cssDoctorBase; ?>/patients.css">
+  <?php endif; ?>
+
 </head>
 <body>
 
@@ -70,27 +73,17 @@ $imgBase = rtrim($baseUrl, '/') . '/assets/images';
     </div>
   </header>
 
-  <!-- Sidebar Navigation -->
+<!-- Sidebar Navigation -->
   <aside class="sidebar">
     <ul>
       <?php
         foreach ($sidebarItems as $key => $label) {
-          // Link to the frontend doctor pages (static HTML index files)
-          $url = $baseUrl . '/frontend/doctor/' . $key . '/index.html';
+          $url = $baseUrl . '/frontend/doctor/' . $key . '/' . $key . '.php';
           $activeClass = ($activePage === $key) ? 'active' : '';
           echo "<li class='" . htmlspecialchars($activeClass, ENT_QUOTES, 'UTF-8') . "'>";
           echo "<a href='" . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . "</a>";
           echo "</li>";
         }
-      ?>
-
-      <!-- Profile (explicit link) -->
-      <?php
-        $profileActive = ($activePage === 'profile') ? 'active' : '';
-        $profileUrl = $baseUrl . '/frontend/doctor/profile/index.html';
-        echo "<li class='" . htmlspecialchars($profileActive, ENT_QUOTES, 'UTF-8') . "'>";
-        echo "<a href='" . htmlspecialchars($profileUrl, ENT_QUOTES, 'UTF-8') . "'>View Profile</a>";
-        echo "</li>";
       ?>
 
       <!-- Logout -->

@@ -1,0 +1,81 @@
+.patients-container {
+    padding: 2rem;
+    background-color: #fcfcff;
+    height: 100%;
+}
+
+.patients-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.patients-header h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #f0f3f8;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    min-width: 300px;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    background: none;
+    width: 100%;
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.search-bar button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    padding-left: 0.5rem;
+}
+
+.patients-table-container {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.patients-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.patients-table thead {
+    background-color: #fdeeee; /* Light pink background */
+}
+
+.patients-table th, .patients-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.patients-table th {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.patients-table td {
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.patients-table tbody tr:last-child td {
+    border-bottom: none;
+}

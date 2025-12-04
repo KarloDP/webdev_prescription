@@ -3,10 +3,7 @@ session_start();
 include(__DIR__ . '/../../../backend/includes/auth.php');
 include(__DIR__ . '/../../../backend/includes/db_connect.php');
 
-if (!isset($_SESSION['patientID'])) {
-    header("Location: ../../login.php");
-    exit;
-}
+require_login('/webdev_prescription/login.php', ['patient']);
 
 $patientID = (int) $_SESSION['patientID'];
 $activePage = 'history';

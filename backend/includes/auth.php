@@ -132,13 +132,15 @@ function set_user_session(string $role, array $row): void
     session_regenerate_id(true);
 
     // Canonical structure for new code
+    // ***** THE FIX IS HERE: Add firstName and lastName to the session array *****
     $_SESSION['user'] = [
-        'id'    => $id,
-        'role'  => $role,
-        'name'  => $name,
-        'email' => $email,
+        'id'        => $id,
+        'role'      => $role,
+        'name'      => $name,
+        'firstName' => $first, // <-- ADD THIS LINE
+        'lastName'  => $last,  // <-- ADD THIS LINE
+        'email'     => $email,
     ];
-
     // Backwards compatibility for existing patient-only code
     if ($role === 'patient') {
         $_SESSION['patientID'] = $id;

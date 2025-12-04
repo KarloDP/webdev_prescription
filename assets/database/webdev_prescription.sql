@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `patient` (
   `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `birthDate` date NOT NULL,
   `gender` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `contactNumber` int NOT NULL,
+  `contactNumber` varchar(10) DEFAULT NULL,
   `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `doctorID` int DEFAULT NULL,
