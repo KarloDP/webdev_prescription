@@ -15,8 +15,8 @@ vhost config file
   </Directory>
 </VirtualHost>
 
-in "C:\Windows\System32\drivers\etc\hosts" add this line
-[ip address * not literally this should be changed] webdev-prescription.bytebusters
+in "C:\Windows\System32\drivers\etc\hosts" add this line to both server and clients
+[ip address of host * not literally this should be changed] webdev-prescription.bytebusters
 
 notes:
 make sure firewall is off
