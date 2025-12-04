@@ -1,5 +1,5 @@
 <?php
-session_start(); // Start the session to access user data
+ // Start the session to access user data
 
 $activePage = 'dashboard';
 

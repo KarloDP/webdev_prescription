@@ -1,19 +1,63 @@
 <?php
-session_start();
-if (!isset($_SESSION['user'])) {
-    header("Location: ../../../login.php");
-    exit();
+$activePage = 'profile';
+
+// Load doctor name from session
+$doctorName = "Doctor";
+if (!empty($_SESSION['user']['name'])) {
+    $doctorName = htmlspecialchars($_SESSION['user']['name']);
 }
 
-include "../doctor_standard.php";
+ob_start();
 ?>
 
-<div class="content">
-    <h2>Profile</h2>
+    <div class="profile-page">
 
-    <p><strong>Name:</strong> <span id="doctor_name"></span></p>
+        <h1>Profile</h1>
+        <p>Welcome, <strong><?= $doctorName ?></strong></p>
 
-    <button id="logoutBtn">Logout</button>
-</div>
+        <div class="profile-card">
+            <table class="table-base profile-table">
+                <tr>
+                    <th>Name</th>
+                    <td><?= $doctorName ?></td>
+                </tr>
+                <tr>
+                    <th>Specialization</th>
+                    <td>—</td> <!-- placeholder -->
+                </tr>
+                <tr>
+                    <th>Qualification</th>
+                    <td>—</td> <!-- placeholder -->
+                </tr>
+                <tr>
+                    <th>Hospital</th>
+                    <td>—</td> <!-- placeholder -->
+                </tr>
+                <tr>
+                    <th>Clinic</th>
+                    <td>—</td> <!-- placeholder -->
+                </tr>
+                <tr>
+                    <th>Years of Experience</th>
+                    <td>—</td> <!-- placeholder -->
+                </tr>
+                <tr>
+                    <th>Schedule</th>
+                    <td>—</td> <!-- placeholder -->
+                </tr>
+                <tr>
+                    <th>Contact Info</th>
+                    <td>—</td> <!-- placeholder -->
+                </tr>
+            </table>
 
-<script src="profile.js"></script>
+            <button id="logoutBtn" class="btn-logout">Logout</button>
+        </div>
+
+    </div>
+
+    <script src="profile.js"></script>
+
+<?php
+$content = ob_get_clean();
+include(__DIR__ . '/../doctor_standard.php');

@@ -4,9 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5e480325-aaa8-4eb3-ae15-400c2f6bfa35" name="Changes" comment="Doctor assigned part">
+    <list default="true" id="5e480325-aaa8-4eb3-ae15-400c2f6bfa35" name="Changes" comment="updated version">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/dashboard/dashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/dashboard/dashboard.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/doctor_standard.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/doctor_standard.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/patients_details.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/patients_details.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/profile/profile.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/profile/profile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/profile/profile.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/profile/profile.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,10 +41,10 @@
     &quot;accountId&quot;: &quot;7357d189-218f-4870-973c-034b0d50dce2&quot;
   }
 }</component>
-  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 6
@@ -49,31 +54,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "Syed",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/xampp/htdocs/WebDev_Prescription",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "show.migrate.to.gradle.popup": "false",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Syed&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/wamp64/www/WebDev_Prescription&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mysql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -90,7 +95,11 @@
       <updated>1763283344951</updated>
       <workItem from="1763283641862" duration="10000" />
       <workItem from="1763283662973" duration="7415000" />
-      <workItem from="1764583723962" duration="13477000" />
+      <workItem from="1764583723962" duration="14134000" />
+      <workItem from="1764836745063" duration="7607000" />
+      <workItem from="1764862722557" duration="2210000" />
+      <workItem from="1764865178461" duration="97000" />
+      <workItem from="1764865280552" duration="1758000" />
     </task>
     <task id="LOCAL-00001" summary="Updated database SQL file">
       <option name="closed" value="true" />
@@ -116,7 +125,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764678633502</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="updated version">
+      <option name="closed" value="true" />
+      <created>1764690605842</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1764690605842</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -126,6 +143,7 @@
     <MESSAGE value="Updated database SQL file" />
     <MESSAGE value="updated doctor backend&#10;&#10;# Conflicts:&#10;#&#9;backend/DISTRIBUTE_TO_APPROPRIATE_FILES/doctor/view_prescription.php&#10;#&#9;database/webdev_prescription.sql&#10;#&#9;doctor/add_patient.php&#10;#&#9;doctor/add_prescription.php&#10;#&#9;doctor/view_patient_prescription.php&#10;#&#9;includes/db_connect.php" />
     <MESSAGE value="Doctor assigned part" />
-    <option name="LAST_COMMIT_MESSAGE" value="Doctor assigned part" />
+    <MESSAGE value="updated version" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated version" />
   </component>
 </project>
