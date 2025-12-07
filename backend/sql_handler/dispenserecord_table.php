@@ -17,7 +17,7 @@ function respond($data, $statusCode = 200) {
 $method = $_SERVER['REQUEST_METHOD'];
 
 $user   = require_user();          // from auth.php
-$role   = $user['role'];           // 'patient', 'doctor', 'pharmacist', 'admin'
+$role   = $user['role'];           // 'patient', 'doctor', 'pharmacist', 'admin'    
 $userID = (int)$user['id'];        // patientID/doctorID/pharmacistID/adminID depending on role
 
 /* ===========================================

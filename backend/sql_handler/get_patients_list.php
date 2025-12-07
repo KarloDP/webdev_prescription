@@ -1,37 +1,49 @@
 <?php
-header('Content-Type: application/json');
-include(__DIR__ . '/../includes/db_connect.php');
-include(__DIR__ . '/../includes/auth.php');
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/auth.php';
 
-// FIX: Use the correct require_role function from your current auth.php
-$user = require_role(['doctor']); 
-$doctorID = (int)$user['id'];
-
-// Fetch a limited number of patients for the dashboard preview
-$stmt = $conn->prepare(
-    "SELECT 
-        patientID AS PatientID, 
-        firstName AS FirstName, 
-        lastName AS LastName, 
-        birthDate AS DateOfBirth 
-     FROM patient 
-     WHERE doctorID = ? 
-     ORDER BY patientID ASC 
-     LIMIT 4"
-);
-$stmt->bind_param('i', $doctorID);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$patients = [];
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
-        $patients[] = $row;
-    }
+function respond($data, $statusCode = 200) {
+    http_response_code($statusCode);
+    header('Content-Type: application/json');
+    echo json_encode($data);
+    exit;
 }
 
-echo json_encode($patients);
+$user = require_role(['pharmacist', 'doctor', 'admin']); // Protect endpoint
+$method = $_SERVER['REQUEST_METHOD'];
 
-$stmt->close();
-$conn->close();
+if ($method === 'GET') {
+    // This query finds the most recent prescription and doctor for each patient.
+    $sql = "
+        SELECT 
+            p.patientID,
+            p.firstName,
+            p.lastName,
+            p.contactNumber,
+            p.address,
+            sub.prescriptionID,
+            doc.lastName AS doctorLastName
+        FROM patient p
+        LEFT JOIN (
+            SELECT 
+                patientID, 
+                prescriptionID, 
+                doctorID,
+                ROW_NUMBER() OVER(PARTITION BY patientID ORDER BY issueDate DESC) as rn
+            FROM prescription
+        ) AS sub ON p.patientID = sub.patientID AND sub.rn = 1
+        LEFT JOIN doctor doc ON sub.doctorID = doc.doctorID
+        ORDER BY p.lastName, p.firstName;
+    ";
+
+    $result = $conn->query($sql);
+    if (!$result) {
+        respond(['error' => 'Database query failed: ' . $conn->error], 500);
+    }
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    respond($data);
+
+} else {
+    respond(['error' => 'Method Not Allowed'], 405);
+}
 ?>

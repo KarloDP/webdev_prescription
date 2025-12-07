@@ -114,87 +114,91 @@
 /* Right content area */
 .prescription-details-content {
     flex-grow: 1;
-    padding: 2rem;
-    overflow-y: auto;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    border: 1px solid #e9ecef;
+    position: relative; /* Make this a positioning context for the form */
 }
 
-.details-header {
+/* Header with Dispense Form - REMOVE THE FORM STYLES FROM HERE */
+.rx-details-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-    border-bottom: 3px solid #e76c8c; /* Highlight under header */
-    padding-bottom: 10px;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.details-header h1 {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #333;
+.rx-details-header h1 {
+    font-size: 1.75rem;
+    margin: 0;
 }
 
-.action-buttons button {
-    margin-left: 1rem;
-    padding: 0.7rem 1.2rem;
+/* --- NEW STYLES FOR THE FORM CONTAINER --- */
+#dispense-form-container {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end; /* Aligns the form to the right */
+}
+
+#dispense-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#dispense-quantity {
+    width: 120px;
+    padding: 0.6rem;
+    border: 1px solid #ced4da;
     border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.2s ease-in-out;
+    font-size: 1rem;
+    text-align: center;
 }
 
-.btn-edit-prescription {
-    background-color: #e76c8c;
+.btn-dispense-action {
+    background-color: #00573d;
     color: white;
     border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-.btn-edit-prescription:hover {
-    background-color: #cf5e7b;
+.btn-dispense-action:hover {
+    background-color: #00422d;
 }
 
-.btn-save-changes {
-    background-color: transparent;
-    color: #e76c8c;
-    border: 1px solid #e76c8c;
-}
-
-.btn-save-changes:hover {
-    background-color: #fdeeee;
-}
-
-.patient-info-card {
+/* This is the grid for Status, Issue Date, etc. */
+.rx-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
     background-color: #fff;
     border-radius: 8px;
     padding: 1.5rem;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    margin-bottom: 2rem;
 }
 
-.info-row {
-    display: flex;
-    flex-wrap: wrap; /* Allows items to wrap on smaller screens */
-    gap: 2rem; /* Spacing between items */
-}
-
-.info-item {
-    flex: 1 1 auto; /* Allows items to grow and shrink */
-    min-width: 150px; /* Minimum width before wrapping */
-}
-
-.info-item .label {
+.rx-details-grid .label {
     display: block;
     font-size: 0.8rem;
     color: #888;
     margin-bottom: 0.3rem;
 }
 
-.info-item .value {
+.rx-details-grid .value {
     font-size: 1rem;
     font-weight: 600;
     color: #333;
 }
 
-/* New Rx section styles, replaces the table */
 .medication-rx-section {
     background-color: #fff;
     border-radius: 8px;
@@ -247,4 +251,150 @@
     font-size: 0.9rem;
     color: #555;
     margin-bottom: 0.5rem;
+}
+
+.rx-item-card {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    position: relative; /* For positioning child elements */
+}
+
+/* Style for fully dispensed items */
+.rx-item-card.item-dispensed {
+    background-color: #f1f3f5;
+    opacity: 0.7;
+}
+
+.rx-item-card.item-dispensed h4 {
+    text-decoration: line-through;
+}
+
+.dispensed-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: #495057;
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.rx-item-card h4 {
+    margin: 0 0 1rem 0;
+}
+
+.item-details-grid {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.item-instructions {
+    margin-bottom: 1rem; /* Add space before the form */
+}
+
+.item-instructions .label {
+    font-weight: 600;
+}
+
+.item-instructions p {
+    margin: 0.25rem 0 0 0;
+    color: #495057;
+}
+
+/* --- Styles for the new per-item form --- */
+.dispense-item-form {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.dispense-item-form .form-label {
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.dispense-item-form .form-inputs {
+    display: flex;
+    justify-content: flex-end; /* Align inputs to the right */
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dispense-item-form input {
+    width: 60px;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.dispense-item-form .btn-dispense-action {
+    background-color: #00573d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dispense-item-form .btn-dispense-action:hover {
+    background-color: #00422d;
+}
+
+/* --- Quantity Input Inside Each Card --- */
+.quantity-input-wrapper {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.item-quantity-input {
+    width: 80px;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.item-quantity-input:focus {
+    outline: none;
+    border-color: #00573d;
+    box-shadow: 0 0 0 3px rgba(0, 87, 61, 0.1);
+}
+
+/* --- Single Dispense Section at Bottom --- */
+.dispense-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #f0f0f0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+#dispense-all-btn {
+    background-color: #00573d;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#dispense-all-btn:hover {
+    background-color: #00422d;
 }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 30, 2025 at 02:32 AM
+-- Generation Time: Dec 07, 2025 at 06:36 PM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `admins` (
   `adminID` int NOT NULL AUTO_INCREMENT,
   `firstName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `lastName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`adminID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -56,35 +56,22 @@ INSERT INTO `admins` (`adminID`, `firstName`, `lastName`, `password`) VALUES
 
 DROP TABLE IF EXISTS `dispenserecord`;
 CREATE TABLE IF NOT EXISTS `dispenserecord` (
+  `dispenseID` int NOT NULL AUTO_INCREMENT,
   `prescriptionItemID` int NOT NULL,
   `pharmacyID` int NOT NULL,
-  `dispenseID` int NOT NULL,
-  `quantityDispensed` int NOT NULL,
-  `dateDispensed` date NOT NULL,
-  `pharmacistName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `status` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nextAvailableDates` date NOT NULL,
+  `dispensedQuantity` int NOT NULL,
+  `dispenseDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`dispenseID`),
-  KEY `PrescItemID` (`prescriptionItemID`),
+  KEY `prescriptionItemID` (`prescriptionItemID`),
   KEY `pharmacyID` (`pharmacyID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `dispenserecord`
 --
 
-INSERT INTO `dispenserecord` (`prescriptionItemID`, `pharmacyID`, `dispenseID`, `quantityDispensed`, `dateDispensed`, `pharmacistName`, `status`, `nextAvailableDates`) VALUES
-(1, 1, 1, 7, '2025-01-01', 'Maria Reyes', 'Dispensed', '2025-01-31'),
-(2, 2, 2, 5, '2025-01-06', 'John Cruz', 'Dispensed', '2025-02-05'),
-(3, 3, 3, 30, '2025-01-12', 'Anna Santos', 'Dispensed', '2025-02-11'),
-(4, 4, 4, 14, '2025-01-14', 'Mark Dela Cruz', 'Dispensed', '2025-02-13'),
-(5, 5, 5, 3, '2025-01-18', 'Paula Ramos', 'Dispensed', '2025-02-17'),
-(6, 6, 6, 14, '2025-01-20', 'Liza Garcia', 'Dispensed', '2025-02-19'),
-(7, 7, 7, 10, '2025-01-23', 'Rafael Lopez', 'Dispensed', '2025-02-22'),
-(8, 8, 8, 30, '2025-01-25', 'Carla Mendoza', 'Dispensed', '2025-02-24'),
-(9, 9, 9, 14, '2025-01-28', 'Simon Cruz', 'Dispensed', '2025-02-27'),
-(1, 1, 10, 1, '2002-01-01', 'dan', 'dispensed', '2002-01-02'),
-(1, 1, 11, 1, '2002-01-01', 'john', 'Dispensed', '2002-01-02');
+INSERT INTO `dispenserecord` (`dispenseID`, `prescriptionItemID`, `pharmacyID`, `dispensedQuantity`, `dispenseDate`) VALUES
+(1, 96, 2, 5, '2025-12-07 16:44:49');
 
 -- --------------------------------------------------------
 
@@ -97,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `doctor` (
   `doctorID` int NOT NULL AUTO_INCREMENT,
   `firstName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `lastName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `specialization` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `licenseNumber` int NOT NULL,
   `email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -166,10 +153,10 @@ CREATE TABLE IF NOT EXISTS `patient` (
   `patientID` int NOT NULL AUTO_INCREMENT,
   `firstName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `lastName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `birthDate` date NOT NULL,
   `gender` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `contactNumber` varchar(10) DEFAULT NULL,
+  `contactNumber` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `doctorID` int DEFAULT NULL,
@@ -186,16 +173,16 @@ CREATE TABLE IF NOT EXISTS `patient` (
 --
 
 INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `password`, `birthDate`, `gender`, `contactNumber`, `address`, `email`, `doctorID`, `healthCondition`, `allergies`, `currentMedication`, `knownDiseases`) VALUES
-(1, 'Juan', 'Dela Cruz', 'patient', '1990-05-12', 'Male', 912345678, 'Batangas City', 'juan.delacruz@example.com', 1, NULL, NULL, NULL, NULL),
-(2, 'Maria', 'Santos', 'patient', '1988-09-23', 'Female', 923456789, 'Quezon City', 'maria.santos@example.com', 2, NULL, NULL, NULL, NULL),
-(3, 'Jose', 'Reyes', 'patient', '1975-02-10', 'Male', 934567890, 'Cebu City', 'jose.reyes@example.com', 3, NULL, NULL, NULL, NULL),
-(4, 'Ana', 'Ramos', 'patient', '1995-11-30', 'Female', 945678901, 'Davao City', 'ana.ramos@example.com', 4, NULL, NULL, NULL, NULL),
-(5, 'Carlos', 'Garcia', 'patient', '1982-03-15', 'Male', 956789012, 'Pasig City', 'carlos.garcia@example.com', 5, NULL, NULL, NULL, NULL),
-(6, 'Liza', 'Torres', 'patient', '2000-07-08', 'Female', 967890123, 'Iloilo City', 'liza.torres@example.com', 6, NULL, NULL, NULL, NULL),
-(7, 'Mark', 'Lim', 'patient', '1998-04-25', 'Male', 978901234, 'Makati City', 'mark.lim@example.com', 7, NULL, NULL, NULL, NULL),
-(8, 'Patricia', 'Mendoza', 'patient', '1993-06-18', 'Female', 989012345, 'Taguig City', 'patricia.mendoza@example.com', 8, NULL, NULL, NULL, NULL),
-(9, 'Andrew', 'Lopez', 'patient', '1987-12-01', 'Male', 990123456, 'Manila', 'andrew.lopez@example.com', 9, NULL, NULL, NULL, NULL),
-(10, 'Sophia', 'De Guzman', 'patient', '1999-10-05', 'Female', 901234567, 'Cavite', 'sophia.deguzman@example.com', 10, NULL, NULL, NULL, NULL);
+(1, 'Juan', 'Dela Cruz', 'patient', '1990-05-12', 'Male', '912345678', 'Batangas City', 'juan.delacruz@example.com', 1, NULL, NULL, NULL, NULL),
+(2, 'Maria', 'Santos', 'patient', '1988-09-23', 'Female', '923456789', 'Quezon City', 'maria.santos@example.com', 2, NULL, NULL, NULL, NULL),
+(3, 'Jose', 'Reyes', 'patient', '1975-02-10', 'Male', '934567890', 'Cebu City', 'jose.reyes@example.com', 3, NULL, NULL, NULL, NULL),
+(4, 'Ana', 'Ramos', 'patient', '1995-11-30', 'Female', '945678901', 'Davao City', 'ana.ramos@example.com', 4, NULL, NULL, NULL, NULL),
+(5, 'Carlos', 'Garcia', 'patient', '1982-03-15', 'Male', '956789012', 'Pasig City', 'carlos.garcia@example.com', 5, NULL, NULL, NULL, NULL),
+(6, 'Liza', 'Torres', 'patient', '2000-07-08', 'Female', '967890123', 'Iloilo City', 'liza.torres@example.com', 6, NULL, NULL, NULL, NULL),
+(7, 'Mark', 'Lim', 'patient', '1998-04-25', 'Male', '978901234', 'Makati City', 'mark.lim@example.com', 7, NULL, NULL, NULL, NULL),
+(8, 'Patricia', 'Mendoza', 'patient', '1993-06-18', 'Female', '989012345', 'Taguig City', 'patricia.mendoza@example.com', 8, NULL, NULL, NULL, NULL),
+(9, 'Andrew', 'Lopez', 'patient', '1987-12-01', 'Male', '990123456', 'Manila', 'andrew.lopez@example.com', 9, NULL, NULL, NULL, NULL),
+(10, 'Sophia', 'De Guzman', 'patient', '1999-10-05', 'Female', '901234567', 'Cavite', 'sophia.deguzman@example.com', 10, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -207,7 +194,7 @@ DROP TABLE IF EXISTS `pharmacy`;
 CREATE TABLE IF NOT EXISTS `pharmacy` (
   `pharmacyID` int NOT NULL,
   `name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `contactNumber` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -307,7 +294,7 @@ INSERT INTO `prescriptionitem` (`doctorID`, `prescriptionItemID`, `prescriptionI
 (7, 93, 7, 3, '500 mg', 'Twice daily', '7 days', 14, 0, '0000-00-00', 'Complete regimen'),
 (8, 94, 8, 8, '10 mg', 'Once daily', '10 days', 10, 1, '0000-00-00', 'Take before bed'),
 (8, 95, 8, 5, '850 mg', 'Twice a day', '60 days', 120, 3, '0000-00-00', 'Long-term maintenance'),
-(9, 96, 9, 4, '10 mg', 'Once daily', '14 days', 14, 1, '0000-00-00', 'Non-drowsy formula'),
+(9, 96, 9, 4, '10 mg', 'Once daily', '14 days', 9, 1, '0000-00-00', 'Non-drowsy formula'),
 (9, 97, 9, 6, '20 mg', 'Once daily', '30 days', 30, 2, '0000-00-00', 'Take regularly'),
 (1, 98, 1, 8, '10 mg', 'Once daily', '7 days', 7, 0, '0000-00-00', 'For allergies'),
 (2, 99, 2, 9, '5 mg', 'Once daily', '90 days', 90, 3, '0000-00-00', 'Long-term therapy'),
@@ -336,7 +323,7 @@ ALTER TABLE `patient`
 -- Constraints for table `prescription`
 --
 ALTER TABLE `prescription`
-  ADD CONSTRAINT `fk_prescription_doctor` FOREIGN KEY (`doctorID`) REFERENCES `patient` (`patientID`) ON DELETE RESTRICT ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_prescription_doctor` FOREIGN KEY (`doctorID`) REFERENCES `doctor` (`doctorID`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
 -- Constraints for table `prescriptionitem`

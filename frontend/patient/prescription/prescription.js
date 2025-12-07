@@ -141,17 +141,17 @@ function renderPrescriptionGroup(group) {
 function renderMedicationRow(row) {
   return `
     <tr>
-      <td>${escapeHtml(row.medicine ?? "-")}</td>
-      <td>${escapeHtml(row.brand ?? "-")}</td>
+      <td>${escapeHtml(row.genericName ?? row.medicine ?? "-")}</td>
+      <td>${escapeHtml(row.brandName ?? row.brand ?? "-")}</td>
       <td>${escapeHtml(row.form ?? "-")}</td>
       <td>${escapeHtml(row.strength ?? "-")}</td>
       <td>${escapeHtml(row.dosage ?? "-")}</td>
       <td>${escapeHtml(row.frequency ?? "-")}</td>
       <td>${escapeHtml(row.duration ?? "-")}</td>
       <td>${escapeHtml(row.prescribed_amount ?? "-")}</td>
-      <td>${escapeHtml(row.refill_count ?? "-")}</td>
+      <td>${escapeHtml(row.refills ?? row.refill_count ?? "-")}</td>
       <td>${escapeHtml(row.instructions ?? "-")}</td>
-      <td>${escapeHtml(row.refillInterval ?? "-")}</td>
+      <td>${escapeHtml(row.refill_interval ?? row.refillInterval ?? "-")}</td>
       <td>
         <a 
           href="prescription_medication.php?prescriptionItemID=${encodeURIComponent(
