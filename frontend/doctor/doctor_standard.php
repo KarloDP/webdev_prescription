@@ -15,10 +15,10 @@ $user_name = $_SESSION['user']['name'] ?? 'Doctor';
 
 $activePage = $activePage ?? 'dashboard';
 $sidebarItems = $sidebarItems ?? [
-        'dashboard'     => 'Dashboard',
-        'patients'      => 'Patients',
-        'prescriptions' => 'Prescriptions',
-        'profile'       => 'Profile',
+    'dashboard'     => 'Dashboard',
+    'patients'      => 'Patients',
+    'prescriptions' => 'Prescriptions',
+    'profile'       => 'Profile',
 ];
 
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
@@ -37,7 +37,7 @@ $imgBase = rtrim($baseUrl, '/') . '/assets/images';
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title><?php echo htmlspecialchars(ucfirst($activePage) . ' | MediSync', ENT_QUOTES, 'UTF-8'); ?></title>
+    <title><?php echo htmlspecialchars(ucfirst($activePage) . ' | MediSync Wellness', ENT_QUOTES, 'UTF-8'); ?></title>
 
     <!-- Core/shared styles -->
     <link rel="stylesheet" href="<?php echo $cssPatientBase; ?>/table.css">
@@ -51,11 +51,11 @@ $imgBase = rtrim($baseUrl, '/') . '/assets/images';
     <?php endif; ?>
     <?php if ($activePage === 'prescriptions'): ?>
         <link rel="stylesheet" href="<?php echo $cssDoctorBase; ?>/prescriptions.css">
+        <link rel="stylesheet" href="<?php echo $cssDoctorBase; ?>/prescription_modal.css">
     <?php endif; ?>
     <?php if ($activePage === 'patients'): ?>
         <link rel="stylesheet" href="<?php echo $cssDoctorBase; ?>/patients.css">
     <?php endif; ?>
-
 </head>
 <body>
 
@@ -85,7 +85,6 @@ $imgBase = rtrim($baseUrl, '/') . '/assets/images';
             echo "</li>";
         }
         ?>
-
         <!-- Logout -->
         <li><a href="<?php echo $baseUrl . '/logout.php'; ?>">Logout</a></li>
     </ul>
@@ -97,6 +96,11 @@ $imgBase = rtrim($baseUrl, '/') . '/assets/images';
     echo $content ?? '<h1>Welcome</h1><p>Select an option from the sidebar.</p>';
     ?>
 </main>
+
+<?php if ($activePage === 'prescriptions'): ?>
+    <?php include(__DIR__ . '/prescriptions/prescription_modal.php'); ?>
+    <script src="<?php echo $baseUrl; ?>/frontend/doctor/prescriptions/prescriptions.js"></script>
+<?php endif; ?>
 
 </body>
 </html>

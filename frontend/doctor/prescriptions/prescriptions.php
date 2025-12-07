@@ -75,9 +75,6 @@ ob_start(); // Start capturing HTML output
         </div>
     </div>
 </div>
-
-<script src="prescriptions.js"></script>
-
 <?php
 $content = ob_get_clean();
 include(__DIR__ . '/../doctor_standard.php');
