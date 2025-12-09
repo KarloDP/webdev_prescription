@@ -41,6 +41,8 @@ ob_start();
     </div>
 
     <div class="table-frame">
+        <a href="add_patient.php" class="btn btn-primary" style="margin-bottom: 20px;">+ Add Patient</a>
+
         <table class="table-base">
             <thead>
                 <tr>
@@ -60,7 +62,10 @@ ob_start();
     </div>
 </div>
 
-<script src="patients.js"></script>
+<script src="patients.js">
+    const LOGGED_DOCTOR_ID = <?= $_SESSION['user']['doctorID'] ?? 'null' ?>;
+    const LOGGED_DOCTOR_NAME = "<?= $_SESSION['user']['name'] ?? '' ?>";
+</script>
 
 <?php
 $content = ob_get_clean(); 

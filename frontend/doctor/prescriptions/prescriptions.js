@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-    fetch('/webdev_prescription/backend/sql_handler/get_prescriptions_data.php')
+    fetch(`/webdev_prescription/backend/sql_handler/get_prescriptions_data.php?doctorID=${LOGGED_DOCTOR_ID}`)
+
         .then(res => res.text())
         .then(text => {
             try {
@@ -71,13 +72,19 @@ function renderActivePrescriptionsTable(prescriptions) {
         const start = formatDateISOtoLocal(p.issueDate);
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td data-label="Patient Name">${patientName}</td>
-            <td data-label="Medicine">${med}</td>
-            <td data-label="Dosage">${escapeHTML(p.dosage || '—')}</td>
-            <td data-label="Frequency">${escapeHTML(p.frequency || '—')}</td>
-            <td data-label="Start Date">${start}</td>
-            <td data-label="Notes">${escapeHTML(p.notes || '')}</td>
-        `;
+    <td data-label="Patient Name">${patientName}</td>
+    <td data-label="Medicine">${med}</td>
+    <td data-label="Dosage">${escapeHTML(p.dosage || '—')}</td>
+    <td data-label="Frequency">${escapeHTML(p.frequency || '—')}</td>
+    <td data-label="Start Date">${start}</td>
+    <td data-label="Notes">${escapeHTML(p.notes || '')}</td>
+    <td>
+        <button class="invalidate-btn" data-id="${p.prescriptionID}">
+          Invalidate
+        </button>
+    </td>
+`;
+
         tableBody.appendChild(row);
     });
 }
@@ -123,3 +130,34 @@ function escapeHTML(str) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[match];
     });
 }
+document.getElementById("add-prescription-btn").addEventListener("click", () => {
+    window.location.href = "./add_prescription.php";
+});
+
+// Handle invalidate button click
+document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("invalidate-btn")) {
+
+        const id = e.target.getAttribute("data-id");
+
+        if (!confirm("Invalidate this prescription?")) return;
+
+        fetch("/webdev_prescription/backend/sql_handler/prescription_table.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                action: "invalidate_prescription",
+                prescriptionID: id
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Prescription invalidated.");
+                    location.reload();
+                } else {
+                    alert("Error: " + data.message);
+                }
+            });
+    }
+});

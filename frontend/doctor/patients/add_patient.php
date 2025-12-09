@@ -1,5 +1,9 @@
 <?php
 
+$activePage = 'patients';
+session_start();
+
+
 if (!isset($_SESSION['user'])) {
     header("Location: ../../../login.php");
     exit();
@@ -37,4 +41,7 @@ include "../doctor_standard.php";
     <p id="message"></p>
 </div>
 
-<script src="add_patient.js"></script>
+<script src="add_patient.js">
+    const LOGGED_DOCTOR_ID = <?= $_SESSION['user']['doctorID'] ?? 'null' ?>;
+    const LOGGED_DOCTOR_NAME = "<?= $_SESSION['user']['name'] ?? '' ?>";
+</script>

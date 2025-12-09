@@ -5,11 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5e480325-aaa8-4eb3-ae15-400c2f6bfa35" name="Changes" comment="updated version">
+      <change afterPath="$PROJECT_DIR$/frontend/doctor/prescriptions/add_prescription.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/doctor/prescriptions/add_prescription.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/doctor/dashboard/dashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/dashboard/dashboard.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/doctor/doctor_standard.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/doctor_standard.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/sql_handler/prescription_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/backend/sql_handler/prescription_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/patients_details.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/patients_details.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/patients.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/patients.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/patients.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/patients.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/prescriptions/prescriptions.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/prescriptions/prescriptions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/prescriptions/prescriptions.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/prescriptions/prescriptions.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/doctor/profile/profile.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/profile/profile.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/doctor/profile/profile.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/profile/profile.php" afterDir="false" />
     </list>
@@ -69,7 +74,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;File.Encoding&quot;,
     &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
@@ -99,7 +104,9 @@
       <workItem from="1764836745063" duration="7607000" />
       <workItem from="1764862722557" duration="2210000" />
       <workItem from="1764865178461" duration="97000" />
-      <workItem from="1764865280552" duration="1758000" />
+      <workItem from="1764865280552" duration="2522000" />
+      <workItem from="1765011724507" duration="9180000" />
+      <workItem from="1765117488949" duration="600000" />
     </task>
     <task id="LOCAL-00001" summary="Updated database SQL file">
       <option name="closed" value="true" />
@@ -133,7 +140,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764690605842</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="updated version">
+      <option name="closed" value="true" />
+      <created>1764867296982</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1764867296982</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
