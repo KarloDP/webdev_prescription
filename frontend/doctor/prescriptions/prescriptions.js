@@ -56,9 +56,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const newPatientFullNameInput = document.getElementById('new-patient-full-name');
     const newPatientAgeInput = document.getElementById('new-patient-age');
     const newPatientGenderSelect = document.getElementById('new-patient-gender');
+    const newPatientEmailInput = document.getElementById('new-patient-email');
     const newPatientContactInput = document.getElementById('new-patient-contact');
 
-    const medicineInput = document.getElementById('prescription-medicine');
+    const brandNameInput = document.getElementById('brandNameInput');
+    const genericNameInput = document.getElementById('genericNameInput');
     const dosageInput = document.getElementById('prescription-dosage');
     const frequencyInput = document.getElementById('prescription-frequency');
     const startDateInput = document.getElementById('prescription-start');
@@ -95,9 +97,11 @@ document.addEventListener('DOMContentLoaded', function () {
         newPatientFullNameInput.value = '';
         newPatientAgeInput.value = '';
         newPatientGenderSelect.value = '';
+        newPatientEmailInput.value = '';
         newPatientContactInput.value = '';
 
-        medicineInput.value = '';
+        brandNameInput.value = '';
+        genericNameInput.value = '';
         dosageInput.value = '';
         frequencyInput.value = '';
         startDateInput.value = '';
@@ -128,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 newPatientFullNameInput.value = '';
                 newPatientAgeInput.value = '';
                 newPatientGenderSelect.value = '';
+                newPatientEmailInput.value = '';
                 newPatientContactInput.value = '';
             } else { // 'new' tab
                 searchPatientInput.value = '';
@@ -158,13 +163,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     patientSearchResults.innerHTML = '';
                     if (data.length > 0) {
                         data.forEach(p => {
+                            const pid = p.patientID ?? p.id; // use the actual key
                             const resultItem = document.createElement('div');
-                            resultItem.classList.add('search-result-item'); // Add a class for styling
-                            resultItem.dataset.patientId = p.id;
+                            resultItem.classList.add('search-result-item');
+                            resultItem.dataset.patientId = pid;
                             resultItem.dataset.patientName = `${p.firstName} ${p.lastName}`;
-                            resultItem.innerHTML = `${escapeHTML(p.firstName)} ${escapeHTML(p.lastName)} <span style="color:#888; font-size:0.8em;">(ID: ${p.id})</span>`;
+                            resultItem.innerHTML = `${escapeHTML(p.firstName)} ${escapeHTML(p.lastName)} <span style="color:#888; font-size:0.8em;">(ID: ${pid})</span>`;
                             resultItem.addEventListener('click', () => {
-                                selectPatient(p.id, `${p.firstName} ${p.lastName}`);
+                                selectPatient(pid, `${p.firstName} ${p.lastName}`);
                             });
                             patientSearchResults.appendChild(resultItem);
                         });
@@ -216,73 +222,99 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Event listener attached to save button.');
     }
 
+    async function postPrescription(payload) {
+        const res = await fetch('/WebDev_Prescription/backend/sql_handler/add_prescription.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(payload)
+        });
+
+        const raw = await res.text();
+        if (!res.ok) {
+            console.error('Add prescription API error body:', raw);
+            let msg = `HTTP ${res.status}`;
+            try {
+                const j = JSON.parse(raw);
+                if (j.details) msg = j.details;
+                else if (j.error) msg = j.error;
+            } catch {}
+            throw new Error(msg);
+        }
+
+        let data;
+        try { data = JSON.parse(raw); }
+        catch {
+            console.error('Invalid JSON from server:', raw);
+            throw new Error('Server returned invalid JSON');
+        }
+        if (data.error) throw new Error(data.details || data.message || 'Server error');
+        return data;
+    }
+
     async function saveExistingPatientPrescription() {
         if (!selectedPatient || !selectedPatient.id) {
-            alert('Please select an existing patient.');
-            return;
+            alert('Please select a patient.');
+            return { error: true, message: 'No patient selected' };
         }
-        if (!medicineInput.value.trim() || !dosageInput.value.trim() || !frequencyInput.value.trim() || !startDateInput.value.trim()) {
-            alert('Please fill in all prescription details.');
-            return;
+        const brand = brandNameInput.value.trim();
+        const generic = genericNameInput.value.trim();
+        if ((!brand && !generic) || !dosageInput.value.trim() || !frequencyInput.value.trim() || !startDateInput.value.trim()) {
+            alert('Brand or generic name, dosage, frequency, and start date are required.');
+            return { error: true, message: 'Missing fields' };
         }
 
-        const formData = new FormData();
-        formData.append('patientId', selectedPatient.id);
-        formData.append('medicineName', medicineInput.value.trim());
-        formData.append('dosage', dosageInput.value.trim());
-        formData.append('frequency', frequencyInput.value.trim());
-        formData.append('issueDate', startDateInput.value.trim());
-        formData.append('notes', notesInput.value.trim());
-
-        console.log('Submitting existing patient prescription:', Object.fromEntries(formData.entries()));
-
-        const res = await fetch('/webdev_prescription/backend/sql_handler/add_prescription_existing_patient.php', {
-            method: 'POST',
-            body: formData
-        });
-        return res.json();
+        const payload = {
+            mode: 'existing',
+            patientId: Number(selectedPatient.id),
+            brandName: brand,
+            genericName: generic,
+            dosage: dosageInput.value.trim(),
+            frequency: frequencyInput.value.trim(),
+            issueDate: startDateInput.value.trim(),
+            notes: notesInput.value.trim()
+        };
+        return postPrescription(payload);
     }
 
     async function saveNewPatientPrescription() {
         const fullName = newPatientFullNameInput.value.trim();
         const age = newPatientAgeInput.value.trim();
         const gender = newPatientGenderSelect.value;
+        const email = newPatientEmailInput.value.trim();
         const contact = newPatientContactInput.value.trim();
 
         if (!fullName || !age || !gender || !contact) {
-            alert('Please fill in all new patient details.');
-            return;
+            alert('Fill all required patient fields (name, age, gender, contact number).');
+            return { error: true, message: 'Missing patient fields' };
         }
-        if (!medicineInput.value.trim() || !dosageInput.value.trim() || !frequencyInput.value.trim() || !startDateInput.value.trim()) {
-            alert('Please fill in all prescription details.');
-            return;
+        const brand = brandNameInput.value.trim();
+        const generic = genericNameInput.value.trim();
+        if ((!brand && !generic) || !dosageInput.value.trim() || !frequencyInput.value.trim() || !startDateInput.value.trim()) {
+            alert('Brand or generic name, dosage, frequency, and start date are required.');
+            return { error: true, message: 'Missing prescription fields' };
         }
 
-        // Simple split for first and last name; consider more robust handling for complex names
         const nameParts = fullName.split(' ');
         const firstName = nameParts[0];
         const lastName = nameParts.slice(1).join(' ') || '';
 
-        const formData = new FormData();
-        formData.append('newPatientFirstName', firstName);
-        formData.append('newPatientLastName', lastName);
-        formData.append('newPatientAge', age);
-        formData.append('newPatientGender', gender);
-        formData.append('newPatientContact', contact); // Could be email or phone
-
-        formData.append('medicineName', medicineInput.value.trim());
-        formData.append('dosage', dosageInput.value.trim());
-        formData.append('frequency', frequencyInput.value.trim());
-        formData.append('issueDate', startDateInput.value.trim());
-        formData.append('notes', notesInput.value.trim());
-
-        console.log('Submitting new patient and prescription:', Object.fromEntries(formData.entries()));
-
-        const res = await fetch('/webdev_prescription/backend/sql_handler/add_prescription_new_patient.php', {
-            method: 'POST',
-            body: formData
-        });
-        return res.json();
+        const payload = {
+            mode: 'new',
+            firstName,
+            lastName,
+            age: Number(age),
+            gender,
+            email,
+            contact,
+            brandName: brand,
+            genericName: generic,
+            dosage: dosageInput.value.trim(),
+            frequency: frequencyInput.value.trim(),
+            issueDate: startDateInput.value.trim(),
+            notes: notesInput.value.trim()
+        };
+        return postPrescription(payload);
     }
 
     // Close modal when clicking outside panel
@@ -319,14 +351,16 @@ function renderPatientsTable(patients) {
         return;
     }
     patients.forEach(p => {
-        const age = p.birthDate ? calculateAge(p.birthDate) : '—';
-        const name = `${escapeHTML(p.firstName)} ${escapeHTML(p.lastName)}`;
+        const pid   = p.patientID ?? p.patientId ?? p.id ?? '—';
+        const first = p.firstName ?? p.firstname ?? p.first_name ?? '';
+        const last  = p.lastName  ?? p.lastname  ?? p.last_name  ?? '';
+        const dob   = p.birthDate ?? p.birthdate ?? p.dateOfBirth ?? p.dob ?? '';
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td data-label="Name">${name}</td>
-            <td data-label="Age">${age}</td>
-            <td data-label="Gender">${escapeHTML(p.gender || '—')}</td>
-            <td data-label="Contact">${escapeHTML(p.email || '—')}</td>
+            <td data-label="ID">${escapeHTML(pid)}</td>
+            <td data-label="First Name">${escapeHTML(first)}</td>
+            <td data-label="Last Name">${escapeHTML(last)}</td>
+            <td data-label="Date of Birth">${escapeHTML(dob)}</td>
         `;
         tableBody.appendChild(row);
     });

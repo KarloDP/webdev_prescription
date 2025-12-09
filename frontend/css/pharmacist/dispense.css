@@ -69,6 +69,15 @@
     padding-left: 0.5rem;
 }
 
+.patient-name {
+  margin-top: 4px;
+  font-weight: 600;
+  color: #222;
+}
+.patient-name.muted {
+  color: #777;
+}
+
 
 .prescription-item {
     background-color: #fff;

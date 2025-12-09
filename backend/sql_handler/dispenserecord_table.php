@@ -14,238 +14,115 @@ function respond($data, $statusCode = 200) {
     exit;
 }
 
-$method = $_SERVER['REQUEST_METHOD'];
+$txActive = false;
 
-$user   = require_user();          // from auth.php
-$role   = $user['role'];           // 'patient', 'doctor', 'pharmacist', 'admin'    
-$userID = (int)$user['id'];        // patientID/doctorID/pharmacistID/adminID depending on role
+try {
+    // Load shared connection and auth once
+    require_once __DIR__ . '/../includes/db_connect.php';
+    require_once __DIR__ . '/../includes/auth.php';
 
-/* ===========================================
-   GET  - view dispense history
-   =========================================== */
-if ($method === 'GET') {
-
-    // If a specific dispenseID is requested
-    if (isset($_GET['dispenseID'])) {
-        $dispenseID = (int)$_GET['dispenseID'];
-
-        if ($role === 'patient') {
-            // Patients: only their own records (via join patient -> prescription)
-            $sql = "
-                SELECT dr.*
-                FROM dispenserecord dr
-                JOIN prescriptionitem pi ON dr.prescriptionItemID = pi.prescriptionItemID
-                JOIN prescription p      ON pi.prescriptionID = p.prescriptionID
-                WHERE dr.dispenseID = ? AND p.patientID = ?
-            ";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                respond(['error' => 'Prepare failed: ' . $conn->error], 500);
-            }
-            $stmt->bind_param('ii', $dispenseID, $userID);
-
-        } elseif (in_array($role, ['admin', 'pharmacist', 'doctor'], true)) {
-            // Admin, pharmacist, doctor: can see any record
-            $sql = "SELECT * FROM dispenserecord WHERE dispenseID = ?";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                respond(['error' => 'Prepare failed: ' . $conn->error], 500);
-            }
-            $stmt->bind_param('i', $dispenseID);
-
-        } else {
-            respond(['error' => 'Unknown role: ' . $role], 403);
-        }
-
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if (!$result || $result->num_rows === 0) {
-            respond(['error' => 'Dispense record not found'], 404);
-        }
-
-        respond($result->fetch_assoc());
+    // Ensure $conn from db_connect.php
+    if (!isset($conn)) { global $conn; }
+    if (!($conn instanceof mysqli)) {
+        throw new Exception('Database connection not initialized', 500);
+    }
+    if ($conn->connect_errno) {
+        throw new Exception('Database connection error: ' . $conn->connect_error, 500);
     }
 
-    // No specific dispenseID → list records
-    if ($role === 'patient') {
-        // Only dispenserecords that belong to this patient
-        $sql = "
-            SELECT dr.*
-            FROM dispenserecord dr
-            JOIN prescriptionitem pi ON dr.prescriptionItemID = pi.prescriptionItemID
-            JOIN prescription p      ON pi.prescriptionID = p.prescriptionID
-            WHERE p.patientID = ?
-            ORDER BY dr.dateDispensed DESC, dr.dispenseID DESC
-        ";
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            respond(['error' => 'Prepare failed: ' . $conn->error], 500);
-        }
-        $stmt->bind_param('i', $userID);
-
-    } elseif (in_array($role, ['admin', 'pharmacist', 'doctor'], true)) {
-        //for all administrative users
-        //find record by dispenseID
-        if (isset($_GET['dispenseID'])) {
-            $dispenseID = (int)$_GET['dispenseID'];
-            $stmt = $conn->prepare(
-                'SELECT *
-                FROM dispenserecord
-                WHERE dispenseID = ?'
-            );
-            if (!$stmt) {
-                respond(['error' => 'Prepare failed: ' . $conn->error], 500);
-            }
-            $stmt->bind_param('i', $dispenseID);
-        
-        //find records by prescriptionItemID
-        }else if(isset($_GET['prescriptionItemID'])){
-            $prescriptionItemID = (int)$_GET['prescriptionItemID'];
-            $stmt = $conn->prepare(
-                'SELECT *
-                FROM dispenserecord
-                WHERE prescriptionItemID = ?
-                ORDER BY dateDispensed DESC, dispenseID DESC'
-            );
-            if (!$stmt) {
-                respond(['error' => 'Prepare failed: ' . $conn->error], 500);
-            }
-            $stmt->bind_param('i', $prescriptionItemID);
-        }
-        
-        else {
-            //see all records
-            $stmt = $conn->prepare(
-                'SELECT *
-                FROM dispenserecord
-                ORDER BY dateDispensed DESC, dispenseID DESC'
-            );
-        }
-        if (!$stmt) {
-            respond(['error' => 'Prepare failed: ' . $conn->error], 500);
-        }
-    } else {
-        respond(['error' => 'Unknown role: ' . $role], 403);
+    // Only pharmacists can dispense
+    $user = require_role(['pharmacist']); // ensures logged in and role
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Method not allowed', 405);
+    }
+    // Parse JSON
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new Exception('Invalid JSON input', 400);
     }
 
+    $prescriptionItemID = filter_var($input['prescriptionItemID'] ?? null, FILTER_VALIDATE_INT);
+    $dispensedQuantity  = filter_var($input['dispensedQuantity'] ?? null, FILTER_VALIDATE_INT);
+    if (!$prescriptionItemID || !$dispensedQuantity || $dispensedQuantity <= 0) {
+        throw new Exception('prescriptionItemID and positive dispensedQuantity are required', 400);
+    }
+
+    // Resolve pharmacyID from session; if not present, fall back to user id
+    // Adjust if your auth stores a different key (e.g., pharmacy_id)
+    $pharmacyID = (int)($user['pharmacyID'] ?? $user['id'] ?? 0);
+    if ($pharmacyID <= 0) {
+        throw new Exception('Could not resolve pharmacyID for this pharmacist', 400);
+    }
+
+    // Start transaction
+    if (!$conn->begin_transaction()) {
+        throw new Exception('Failed to start transaction: ' . $conn->error, 500);
+    }
+    $txActive = true;
+
+    // Lock item row and validate remaining amount
+    $stmt = $conn->prepare("SELECT prescribed_amount, prescriptionID FROM prescriptionitem WHERE prescriptionItemID = ? FOR UPDATE");
+    if (!$stmt) throw new Exception('Prepare failed (select item): ' . $conn->error, 500);
+    $stmt->bind_param('i', $prescriptionItemID);
     $stmt->execute();
-    $result = $stmt->get_result();
+    $item = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
 
-    if (!$result) {
-        respond(['error' => 'Database error: ' . $conn->error], 500);
+    if (!$item) {
+        throw new Exception('Prescription item not found', 404);
     }
 
-    $data = [];
-    while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
-    }
-    respond($data);
-}
+    $currentAmount  = (int)$item['prescribed_amount'];
+    $prescriptionID = (int)$item['prescriptionID'];
 
-/* ===========================================
-   POST - add dispense record
-   Only pharmacists can add.
-   =========================================== */
-elseif ($method === 'POST') {
-
-    if ($role !== 'pharmacist') {
-        respond(['error' => 'Only pharmacists can add dispense records'], 403);
+    if ($dispensedQuantity > $currentAmount) {
+        throw new Exception('Dispensed quantity exceeds remaining amount', 400);
     }
 
-    $raw  = file_get_contents('php://input');
-    $data = json_decode($raw, true);
+    // Update remaining quantity on the prescription item
+    $newAmount = $currentAmount - $dispensedQuantity;
+    $stmt = $conn->prepare("UPDATE prescriptionitem SET prescribed_amount = ? WHERE prescriptionItemID = ?");
+    if (!$stmt) throw new Exception('Prepare failed (update item): ' . $conn->error, 500);
+    $stmt->bind_param('ii', $newAmount, $prescriptionItemID);
+    $stmt->execute();
+    $stmt->close();
 
-    if (!is_array($data)) {
-        respond(['error' => 'Invalid JSON body'], 400);
-    }
-
-    $prescriptionItemID = isset($data['prescriptionItemID']) ? (int)$data['prescriptionItemID'] : 0;
-    $pharmacyID         = isset($data['pharmacyID'])         ? (int)$data['pharmacyID']         : 0;
-    $quantityDispensed  = isset($data['quantityDispensed'])  ? (int)$data['quantityDispensed']  : 0;
-    $dateDispensed      = trim($data['dateDispensed']      ?? '');     // 'YYYY-MM-DD'
-    $status             = trim($data['status']             ?? '');
-    $nextAvailableDates = trim($data['nextAvailableDates'] ?? '');     // 'YYYY-MM-DD'
-
-    // pharmacistName from session user
-    $pharmacistName = $user['name'] ?? 'Pharmacist';
-
-    if ($prescriptionItemID <= 0 || $pharmacyID <= 0 || $quantityDispensed <= 0 ||
-        $dateDispensed === '' || $status === '' || $nextAvailableDates === '') {
-        respond(['error' => 'All fields are required'], 400);
-    }
-
-    $sql = "
-        INSERT INTO dispenserecord
-            (prescriptionItemID, pharmacyID, quantityDispensed, dateDispensed,
-             pharmacistName, status, nextAvailableDates)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ";
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        respond(['error' => 'Prepare failed: ' . $conn->error], 500);
-    }
-
-    // 3 ints, 4 strings (dates treated as strings)
-    $stmt->bind_param(
-        'iiissss',
-        $prescriptionItemID,
-        $pharmacyID,
-        $quantityDispensed,
-        $dateDispensed,
-        $pharmacistName,
-        $status,
-        $nextAvailableDates
+    // Insert into dispenserecord (dispenseDate uses default CURRENT_TIMESTAMP)
+    $stmt = $conn->prepare(
+        "INSERT INTO dispenserecord (prescriptionItemID, pharmacyID, dispensedQuantity) VALUES (?, ?, ?)"
     );
-
-    if ($stmt->execute()) {
-        respond([
-            'status'      => 'success',
-            'message'     => 'Dispense record added',
-            'insert_ID'   => $stmt->insert_id
-        ], 201);
-    } else {
-        respond(['error' => 'Insert failed: ' . $stmt->error], 500);
-    }
-}
-
-/* ===========================================
-   DELETE - delete dispense record
-   Only admins can delete.
-   =========================================== */
-elseif ($method === 'DELETE') {
-
-    if ($role !== 'admin') {
-        respond(['error' => 'Only admins can delete dispense records'], 403);
-    }
-
-    if (!isset($_GET['dispenseID'])) {
-        respond(['error' => 'dispenseID is required'], 400);
-    }
-
-    $dispenseID = (int)$_GET['dispenseID'];
-
-    $stmt = $conn->prepare("DELETE FROM dispenserecord WHERE dispenseID = ?");
-    if (!$stmt) {
-        respond(['error' => 'Prepare failed: ' . $conn->error], 500);
-    }
-    $stmt->bind_param('i', $dispenseID);
+    if (!$stmt) throw new Exception('Prepare failed (insert record): ' . $conn->error, 500);
+    $stmt->bind_param('iii', $prescriptionItemID, $pharmacyID, $dispensedQuantity);
     $stmt->execute();
+    $insertId = $stmt->insert_id;
+    $stmt->close();
 
-    if ($stmt->affected_rows > 0) {
-        respond([
-            'status'  => 'success',
-            'message' => 'Dispense record deleted'
-        ]);
-    } else {
-        respond(['error' => 'Dispense record not found'], 404);
+    // If all items are dispensed, optionally update prescription status to 'Dispensed'
+    $stmt = $conn->prepare("SELECT SUM(prescribed_amount) AS total_remaining FROM prescriptionitem WHERE prescriptionID = ?");
+    if (!$stmt) throw new Exception('Prepare failed (check total): ' . $conn->error, 500);
+    $stmt->bind_param('i', $prescriptionID);
+    $stmt->execute();
+    $totalRemaining = (int)($stmt->get_result()->fetch_assoc()['total_remaining'] ?? 0);
+    $stmt->close();
+
+    if ($totalRemaining <= 0) {
+        $stmt = $conn->prepare("UPDATE prescription SET status = 'Dispensed' WHERE prescriptionID = ?");
+        if (!$stmt) throw new Exception('Prepare failed (update prescription status): ' . $conn->error, 500);
+        $stmt->bind_param('i', $prescriptionID);
+        $stmt->execute();
+        $stmt->close();
     }
-}
 
-/* ===========================================
-   Unsupported method
-   =========================================== */
-else {
-    respond(['error' => 'Method not allowed'], 405);
+    $conn->commit();
+    $txActive = false;
+
+    respond(['success' => true, 'insert_id' => $insertId], 201);
+
+} catch (Throwable $e) {
+    if ($txActive && isset($conn) && ($conn instanceof mysqli)) {
+        $conn->rollback();
+    }
+    $code = ($e->getCode() >= 400 && $e->getCode() < 600) ? $e->getCode() : 500;
+    respond(['error' => true, 'details' => $e->getMessage()], $code);
 }
 ?>

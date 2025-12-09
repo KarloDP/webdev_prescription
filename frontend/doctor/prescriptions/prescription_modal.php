@@ -1,5 +1,5 @@
 <?php
-// prescription_modal.php
+// filepath: c:\wamp64\www\WebDev_Prescription\frontend\doctor\prescriptions\prescription_modal.php
 ?>
 
 <!-- Prescription Modal Popup -->
@@ -21,7 +21,7 @@
         <div class="modal-tab-content" id="tab-existing">
             <label for="search-patient">Search Patient</label>
             <input type="text" id="search-patient" class="modal-input" placeholder="Type patient name...">
-            <input type="hidden" id="selected-patient-id"> <!-- Hidden input for selected patient ID -->
+            <input type="hidden" id="selected-patient-id">
             <div id="patient-search-results" class="search-results"></div>
         </div>
 
@@ -41,16 +41,22 @@
                 <option value="Other">Other</option>
             </select>
 
-            <label for="new-patient-contact">Contact</label>
-            <input type="text" id="new-patient-contact" class="modal-input" placeholder="Email or phone">
+            <label for="new-patient-email">Email</label>
+            <input type="email" id="new-patient-email" class="modal-input" placeholder="e.g. patient@example.com">
+
+            <label for="new-patient-contact">Contact Number</label>
+            <input type="tel" id="new-patient-contact" class="modal-input" placeholder="e.g. +1234567890">
         </div>
 
         <hr>
 
         <!-- Prescription Details -->
         <div class="modal-section">
-            <label for="prescription-medicine">Medicine</label>
-            <input type="text" id="prescription-medicine" class="modal-input" placeholder="Medicine name">
+            <label for="brandNameInput">Brand Name</label>
+            <input type="text" id="brandNameInput" class="modal-input" placeholder="e.g. Paracetamol">
+
+            <label for="genericNameInput">Generic Name</label>
+            <input type="text" id="genericNameInput" class="modal-input" placeholder="e.g. Acetaminophen">
 
             <label for="prescription-dosage">Dosage</label>
             <input type="text" id="prescription-dosage" class="modal-input" placeholder="e.g. 500 mg">
@@ -62,7 +68,7 @@
             <input type="date" id="prescription-start" class="modal-input">
 
             <label for="prescription-notes">Notes</label>
-            <textarea id="prescription-notes" class="modal-input" rows="2"></textarea>
+            <textarea id="prescription-notes" class="modal-input" rows="3" placeholder="Additional instructions..."></textarea>
         </div>
 
         <!-- Actions -->

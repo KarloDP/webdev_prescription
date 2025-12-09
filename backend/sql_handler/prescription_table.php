@@ -74,28 +74,20 @@ if ($method == 'GET') {
 
 
     if (isset($_GET['prescriptionID'])) {
-        $prescriptionID = (int)$_GET['prescriptionID'];
-
-        //patient
-        if ($role === 'patient') {
-            $stmt = $conn->prepare(
-                'SELECT * FROM prescription WHERE prescriptionID = ? AND patientID = ?'
-            );
-            $stmt->bind_param('ii', $prescriptionID, $userID);
-        } else { //all other adminisatrative users
-            $stmt = $conn->prepare(
-                'SELECT * FROM prescription WHERE prescriptionID = ?'
-            );
-            $stmt->bind_param('i', $prescriptionID);
-        }
-
+        $id = (int)$_GET['prescriptionID'];
+        $stmt = $conn->prepare("
+            SELECT p.*, pat.firstName AS patientFirstName, pat.lastName AS patientLastName
+            FROM prescription p
+            JOIN patient pat ON pat.patientID = p.patientID
+            WHERE p.prescriptionID = ?
+            LIMIT 1
+        ");
+        if (!$stmt) respond(['error' => true, 'details' => 'Prepare failed: ' . $conn->error], 500);
+        $stmt->bind_param('i', $id);
         $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows === 0) {
-            respond(['error' => 'Prescription not found'], 404);
-        }
-        respond($result->fetch_assoc());
+        $rx = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        respond($rx ?: []);
     }
 
     //retun all prescription with a certain patients ID
