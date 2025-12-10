@@ -1,0 +1,37 @@
+services:
+  web:
+    build: .
+    container_name: webdev_prescription_app
+    ports:
+      - "80:80"   # serve on host port 80
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:11
+    container_name: webdev_prescription_db
+    restart: unless-stopped
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
+      MARIADB_DATABASE: webdev_prescription
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./assets/database/webdev_prescription.sql:/docker-entrypoint-initdb.d/webdev_prescription.sql:ro
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: webdev_prescription_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: ""
+    depends_on:
+      - db
+
+volumes:
+  db_data:
