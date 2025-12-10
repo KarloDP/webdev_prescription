@@ -66,12 +66,6 @@ ob_start();
                                class="btn-green small">
                                 Edit
                             </a>
-
-                            <a href="#"
-                               class="btn-gray small view-history"
-                               data-id="<?= $row['medicationID'] ?>">
-                                History
-                            </a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
