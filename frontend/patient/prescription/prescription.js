@@ -96,21 +96,6 @@ function renderPrescriptionGroup(group) {
       Doctor: ${doctor} | Issued: ${issued} | Expires: ${expires}
     </p>
 
-    <div class="prescription-button-container">
-      <button
-              class="prescription-btn-view"
-              onclick="window.location.href='prescription_medication.php?prescriptionID=${rxId}'"
-            >
-            View Medication Details
-      </button>
-    </div>
-
-   // <div class="prescription-button-container">
-   //   <a href="prescription_medication.php?prescriptionID=${rxId}" class="prescription-btn-view">
-   //     View Full Medication Details
-   //   </a>
-   // </div>
-
     <div class="table-frame">
       <table class="table-base">
         <thead>
@@ -135,7 +120,6 @@ function renderPrescriptionGroup(group) {
     </div>
   </div>
 `;
-
 }
 
 function renderMedicationRow(row) {
