@@ -42,7 +42,6 @@ ob_start();
             <tr><th>License</th><td><?= $license ?></td></tr>
             <tr><th>Status</th><td><?= $status ?></td></tr>
         </table>
-        <button id="logoutBtn" class="btn-logout">Logout</button>
     </div>
 </div>
 <script src="profile.js"></script>

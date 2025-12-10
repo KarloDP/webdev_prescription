@@ -19,6 +19,7 @@ async function loadDispenseHistory(itemID) {
 
   try {
     const res = await fetch(DISPENSE_API, {
+      method: "GET",
       credentials: 'include'
     });
     
