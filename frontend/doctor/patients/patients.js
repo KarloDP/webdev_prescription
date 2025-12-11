@@ -4,8 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let allPatients = []; // Cache for all patient data
 
     // Fetch initial data
-    fetch(`/WebDev_Prescription/backend/sql_handler/get_doctor_patients.php?doctorID=${LOGGED_DOCTOR_ID}`)
-
+    fetch('/../../../backend/sql_handler/get_doctor_patients.php')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
