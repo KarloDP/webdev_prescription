@@ -5,18 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5e480325-aaa8-4eb3-ae15-400c2f6bfa35" name="Changes" comment="updated version">
-      <change afterPath="$PROJECT_DIR$/frontend/doctor/prescriptions/add_prescription.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/doctor/prescriptions/add_prescription.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/sql_handler/prescription_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/backend/sql_handler/prescription_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/add_patient.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/sql_handler/get_doctor_patients.php" beforeDir="false" afterPath="$PROJECT_DIR$/backend/sql_handler/get_doctor_patients.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/dashboard/dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/dashboard/dashboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/dashboard/dashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/dashboard/dashboard.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/patients.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/patients.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/doctor/patients/patients.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/patients/patients.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/prescriptions/add_prescription.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/prescriptions/add_prescription.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/doctor/prescriptions/prescription_modal.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/prescriptions/prescription_modal.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/doctor/prescriptions/prescriptions.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/prescriptions/prescriptions.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/doctor/prescriptions/prescriptions.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/prescriptions/prescriptions.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/doctor/profile/profile.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/profile/profile.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/doctor/profile/profile.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/doctor/profile/profile.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,31 +58,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Syed&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/wamp64/www/WebDev_Prescription&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;File.Encoding&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "Syed",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/wamp64/www/WebDev_Prescription",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "ml.llm.LLMConfigurable",
+    "show.migrate.to.gradle.popup": "false",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mysql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
     ]
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -107,6 +106,8 @@
       <workItem from="1764865280552" duration="2522000" />
       <workItem from="1765011724507" duration="9180000" />
       <workItem from="1765117488949" duration="600000" />
+      <workItem from="1765284476152" duration="1665000" />
+      <workItem from="1765455098778" duration="13221000" />
     </task>
     <task id="LOCAL-00001" summary="Updated database SQL file">
       <option name="closed" value="true" />
@@ -148,7 +149,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764867296982</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="updated version">
+      <option name="closed" value="true" />
+      <created>1765284504769</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1765284504769</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -160,5 +169,9 @@
     <MESSAGE value="Doctor assigned part" />
     <MESSAGE value="updated version" />
     <option name="LAST_COMMIT_MESSAGE" value="updated version" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

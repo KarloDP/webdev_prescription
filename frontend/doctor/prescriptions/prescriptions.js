@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Data Fetching and Table Rendering ---
     const refreshTables = () => {
-        fetch('/../../../backend/sql_handler/get_prescriptions_data.php')
+        fetch('/WebDev_Prescription/backend/sql_handler/get_prescriptions_data.php')
             .then(res => res.text())
             .then(text => {
                 try {
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         searchTimeout = setTimeout(() => {
-            fetch(`/../../../backend/sql_handler/get_patients_list.php?query=${encodeURIComponent(query)}`)
+            fetch(`/WebDev_Prescription/backend/sql_handler/get_patients_list.php?query=${encodeURIComponent(query)}`)
                 .then(res => res.json())
                 .then(data => {
                     patientSearchResults.innerHTML = '';
