@@ -1,5 +1,4 @@
 <?php
-<?php
 require_once __DIR__ . '/../../backend/includes/auth.php';
 $user = require_role(['patient']);
 

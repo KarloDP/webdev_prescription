@@ -1,5 +1,4 @@
 <?php
-<?php
 // Set the header first to ensure JSON output, even on error
 header('Content-Type: application/json');
 
