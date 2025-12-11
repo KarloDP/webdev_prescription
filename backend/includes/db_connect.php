@@ -1,5 +1,6 @@
 <?php
-$servername = "127.0.0.1";  // match the service name in docker-compose
+//$servername = "db";  // match the service name in docker-compose
+$servername = "127.0.0.1";
 $username   = "root";
 $password   = "";
 $database   = "webdev_prescription";
