@@ -1,6 +1,6 @@
 //default landing page. redirect to login page if user session is not started.
 document.addEventListener('DOMContentLoaded', function() {
-  fetch('/WebDev_Prescription/backend/sql_handler/get_dashboard_stats.php')
+  fetch('/../../../backend/sql_handler/get_dashboard_stats.php')
     .then(r => r.json())
     .then(data => {
       document.getElementById('patients-count').textContent = data.total_patients ?? '0';
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('meds-prescribed-count').textContent = 'N/A';
     });
 
-  fetch('/WebDev_Prescription/backend/sql_handler/get_patients_list.php')
+  fetch('/../../../backend/sql_handler/get_patients_list.php')
     .then(r => r.json())
     .then(data => {
       const tbody = document.getElementById('patients-table-body');
