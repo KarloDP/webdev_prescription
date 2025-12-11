@@ -3,12 +3,22 @@
 ob_start();
 ini_set('display_errors', '0');
 error_reporting(E_ALL);
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 include(__DIR__ . '/../includes/db_connect.php');
 include(__DIR__ . '/../includes/auth.php');
 
+function respond($data, $code = 200) {
+    http_response_code($code);
+    echo json_encode($data);
+    exit;
+}
+
 try {
+    if (!($conn instanceof mysqli)) {
+        throw new Exception('DB connection not initialized', 500);
+    }
+
     $user = require_role(['doctor']); // ensure doctor is logged in
     $doctorID = (int) ($user['id'] ?? $user['doctorID'] ?? $user['doctor_id'] ?? $user['user_id'] ?? 0);
     if ($doctorID <= 0) throw new Exception('Unable to determine doctor ID from session.');
@@ -82,8 +92,9 @@ try {
         $stmt->close();
     }
 
+    respond($data);
+
     ob_end_clean();
-    echo json_encode($data);
     $conn->close();
     exit;
 } catch (Exception $e) {

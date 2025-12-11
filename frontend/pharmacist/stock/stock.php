@@ -1,59 +1,40 @@
 <?php
 session_start();
 
-include(__DIR__ . '/../../../backend/includes/auth.php');
-include(__DIR__ . '/../../../backend/includes/db_connect.php');
+require_once __DIR__ . '/../../../backend/includes/auth.php';
+require_login('/WebDev_Prescription/login.php', ['pharmacist']);
 
-// Redirect if not logged in as pharmacist
-if (!isset($_SESSION['pharmacistID'])) {
-    header("Location: ../TestLoginPharmacist.php");
-    exit;
-}
-
-$pharmacistName = $_SESSION['pharmacist_name'] ?? 'Pharmacist';
+// Sidebar highlight
 $activePage = 'stock';
 
-// Fetch stock list
-$stockQuery = "
-    SELECT 
-        medicationID,
-        genericName,
-        brandName,
-        form,
-        strength,
-        manufacturer,
-        stock
-    FROM medication
-    ORDER BY genericName ASC
-";
+// Load stock list from backend handler
+$stockList = include __DIR__ . '/../../../backend/pharmacist/stock/get_stock.php';
 
-$stmt = $conn->prepare($stockQuery);
-$stmt->execute();
-$stockResult = $stmt->get_result();
+// Page-specific CSS
+$pageStyles = '
+    <link rel="stylesheet" href="stock.css">
+';
 
-// Start capturing content for pharmacist_standard.php
+// -----------------------------
+// START PAGE CONTENT CAPTURE
+// -----------------------------
 ob_start();
 ?>
 
-<!-- Page-specific CSS -->
-<link rel="stylesheet" href="../../assets/css/table.css">
-<link rel="stylesheet" href="../../assets/css/role-pharmacist.css">
-
-<div class="pharmacist-stock-page">
-
-    <h2>Medication Stock</h2>
-    <p>Below is the complete list of medication stock levels.</p>
+    <div class="page-header">
+        <h1>Medication Stock Inventory</h1>
+        <p class="subtitle">Manage, monitor, and update medication availability.</p>
+    </div>
 
     <!-- Add Stock Button -->
-    <div style="margin: 15px 0;">
-        <a href="add_stock.php" class="btn-view"
-           style="padding:10px 15px;background:#1e3d2f;color:#fff;border-radius:4px;text-decoration:none;">
+    <div class="actions-bar">
+        <a href="add_stock.php" class="btn-green large">
             + Add Stock
         </a>
     </div>
 
-    <!-- Table container -->
-    <div class="table-frame">
+    <!-- Stock Table -->
+    <div class="table-container">
         <table class="table-base">
             <thead>
             <tr>
@@ -64,16 +45,15 @@ ob_start();
                 <th>Strength</th>
                 <th>Manufacturer</th>
                 <th>Stock</th>
-                <th>Actions</th>
+                <th style="text-align:center;">Actions</th>
             </tr>
             </thead>
 
             <tbody>
-            <?php if ($stockResult && $stockResult->num_rows > 0): ?>
-                <?php while ($row = $stockResult->fetch_assoc()): ?>
-                    <?php $id = $row['medicationID']; ?>
+            <?php if (!empty($stockList)) : ?>
+                <?php foreach ($stockList as $row) : ?>
                     <tr>
-                        <td><?= $id ?></td>
+                        <td><?= htmlspecialchars($row['medicationID']) ?></td>
                         <td><?= htmlspecialchars($row['genericName']) ?></td>
                         <td><?= htmlspecialchars($row['brandName']) ?></td>
                         <td><?= htmlspecialchars($row['form']) ?></td>
@@ -81,46 +61,31 @@ ob_start();
                         <td><?= htmlspecialchars($row['manufacturer']) ?></td>
                         <td><?= htmlspecialchars($row['stock']) ?></td>
 
-                        <td>
-                            <!-- Edit Button -->
-                            <a href="edit_stock.php?medicationID=<?= $id ?>"
-                               class="btn-view"
-                               style="background:#1e3d2f;color:#fff;padding:5px 10px;border-radius:4px;text-decoration:none;">
+                        <td class="action-col">
+                            <a href="edit_stock.php?medicationID=<?= $row['medicationID'] ?>"
+                               class="btn-green small">
                                 Edit
-                            </a>
-
-                            <!-- View History Button -->
-                            <a href="#" class="btn-view view-history"
-                               data-id="<?= $id ?>"
-                               style="background:#6c757d;color:#fff;padding:5px 10px;border-radius:4px;text-decoration:none;margin-left:5px;">
-                                View History
                             </a>
                         </td>
                     </tr>
-                <?php endwhile; ?>
+                <?php endforeach; ?>
 
-            <?php else: ?>
-                <tr><td colspan="8" style="text-align:center;">No stock records found.</td></tr>
+            <?php else : ?>
+                <tr>
+                    <td colspan="8" class="empty-message">
+                        No medication stock records found.
+                    </td>
+                </tr>
             <?php endif; ?>
             </tbody>
         </table>
     </div>
 
-</div>
-
-<!-- JS for View History behaviour -->
-<script src="stock.js"></script>
+    <!-- JS Controller -->
+    <script src="stock.js"></script>
 
 <?php
-// final captured content
-$content = ob_get_clean();
+$pageContent = ob_get_clean();
 
-
-$standard = __DIR__ . '/../pharmacist_standard.php';
-
-if (file_exists($standard)) {
-    include $standard;
-} else {
-    echo $content;
-}
-?>
+// Render inside pharmacist layout
+include __DIR__ . '/../pharmacy_standard.php';

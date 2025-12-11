@@ -1,0 +1,100 @@
+.prescription-page-container {
+    padding: 2rem;
+}
+
+.page-header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+
+.prescription-card {
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.card-header {
+    padding: 1rem 1.5rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.rx-id {
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.active { background-color: #d4edda; color: #155724; }
+.status-badge.dispensed { background-color: #cce5ff; color: #004085; }
+.status-badge.expired { background-color: #f8d7da; color: #721c24; }
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-body > p {
+    margin-bottom: 1.5rem;
+}
+
+.medication-table-container {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-title {
+    padding: 0.75rem 1rem;
+    background-color: #e9ecef;
+    font-weight: 600;
+    color: #495057;
+    font-style: italic;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 0.9rem;
+}
+
+thead th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.btn-history {
+    background-color: #00573d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+}

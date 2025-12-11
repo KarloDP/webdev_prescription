@@ -96,21 +96,6 @@ function renderPrescriptionGroup(group) {
       Doctor: ${doctor} | Issued: ${issued} | Expires: ${expires}
     </p>
 
-    <div class="prescription-button-container">
-      <button
-              class="prescription-btn-view"
-              onclick="window.location.href='prescription_medication.php?prescriptionID=${rxId}'"
-            >
-            View Medication Details
-      </button>
-    </div>
-
-   // <div class="prescription-button-container">
-   //   <a href="prescription_medication.php?prescriptionID=${rxId}" class="prescription-btn-view">
-   //     View Full Medication Details
-   //   </a>
-   // </div>
-
     <div class="table-frame">
       <table class="table-base">
         <thead>
@@ -135,23 +120,22 @@ function renderPrescriptionGroup(group) {
     </div>
   </div>
 `;
-
 }
 
 function renderMedicationRow(row) {
   return `
     <tr>
-      <td>${escapeHtml(row.medicine ?? "-")}</td>
-      <td>${escapeHtml(row.brand ?? "-")}</td>
+      <td>${escapeHtml(row.genericName ?? row.medicine ?? "-")}</td>
+      <td>${escapeHtml(row.brandName ?? row.brand ?? "-")}</td>
       <td>${escapeHtml(row.form ?? "-")}</td>
       <td>${escapeHtml(row.strength ?? "-")}</td>
       <td>${escapeHtml(row.dosage ?? "-")}</td>
       <td>${escapeHtml(row.frequency ?? "-")}</td>
       <td>${escapeHtml(row.duration ?? "-")}</td>
       <td>${escapeHtml(row.prescribed_amount ?? "-")}</td>
-      <td>${escapeHtml(row.refill_count ?? "-")}</td>
+      <td>${escapeHtml(row.refills ?? row.refill_count ?? "-")}</td>
       <td>${escapeHtml(row.instructions ?? "-")}</td>
-      <td>${escapeHtml(row.refillInterval ?? "-")}</td>
+      <td>${escapeHtml(row.refill_interval ?? row.refillInterval ?? "-")}</td>
       <td>
         <a 
           href="prescription_medication.php?prescriptionItemID=${encodeURIComponent(

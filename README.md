@@ -21,3 +21,8 @@ in "C:\Windows\System32\drivers\etc\hosts" add this line to both server and clie
 notes:
 make sure firewall is off
 all systems of wamp are running
+
+DOCKER INSTRUCTIONS:
+inside the root folder run
+Creating and running the image:
+docker-compose up --build

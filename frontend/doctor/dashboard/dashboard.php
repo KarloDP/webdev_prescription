@@ -1,16 +1,19 @@
 <?php
- // Start the session to access user data
+// filepath: c:\wamp64\www\WebDev_Prescription\frontend\doctor\dashboard\dashboard.php
+require_once(__DIR__ . '/../../../backend/includes/auth.php');
+require_once(__DIR__ . '/../../../backend/includes/db_connect.php');
+require_login('/webdev_prescription/login.php', ['doctor']);
 
 $activePage = 'dashboard';
+$doctorName = $_SESSION['user']['name'] ?? 'Doctor';
 
-$doctorName = "Doctor"; // Default value
-if (isset($_SESSION['user']['name'])) {
-    // Sanitize output to prevent XSS
-    $fullName = htmlspecialchars($_SESSION['user']['name']);
-    $doctorName = "Dr. {$fullName}!";
-}
+
 ob_start();
 ?>
+<div class="dash-hero">
+  <h2>Welcome back, <?= htmlspecialchars($doctorName) ?></h2>
+  <p>Here is a summary of your activity.</p>
+</div>
 
 <div class="doctor-dashboard">
     <!-- Welcome Row -->

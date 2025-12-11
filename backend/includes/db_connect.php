@@ -1,5 +1,5 @@
 <?php
-// db_connect.php
+//$servername = "db";  // match the service name in docker-compose
 $servername = "127.0.0.1";
 $username   = "root";
 $password   = "";
@@ -12,7 +12,6 @@ try {
     $conn = new mysqli($servername, $username, $password, $database, $port);
     $conn->set_charset('utf8mb4');
 } catch (Throwable $e) {
-    // Log error in real app; show minimal message in dev
     error_log('DB connect error: ' . $e->getMessage());
     http_response_code(500);
     die('Database connection error.');

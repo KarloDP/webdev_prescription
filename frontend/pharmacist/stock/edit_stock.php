@@ -53,14 +53,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($updateStmt->execute()) {
             $successMsg = "Stock updated successfully.";
-            $med['stock'] = $updatedStock; // Refresh value shown on page
+            $med['stock'] = $updatedStock; // Refresh displayed value
         } else {
             $errorMsg = "Failed to update stock.";
         }
     }
 }
 
-// Capture page content
+// -----------------------------
+// BEGIN PAGE CONTENT
+// -----------------------------
 ob_start();
 ?>
 
@@ -89,90 +91,68 @@ ob_start();
                 <tbody>
                 <tr>
                     <th>Medication ID</th>
-                    <td class="value-cell">
-                        <?= $med['medicationID'] ?>
-                    </td>
+                    <td class="value-cell"><?= $med['medicationID'] ?></td>
                 </tr>
 
                 <tr>
                     <th>Generic Name</th>
-                    <td class="value-cell">
-                        <?= htmlspecialchars($med['genericName']) ?>
-                    </td>
+                    <td class="value-cell"><?= htmlspecialchars($med['genericName']) ?></td>
                 </tr>
 
                 <tr>
                     <th>Brand Name</th>
-                    <td class="value-cell">
-                        <?= htmlspecialchars($med['brandName']) ?>
-                    </td>
+                    <td class="value-cell"><?= htmlspecialchars($med['brandName']) ?></td>
                 </tr>
 
                 <tr>
                     <th>Form</th>
-                    <td class="value-cell">
-                        <?= htmlspecialchars($med['form']) ?>
-                    </td>
+                    <td class="value-cell"><?= htmlspecialchars($med['form']) ?></td>
                 </tr>
 
                 <tr>
                     <th>Strength</th>
-                    <td class="value-cell">
-                        <?= htmlspecialchars($med['strength']) ?>
-                    </td>
+                    <td class="value-cell"><?= htmlspecialchars($med['strength']) ?></td>
                 </tr>
 
                 <tr>
                     <th>Manufacturer</th>
-                    <td class="value-cell">
-                        <?= htmlspecialchars($med['manufacturer']) ?>
-                    </td>
+                    <td class="value-cell"><?= htmlspecialchars($med['manufacturer']) ?></td>
                 </tr>
 
                 <tr>
                     <th>Stock</th>
                     <td class="value-cell">
-                        <input
-                            type="number"
-                            name="stock"
-                            min="0"
-                            value="<?= htmlspecialchars($med['stock']) ?>"
-                        >
-                        <!-- error text injected here by JS if needed -->
+                        <input type="number" name="stock" min="0"
+                               value="<?= htmlspecialchars($med['stock']) ?>">
                     </td>
                 </tr>
                 </tbody>
             </table>
 
-            <div class="edit-stock-actions" style="margin-top: 18px;">
-                <button type="submit" class="btn-save">
-                    Update Stock
-                </button>
-
-                <a href="stock.php" class="btn-cancel">
-                    Cancel
-                </a>
+            <div class="edit-stock-actions">
+                <button type="submit" class="btn-save">Update Stock</button>
+                <a href="stock.php" class="btn-cancel">Cancel</a>
             </div>
+
         </form>
     </div>
 
-    <div class="edit-stock-back" style="margin-top: 18px;">
-        <a href="stock.php" class="btn-back-outline">
-            ← Back to Stock
-        </a>
+    <div class="edit-stock-back">
+        <a href="stock.php" class="btn-back-outline">← Back to Stock</a>
     </div>
+
 </div>
 
 <script src="edit_stock.js"></script>
 
 <?php
-$content = ob_get_clean();
+$pageContent = ob_get_clean();
 
 // Render with global pharmacist layout
-$standard = __DIR__ . '/../pharmacist_standard.php';
-if (file_exists($standard)) {
-    include $standard;
+$layout = __DIR__ . '/../pharmacist_standard.php';
+if (file_exists($layout)) {
+    include $layout;
 } else {
-    echo $content;
+    echo $pageContent;
 }
 ?>

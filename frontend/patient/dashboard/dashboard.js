@@ -76,9 +76,7 @@ function renderDashboard() {
             ? `<button class="page-link" data-page="${currentPage - 1}">&laquo; Prev</button>`
             : `<span class="page-link disabled">&laquo; Prev</span>`
         }
-
         <span class="page-info">Page ${currentPage} of ${totalPages}</span>
-
         ${
           currentPage < totalPages
             ? `<button class="page-link" data-page="${currentPage + 1}">Next &raquo;</button>`
@@ -92,13 +90,11 @@ function renderDashboard() {
     <div class="patient-dashboard">
       <div class="welcome-row">
         <div class="welcome-card">
-          <h1>Welcome <span class="name">${escapeHtml(
-            patientName
-          )} !!</span></h1>
+          <h1>Welcome <span class="name">${escapeHtml(patientName)} !!</span></h1>
           <p class="subtitle">View Prescriptions. Manage medications and pharmacies.</p>
           <div class="welcome-actions">
-            <a class="btn btn-primary" href="../medication.php">View Medications</a>
-            <a class="btn btn-outline" href="../pharmacies.php">Find Pharmacies</a>
+            <a class="btn btn-primary" href="../medication/medication.php">View Medications</a>
+            <a class="btn btn-outline" href="../pharmacies/pharmacies.php">Find Pharmacies</a>
           </div>
         </div>
 
@@ -118,24 +114,21 @@ function renderDashboard() {
             </div>
           </div>
           <div class="stats-cta">
-            <a class="link" href="../prescriptions.php">View Details</a>
+            <a class="link" href="../prescription/prescription.php">View Details</a>
           </div>
         </div>
       </div>
 
       <section class="prescriptions-section">
         <h2 class="section-title">Active Prescriptions</h2>
-
         <div class="cards-grid">
           ${cardsHtml}
         </div>
-
         ${paginationHtml}
       </section>
     </div>
   `;
 
-  // pagination handlers
   root.querySelectorAll(".pagination .page-link[data-page]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const page = parseInt(btn.getAttribute("data-page"), 10);
@@ -179,7 +172,7 @@ function renderPrescriptionCard(p) {
       </div>
       <div class="card-right">
         <p class="note">${escapeHtml(notes)}</p>
-        <a class="details-link" href="../prescription_Details/original_prescription.php?prescriptionID=${id}">
+        <a class="details-link" href="../prescription/prescription_medication.php?prescriptionID=${id}">
           Medicine Details &gt;&gt;
         </a>
       </div>

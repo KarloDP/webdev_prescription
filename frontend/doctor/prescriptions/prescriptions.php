@@ -9,10 +9,7 @@ ob_start(); // Start capturing HTML output
 <div class="prescriptions-page">
     <div class="page-header">
         <h1 class="page-title">Prescriptions</h1>
-        <button onclick="window.location.href='add_prescription.php'" class="btn btn-primary">
-            + Add Prescription
-        </button>
-
+        <button id="add-prescription-btn" class="btn btn-primary">+ Add Prescription</button>
     </div>
 
     <!-- Section 1: Patient Information -->
@@ -78,12 +75,6 @@ ob_start(); // Start capturing HTML output
         </div>
     </div>
 </div>
-
-<script src="prescriptions.js">
-    const LOGGED_DOCTOR_ID = <?= $_SESSION['user']['doctorID'] ?? 'null' ?>;
-    const LOGGED_DOCTOR_NAME = "<?= $_SESSION['user']['name'] ?? '' ?>";
-</script>
-
 <?php
 $content = ob_get_clean();
 include(__DIR__ . '/../doctor_standard.php');

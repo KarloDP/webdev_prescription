@@ -11,144 +11,131 @@ if (!isset($_SESSION['pharmacistID'])) {
 }
 
 $activePage = 'stock';
-$pharmacistName = $_SESSION['pharmacist_name'] ?? 'Pharmacist';
-
 $successMsg = "";
 $errorMsg = "";
 
-// Handle Add Medication Submission
+// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $genericName = trim($_POST['genericName'] ?? '');
-    $brandName = trim($_POST['brandName'] ?? '');
-    $form = trim($_POST['form'] ?? '');
-    $strength = trim($_POST['strength'] ?? '');
-    $manufacturer = trim($_POST['manufacturer'] ?? '');
-    $stock = $_POST['stock'] ?? null;
 
-    if (
-        $genericName === "" ||
-        $brandName === "" ||
-        $form === "" ||
-        $strength === "" ||
-        $manufacturer === "" ||
-        $stock === null || !is_numeric($stock) || $stock < 0
-    ) {
+    $genericName  = trim($_POST['genericName'] ?? '');
+    $brandName    = trim($_POST['brandName'] ?? '');
+    $form         = trim($_POST['form'] ?? '');
+    $strength     = trim($_POST['strength'] ?? '');
+    $manufacturer = trim($_POST['manufacturer'] ?? '');
+    $stock        = trim($_POST['stock'] ?? '');
+
+    if ($genericName === '' || $brandName === '' || $form === '' ||
+        $strength === '' || $manufacturer === '' || $stock === '' || !is_numeric($stock) || $stock < 0) {
+
         $errorMsg = "Please fill in all fields correctly.";
+
     } else {
-        $insertSQL = "
-            INSERT INTO medication 
-                (genericName, brandName, form, strength, manufacturer, stock) 
-            VALUES 
-                (?, ?, ?, ?, ?, ?)
-        ";
-        $stmt = $conn->prepare($insertSQL);
-        $stmt->bind_param("sssssi", $genericName, $brandName, $form, $strength, $manufacturer, $stock);
+
+        $sql = "INSERT INTO medication 
+                (genericName, brandName, form, strength, manufacturer, stock)
+                VALUES (?, ?, ?, ?, ?, ?)";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssssi",
+            $genericName, $brandName, $form, $strength, $manufacturer, $stock
+        );
 
         if ($stmt->execute()) {
-            $successMsg = "Medication added successfully.";
+            $successMsg = "Medication added successfully!";
         } else {
             $errorMsg = "Failed to add medication.";
         }
     }
 }
 
-// Capture page content
+// -----------------------------
+// BEGIN PAGE CONTENT
+// -----------------------------
 ob_start();
 ?>
 
-<link rel="stylesheet" href="../../assets/css/table.css">
 <link rel="stylesheet" href="../../assets/css/role-pharmacist.css">
+<link rel="stylesheet" href="../../assets/css/table.css">
 <link rel="stylesheet" href="stock.css">
-<link rel="stylesheet" href="edit_stock.css">
+<link rel="stylesheet" href="add_stock.css">
 
-<div class="edit-stock-page">
-    <h2>Add New Medication</h2>
-    <p>Fill out the form below to add a new medication to the inventory.</p>
+<div class="add-stock-page">
 
-    <?php if (!empty($successMsg)): ?>
+    <h2>Add New Medication Stock</h2>
+    <p>Fill in the details below to register a new medication in the inventory.</p>
+
+    <?php if ($successMsg): ?>
         <div class="success-message"><?= htmlspecialchars($successMsg) ?></div>
     <?php endif; ?>
 
-    <?php if (!empty($errorMsg)): ?>
+    <?php if ($errorMsg): ?>
         <div class="error-message"><?= htmlspecialchars($errorMsg) ?></div>
     <?php endif; ?>
 
-    <div class="edit-stock-container">
-        <form method="POST" class="edit-stock-form">
-            <table class="table-base">
-                <tbody>
+    <div class="add-stock-container">
+        <form method="POST" class="add-stock-form" id="addStockForm">
 
-                <tr>
-                    <th>Generic Name</th>
-                    <td class="value-cell">
-                        <input type="text" name="genericName" required>
-                    </td>
-                </tr>
+            <div class="form-group">
+                <label>Generic Name</label>
+                <input type="text" name="genericName" required>
+            </div>
 
-                <tr>
-                    <th>Brand Name</th>
-                    <td class="value-cell">
-                        <input type="text" name="brandName" required>
-                    </td>
-                </tr>
+            <div class="form-group">
+                <label>Brand Name</label>
+                <input type="text" name="brandName" required>
+            </div>
 
-                <tr>
-                    <th>Form</th>
-                    <td class="value-cell">
-                        <select name="form" required>
-                            <option value="">Select Form</option>
-                            <option>Tablet</option>
-                            <option>Capsule</option>
-                            <option>Syrup</option>
-                            <option>Injection</option>
-                            <option>Ointment</option>
-                            <option>Cream</option>
-                        </select>
-                    </td>
-                </tr>
+            <div class="form-group">
+                <label>Form</label>
+                <select name="form" required>
+                    <option value="">Select form...</option>
+                    <option value="Tablet">Tablet</option>
+                    <option value="Capsule">Capsule</option>
+                    <option value="Syrup">Syrup</option>
+                    <option value="Drop">Drop</option>
+                    <option value="Ointment">Ointment</option>
+                </select>
+            </div>
 
-                <tr>
-                    <th>Strength</th>
-                    <td class="value-cell">
-                        <input type="text" name="strength" required>
-                    </td>
-                </tr>
+            <div class="form-group">
+                <label>Strength</label>
+                <input type="text" name="strength" required>
+            </div>
 
-                <tr>
-                    <th>Manufacturer</th>
-                    <td class="value-cell">
-                        <input type="text" name="manufacturer" required>
-                    </td>
-                </tr>
+            <div class="form-group">
+                <label>Manufacturer</label>
+                <input type="text" name="manufacturer" required>
+            </div>
 
-                <tr>
-                    <th>Initial Stock</th>
-                    <td class="value-cell">
-                        <input type="number" name="stock" min="0" required>
-                    </td>
-                </tr>
+            <div class="form-group">
+                <label>Initial Stock</label>
+                <input type="number" name="stock" min="0" required>
+            </div>
 
-                </tbody>
-            </table>
-
-            <div style="margin-top: 20px;">
+            <div class="add-stock-actions">
                 <button type="submit" class="btn-save">Add Medication</button>
                 <a href="stock.php" class="btn-cancel">Cancel</a>
             </div>
         </form>
+    </div>
 
+    <div class="add-stock-back">
         <a href="stock.php" class="btn-back-outline">← Back to Stock</a>
     </div>
+
 </div>
 
-<?php
-$content = ob_get_clean();
+<script src="add_stock.js"></script>
 
-// Render with global pharmacist layout
-$standard = __DIR__ . '/../pharmacist_standard.php';
-if (file_exists($standard)) {
-    include $standard;
+<?php
+// FIXED — use $pageContent instead of $content
+$pageContent = ob_get_clean();
+
+// Render layout
+$layout = __DIR__ . '/../pharmacist_standard.php';
+if (file_exists($layout)) {
+    include $layout;
 } else {
-    echo $content;
+    echo $pageContent;
 }
 ?>
