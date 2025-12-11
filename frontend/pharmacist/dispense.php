@@ -3,7 +3,8 @@ require_once __DIR__ . '/../../backend/includes/auth.php';
 $user = require_role(['pharmacist']);
 
 $activePage = 'dispense';
-$pageStyles = '<link rel="stylesheet" href="/WebDev_Prescription/frontend/css/pharmacist/dispense.css">';
+$pageStyles = '<link rel="stylesheet" href="/frontend/css/pharmacist/dispense.css">';
+$pageScripts = '<script src="/frontend/pharmacist/js/dispense.js" defer></script>';
 
 ob_start();
 ?>
@@ -26,10 +27,7 @@ ob_start();
     </div>
 </div>
 
-<!-- Link to your controller -->
-<script src="/WebDev_Prescription/frontend/pharmacist/js/dispense.js"></script>
-
 <?php
 $pageContent = ob_get_clean();
-require_once 'pharmacy_standard.php';
+require_once __DIR__ . '/pharmacy_standard.php';
 ?>

@@ -5,6 +5,7 @@
 // Handles get/add/delete for dispenserecord table.
 include(__DIR__ . '/../includes/db_connect.php');
 include(__DIR__ . '/../includes/auth.php');
+require_once __DIR__ . '/../includes/functions.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -156,6 +157,10 @@ try {
 
         $conn->commit();
         $txActive = false;
+        
+        log_audit($conn, $userID, 'pharmacist', 'Dispense Medication', 
+            "Dispensed $dispensedQuantity units for prescription item #$prescriptionItemID");
+        
         respond(['success' => true, 'insert_id' => $insertId], 201);
 
     } else {

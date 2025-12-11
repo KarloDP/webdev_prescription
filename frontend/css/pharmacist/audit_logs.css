@@ -1,0 +1,235 @@
+.audit-logs-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.audit-header {
+    margin-bottom: 30px;
+    border-bottom: 3px solid #0E6B3D;
+    padding-bottom: 15px;
+}
+
+.audit-header h1 {
+    color: #0E6B3D;
+    font-size: 28px;
+    margin: 0 0 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.audit-header .subtitle {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+.audit-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-input {
+    flex: 1;
+    min-width: 150px;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: #0E6B3D;
+    box-shadow: 0 0 4px rgba(14, 107, 61, 0.2);
+}
+
+.btn-clear {
+    padding: 10px 16px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.btn-clear:hover {
+    background: #5a6268;
+}
+
+.table-frame {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.table-base {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.table-base thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table-base th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #0E6B3D;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-base tbody tr {
+    border-bottom: 1px solid #dee2e6;
+    transition: background 0.2s;
+}
+
+.table-base tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.table-base td {
+    padding: 12px 15px;
+    color: #333;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.role-pharmacist {
+    background: #d4edda;
+    color: #155724;
+}
+
+.role-doctor {
+    background: #cfe2ff;
+    color: #084298;
+}
+
+.role-admin {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.role-patient {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.action-badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.action-login {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.action-dispense {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.action-add {
+    background: #d4edda;
+    color: #155724;
+}
+
+.action-edit {
+    background: #cfe2ff;
+    color: #084298;
+}
+
+.action-delete {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.timestamp {
+    color: #666;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.details-text {
+    color: #555;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.error {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #f5c6cb;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    align-items: center;
+}
+
+.pagination-btn {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 13px;
+    transition: all 0.3s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #0E6B3D;
+    color: white;
+    border-color: #0E6B3D;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    color: #666;
+    font-size: 13px;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+}

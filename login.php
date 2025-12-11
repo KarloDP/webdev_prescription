@@ -3,6 +3,7 @@ session_start();
 
 require_once __DIR__ . '/backend/includes/db_connect.php';
 require_once __DIR__ . '/backend/includes/auth.php';
+require_once __DIR__ . '/backend/includes/functions.php';
 
 $error = "";
 $selectedRole = $_POST['role'] ?? 'patient'; // Default to patient for the dropdown
@@ -25,11 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Invalid role selected.";
     } else {
         // Authenticate using the generic function from auth.php
-        $userData = authenticate_user($conn, $role, $email, $password);
-
-        if ($userData !== null) {
+        if ($user = authenticate_user($conn, $role, $email, $password)) {
             // Login is successful, set the session for the correct role
-            set_user_session($role, $userData);
+            set_user_session($role, $user);
+            
+            // Log the login
+            log_audit($conn, $user['id'], $role, 'Login', 'User logged in successfully');
+            
             redirect_based_on_role($role);
         } else {
             // Authentication failed

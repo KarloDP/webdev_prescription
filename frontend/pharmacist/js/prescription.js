@@ -63,6 +63,56 @@ function setLoading() {
   tbody.innerHTML = `<tr><td colspan="7">Loading...</td></tr>`;
 }
 
+document.addEventListener('DOMContentLoaded', async () => {
+  const target = document.getElementById('prescription-list');
+  if (!target) return;
+  
+  try {
+    const res = await fetch('/WebDev_Prescription/backend/sql_handler/get_prescriptions_data.php', { 
+      credentials: 'include' 
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const rows = await res.json();
+    
+    if (!rows.length) {
+      target.innerHTML = '<p>No prescriptions found.</p>';
+      return;
+    }
+    
+    target.innerHTML = `
+      <table class="table-base">
+        <thead><tr>
+          <th>Prescription ID</th>
+          <th>Patient</th>
+          <th>Doctor</th>
+          <th>Issue Date</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(r => `
+            <tr>
+              <td>${escapeHtml(r.prescriptionID)}</td>
+              <td>${escapeHtml(r.patientName || '-')}</td>
+              <td>${escapeHtml(r.doctorName || '-')}</td>
+              <td>${escapeHtml(r.issueDate || '-')}</td>
+              <td>${escapeHtml(r.status || '-')}</td>
+              <td>
+                <button onclick="viewDetails(${r.prescriptionID})">View</button>
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch (e) {
+    console.error(e);
+    target.innerHTML = '<p class="error">Failed to load prescriptions.</p>';
+  }
+});
+
+function viewDetails(id) {
+  window.location.href = `/WebDev_Prescription/frontend/pharmacist/dispense.php?prescriptionID=${id}`;
+}
+
 function escapeHtml(str) {
   return String(str ?? "")
     .replace(/&/g, "&amp;").replace(/</g, "&lt;")
