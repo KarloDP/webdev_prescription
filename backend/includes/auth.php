@@ -20,38 +20,31 @@ function auth_id_field_for_role(string $role): ?string
     return $map[$role] ?? null;
 }
 
-function redirect_based_on_role(string $role): void {
-
-
+function redirect_based_on_role(string $role): void
+{
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-    ? "https://" : "http://";
+        ? 'https://' : 'http://';
 
-    $host = $_SERVER['HTTP_HOST']; // e.g. localhost OR yourdomain.com
-
-    // Detect if inside a folder (like /webdev_prescription) or inside root
-    $projectFolder = dirname($_SERVER['SCRIPT_NAME']); // e.g. /webdev_prescription/frontend/patient
-    $projectFolder = explode('/frontend', $projectFolder)[0]; // keep only root folder
-
-    $basePath = rtrim($protocol . $host . $projectFolder, '/');
+    $host = $_SERVER['HTTP_HOST'];
+    $base = $protocol . $host;
 
     switch ($role) {
         case 'patient':
-            header("Location: {$basePath}/frontend/patient/dashboard/dashboard.php");
+            header("Location: {$base}/frontend/patient/dashboard/dashboard.php");
             break;
         case 'doctor':
-            header("Location: {$basePath}/frontend/doctor/dashboard/dashboard.php");
+            header("Location: {$base}/frontend/doctor/dashboard/dashboard.php");
             break;
-        case 'pharmacist': // Added: Redirect for pharmacist role
-            header("Location: {$basePath}/frontend/pharmacist/index.php");
+        case 'pharmacist':
+            header("Location: {$base}/frontend/pharmacist/index.php");
             break;
-        // Add other roles as needed
         default:
-            // Fallback to the main login page
-            header("Location: {$basePath}/login.php");
+            header("Location: {$base}/login.php");
             break;
     }
     exit;
 }
+
 
 /**
  * Authenticates a user against the database.
@@ -162,12 +155,12 @@ function clear_user_session(): void
     unset($_SESSION['user'], $_SESSION['patientID'], $_SESSION['patient_name'], $_SESSION['patient_email']);
 }
 
-/**
- * Returns true if any user (of any role) is logged in.
- */
 function is_logged_in(): bool
 {
-    return !empty($_SESSION['user']['id']) && !empty($_SESSION['user']['role']);
+    return isset($_SESSION['user'])
+        && isset($_SESSION['user']['id'])
+        && isset($_SESSION['user']['role'])
+        && $_SESSION['user']['id'] > 0;
 }
 
 /**
@@ -223,7 +216,7 @@ function require_role(array $allowedRoles): array
  * @param string    $loginPath   Relative path/URL to login page.
  * @param array|null $allowedRoles Optional array of allowed roles; if null, any logged-in user is allowed.
  */
-function require_login(string $loginPath = '/webdev_prescription/login.php', ?array $allowedRoles = null): void
+function require_login(string $loginPath = '/login.php', ?array $allowedRoles = null): void
 {
     if (!is_logged_in()) {
         header('Location: ' . $loginPath);
