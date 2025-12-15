@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Dec 12, 2025 at 03:03 AM
+-- Generation Time: Dec 15, 2025 at 12:01 PM
 -- Server version: 11.5.2-MariaDB
 -- PHP Version: 8.3.14
 
@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS `admins` (
   `firstName` text NOT NULL,
   `lastName` text NOT NULL,
   `password` varchar(255) NOT NULL,
+  `status` enum('active','pending') DEFAULT 'pending',
   PRIMARY KEY (`adminID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -40,13 +41,13 @@ CREATE TABLE IF NOT EXISTS `admins` (
 -- Dumping data for table `admins`
 --
 
-INSERT INTO `admins` (`adminID`, `firstName`, `lastName`, `password`) VALUES
-(1, 'Alice', 'Johnson', 'alice'),
-(2, 'Benjamin', 'Lopez', 'benjamin'),
-(3, 'Clara', 'Hughes', 'clara'),
-(4, 'Daniel', 'Parker', 'daniel'),
-(5, 'Elena', 'Mitchell', 'elena'),
-(6, 'Clara', 'Hughes', 'clara');
+INSERT INTO `admins` (`adminID`, `firstName`, `lastName`, `password`, `status`) VALUES
+(1, 'Alice', 'Johnson', 'alice', 'pending'),
+(2, 'Benjamin', 'Lopez', 'benjamin', 'pending'),
+(3, 'Clara', 'Hughes', 'clara', 'pending'),
+(4, 'Daniel', 'Parker', 'daniel', 'pending'),
+(5, 'Elena', 'Mitchell', 'elena', 'pending'),
+(6, 'Clara', 'Hughes', 'clara', 'pending');
 
 -- --------------------------------------------------------
 
