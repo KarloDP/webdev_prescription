@@ -75,7 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <option value="patient" <?= $selectedRole === 'patient' ? 'selected' : '' ?>>Patient</option>
                 <option value="doctor" <?= $selectedRole === 'doctor' ? 'selected' : '' ?>>Doctor</option>
                 <option value="pharmacist" <?= $selectedRole === 'pharmacist' ? 'selected' : '' ?>>Pharmacist</option>
-                <option value="admin" <?= $selectedRole === 'admin' ? 'selected' : '' ?>>Admin</option>
             </select>
         </div>
         <div class="form-group">
