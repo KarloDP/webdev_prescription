@@ -141,22 +141,6 @@ if (window.__dispenseInit) {
     async function handleDispenseAll(e) {
       e.preventDefault();
 
-<<<<<<< HEAD
-      const itemInputs = document.querySelectorAll('.item-quantity-input');
-      const dispensesToProcess = [];
-      
-      // 1. Gather all valid inputs
-      itemInputs.forEach(input => {
-        const qty = parseInt(input.value, 10);
-        const max = parseInt(input.getAttribute('max'), 10) || Infinity;
-        const itemId = input.getAttribute('data-item-id');
-
-        if (Number.isFinite(qty) && qty > 0 && qty <= max && itemId) {
-            dispensesToProcess.push({
-                prescriptionItemID: itemId,
-                dispensedQuantity: qty
-            });
-=======
       const inputs = document.querySelectorAll(".item-quantity-input");
       const payloads = [];
 
@@ -168,7 +152,6 @@ if (window.__dispenseInit) {
             prescriptionItemID: parseInt(input.dataset.itemId, 10),
             dispensedQuantity: qty
           });
->>>>>>> mainAdminMerge
         }
       });
 
@@ -177,59 +160,6 @@ if (window.__dispenseInit) {
         return;
       }
 
-<<<<<<< HEAD
-      showMessage('Dispensing...', 'info');
-      const btn = document.getElementById('dispense-all-btn');
-      if(btn) btn.disabled = true;
-
-      let successCount = 0;
-      let errors = [];
-
-      try {
-        // 2. Process sequentially
-        for (const payload of dispensesToProcess) {
-            try {
-                const res = await fetch('../../backend/sql_handler/dispenserecord_table.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                // Get text first to debug "Unexpected token" issues
-                const text = await res.text();
-                let data;
-                
-                try {
-                    data = JSON.parse(text);
-                } catch (parseErr) {
-                    console.error("Server returned invalid JSON:", text);
-                    throw new Error("Server Error: Invalid response format.");
-                }
-
-                if (!res.ok || data.error) {
-                    throw new Error(data.details || data.message || 'Unknown error');
-                }
-                
-                successCount++;
-            } catch (innerErr) {
-                console.error("Failed to dispense item:", payload, innerErr);
-                errors.push(`Item #${payload.prescriptionItemID}: ${innerErr.message}`);
-            }
-        }
-
-        // 3. Final Status
-        if (errors.length > 0) {
-            showMessage(`Dispensed ${successCount} items. Errors: ${errors.join('; ')}`, 'error');
-        } else {
-            showMessage(`Successfully dispensed ${successCount} item(s).`, 'success');
-        }
-
-        // Refresh details after a short delay
-        setTimeout(() => {
-            if (selectedId) selectRx(selectedId);
-        }, 1000);
-
-=======
       showMessage("Dispensing...", "info");
 
       try {
@@ -246,7 +176,6 @@ if (window.__dispenseInit) {
 
         showMessage("Dispense successful.", "success");
         setTimeout(() => selectRx(selectedId), 800);
->>>>>>> mainAdminMerge
       } catch (err) {
         showMessage(err.message, "error");
       }
