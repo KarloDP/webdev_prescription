@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . '/../../../backend/includes/auth.php');
-require_login('../login.php', ['doctor']);
+require_login('/../../../login.php', ['doctor']);
 
 $activePage = 'prescriptions';
 ob_start();

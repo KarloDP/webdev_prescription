@@ -8,6 +8,7 @@
 //
 // This file is self-contained and uses relative paths that work when
 // included from files inside the doctor/ directory.
+require_login('/../../../login.php', ['doctor']);
 
 if (session_status() === PHP_SESSION_NONE) session_start();
 
