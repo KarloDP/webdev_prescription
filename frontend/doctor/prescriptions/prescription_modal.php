@@ -1,4 +1,5 @@
 <?php
+require_login('/../../../login.php', ['doctor']);
 // filepath: c:\wamp64\www\WebDev_Prescription\frontend\doctor\prescriptions\prescription_modal.php
 ?>
 

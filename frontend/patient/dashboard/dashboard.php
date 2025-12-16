@@ -2,9 +2,7 @@
 // frontend/patient/dashboard/dashboard.php
 
 require_once __DIR__ . '/../../../backend/includes/auth.php';
-
-// Only allow logged-in patients
-require_login('/webdev_prescription/login.php', ['patient']);
+require_login('/../../../login.php', ['patient']);
 
 // Sidebar active key for patient_standard.php
 $activePage = 'dashboard';

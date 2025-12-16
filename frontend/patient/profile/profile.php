@@ -6,7 +6,7 @@ session_start();
 
 include(__DIR__ . '/../../../backend/includes/auth.php');
 include(__DIR__ . '/../../../backend/includes/db_connect.php');
-require_login('/webdev_prescription/login.php', ['patient']);
+require_login('/../../../login.php', ['patient']);
 
 $patientID = $_SESSION['patientID'];
 

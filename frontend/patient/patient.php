@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../backend/includes/auth.php';
+require_login('/../../login.php', ['patient']);
 $user = require_role(['patient']);
 
 $activePage = 'dashboard';

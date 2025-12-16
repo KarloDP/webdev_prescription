@@ -2,7 +2,7 @@
 // filepath: c:\wamp64\www\WebDev_Prescription\frontend\doctor\profile\profile.php
 require_once(__DIR__ . '/../../../backend/includes/auth.php');
 require_once(__DIR__ . '/../../../backend/includes/db_connect.php');
-require_login('/webdev_prescription/login.php', ['doctor']);
+require_login('/../../../login.php', ['doctor']);
 
 $activePage = 'profile';
 

@@ -10,7 +10,7 @@
 // included from files inside the patient/ directory.
 
 if (session_status() === PHP_SESSION_NONE) session_start();
-
+require_login('/../../login.php', ['patient']);
 $user_name = $_SESSION['patient_name']
     ?? $_SESSION['user_name']
     ?? 'Patient';
