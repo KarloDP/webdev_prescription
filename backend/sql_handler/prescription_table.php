@@ -97,14 +97,46 @@ if ($method === 'GET') {
 
     } elseif ($role === 'doctor') {
 
-        $stmt = $conn->prepare(
-            'SELECT * FROM prescription WHERE doctorID = ? ORDER BY prescriptionID'
-        );
+        $stmt = $conn->prepare("
+            SELECT
+                p.*,
+                pat.firstName AS patientFirstName,
+                pat.lastName AS patientLastName,
+                CONCAT(pat.firstName, ' ', pat.lastName) AS patientFullName
+            FROM prescription p
+            JOIN patient pat ON pat.patientID = p.patientID
+            WHERE p.doctorID = ?
+            ORDER BY p.prescriptionID
+        ");
         $stmt->bind_param('i', $userID);
 
     } elseif (in_array($role, ['admin', 'pharmacist'], true)) {
+        $includeExpired = ($_GET['includeExpired'] ?? '') === '1';
 
-        $stmt = $conn->prepare('SELECT * FROM prescription ORDER BY prescriptionID');
+        $sql = "
+            SELECT
+                p.*,
+                pat.firstName AS patientFirstName,
+                pat.lastName AS patientLastName,
+                CONCAT(pat.firstName, ' ', pat.lastName) AS patientFullName,
+                CASE
+                    WHEN p.status = 'Expired'
+                         OR (p.expirationDate IS NOT NULL AND p.expirationDate < CURDATE()) THEN 1
+                    ELSE 0
+                END AS isExpired
+            FROM prescription p
+            JOIN patient pat ON pat.patientID = p.patientID
+        ";
+
+        if (!$includeExpired) {
+            $sql .= "
+                WHERE (p.status IS NULL OR p.status NOT IN ('Expired', 'Cancelled'))
+                  AND (p.expirationDate IS NULL OR p.expirationDate >= CURDATE())
+            ";
+        }
+
+        $sql .= " ORDER BY p.prescriptionID";
+        $stmt = $conn->prepare($sql);
 
     } else {
         respond(['error' => 'Unknown role'], 403);

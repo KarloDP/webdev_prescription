@@ -17,22 +17,18 @@ ob_start();
     <div class="card">
         <div id="pending-count" class="card-value">0</div>
         <div class="card-title">Pending Prescriptions</div>
-        <a href="prescription.php" class="card-link">View Details</a>
     </div>
     <div class="card">
         <div id="dispensed-count" class="card-value">0</div>
         <div class="card-title">Prescriptions Dispensed</div>
-        <a href="#" class="card-link">View History</a>
     </div>
     <div class="card">
         <div id="active-count" class="card-value">0</div>
         <div class="card-title">Active Prescriptions</div>
-        <a href="prescription.php" class="card-link">View Details</a>
     </div>
     <div class="card">
         <div id="expiring-count" class="card-value">0</div>
-        <div class="card-title">Expiring Prescriptions</div>
-        <a href="prescription.php" class="card-link">View Details</a>
+        <div class="card-title">Expiring Soon</div>
     </div>
 </section>
 

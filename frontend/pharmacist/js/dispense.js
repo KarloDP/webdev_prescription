@@ -14,6 +14,7 @@ if (window.__dispenseInit) {
     const searchInput = document.getElementById("list-search-input");
 
     let allRx = [];
+    let activeRx = [];
     let selectedId = null;
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -25,42 +26,53 @@ if (window.__dispenseInit) {
     async function loadList(preselectedId = null) {
       setListLoading();
       try {
-        const res = await fetch(`${RX_LIST_API}?status=Active`, { credentials: "include" });
+        const res = await fetch(`${RX_LIST_API}?includeExpired=1`, { credentials: "include" });
         const data = await res.json();
-        allRx = Array.isArray(data) ? data : [];
-        renderList(allRx);
+        const rawList = Array.isArray(data) ? data : [];
 
+        allRx = rawList.map(rx => ({
+          ...rx,
+          isExpired: isRxExpired(rx)
+        }));
+        activeRx = allRx.filter(rx => !rx.isExpired);
+
+        renderList(activeRx);
         if (preselectedId) {
           selectRx(preselectedId);
-        } else if (allRx.length > 0) {
-          const firstId = allRx[0].prescriptionID;
-          history.replaceState({ id: firstId }, "", `?prescription_id=${firstId}`);
-          selectRx(firstId);
+        } else if (activeRx.length) {
+          selectRx(activeRx[0].prescriptionID);
         } else {
-          rxDetailsEl.innerHTML = "<p>No active prescriptions found.</p>";
+          setDetailsLoading();
         }
-      } catch {
-        rxListEl.innerHTML = "<p class='error'>Failed to load prescriptions.</p>";
-        rxDetailsEl.innerHTML = "<p class='error'>Select a prescription.</p>";
+      } catch (err) {
+        console.error("Failed to load prescriptions", err);
+        rxListEl.innerHTML = "<p>Failed to load prescriptions.</p>";
+        setDetailsLoading();
       }
     }
 
-    function renderList(list) {
+    function renderList(list, fromSearch = false) {
       if (!list.length) {
-        rxListEl.innerHTML = "<p>No prescriptions found.</p>";
+        rxListEl.innerHTML = fromSearch ? "<p>No matching prescriptions.</p>" : "<p>No active prescriptions.</p>";
         return;
       }
 
-      rxListEl.innerHTML = list.map(rx => `
-        <div class="prescription-item ${selectedId == rx.prescriptionID ? "active" : ""}" data-id="${rx.prescriptionID}">
+      rxListEl.innerHTML = list.map(rx => {
+        const patientName = resolvePatientName(rx);
+        const label = `RX-${rx.prescriptionID} - ${patientName || "Unknown patient"}`;
+        const expiredBadge = rx.isExpired ? '<span class="rx-badge">Expired</span>' : "";
+
+        return `
+        <div class="prescription-item ${selectedId == rx.prescriptionID ? "active" : ""} ${rx.isExpired ? "is-expired" : ""}" data-id="${rx.prescriptionID}">
           <a href="?prescription_id=${rx.prescriptionID}" data-id="${rx.prescriptionID}">
             <div class="rx-line">
-              <span class="rx-id">RX-${rx.prescriptionID}</span>
-              <span class="rx-name">${escapeHtml(rx.firstName ?? "")} ${escapeHtml(rx.lastName ?? "")}</span>
+              <span class="rx-label">${escapeHtml(label)}</span>
+              ${expiredBadge}
             </div>
           </a>
         </div>
-      `).join("");
+      `;
+      }).join("");
 
       rxListEl.querySelectorAll("a[data-id]").forEach(a =>
         a.addEventListener("click", e => {
@@ -70,6 +82,7 @@ if (window.__dispenseInit) {
           selectRx(id);
         })
       );
+      highlightSelected();
     }
 
     async function selectRx(id) {
@@ -94,10 +107,7 @@ if (window.__dispenseInit) {
 
     function renderDetails(rx, items) {
       const hasRemaining = Array.isArray(items) && items.some(i => (parseInt(i.prescribed_amount, 10) || 0) > 0);
-
-      const first = rx.patientFirstName ?? rx.firstName ?? "";
-      const last = rx.patientLastName ?? rx.lastName ?? "";
-      const patientName = `${escapeHtml(first)} ${escapeHtml(last)}`.trim();
+      const patientName = escapeHtml(resolvePatientName(rx));
 
       rxDetailsEl.innerHTML = `
         <header class="rx-details-header">
@@ -182,11 +192,18 @@ if (window.__dispenseInit) {
     }
 
     function applySearch() {
-      const term = searchInput.value.toLowerCase();
-      renderList(allRx.filter(rx =>
-        `${rx.firstName ?? ""} ${rx.lastName ?? ""}`.toLowerCase().includes(term) ||
-        String(rx.prescriptionID).includes(term)
-      ));
+      const term = (searchInput?.value || "").trim().toLowerCase();
+      if (!term) {
+        renderList(activeRx);
+        return;
+      }
+
+      const matches = allRx.filter(rx => {
+        const name = resolvePatientName(rx).toLowerCase();
+        return name.includes(term) || String(rx.prescriptionID).includes(term);
+      });
+
+      renderList(matches, true);
     }
 
     function highlightSelected() {
@@ -214,6 +231,45 @@ if (window.__dispenseInit) {
       return String(str ?? "").replace(/[&<>"']/g, m => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
       }[m]));
+    }
+
+    function resolvePatientName(rx = {}) {
+      const firstCandidates = [
+        rx.patientFirstName, rx.firstName, rx.patient_first_name,
+        rx.patient_firstname, rx.patient_first, rx.patientGivenName,
+        rx.givenName
+      ];
+      const lastCandidates = [
+        rx.patientLastName, rx.lastName, rx.patient_last_name,
+        rx.patient_lastname, rx.patient_last, rx.patientSurname,
+        rx.surname, rx.familyName
+      ];
+      const miscCandidates = [
+        rx.patientName, rx.patient_name, rx.patientFullName,
+        rx.patient_fullname, rx.patientFullname, rx.patient_full_name,
+        rx.fullName, rx.full_name, rx.patient, rx.name
+      ];
+
+      const first = firstCandidates.find(v => typeof v === "string" && v.trim().length) ?? "";
+      const last = lastCandidates.find(v => typeof v === "string" && v.trim().length) ?? "";
+      const combined = `${first} ${last}`.trim();
+
+      if (combined.length) return combined;
+
+      const fallback = miscCandidates.find(v => typeof v === "string" && v.trim().length);
+      return fallback ? fallback.trim() : "";
+    }
+
+    function isRxExpired(rx = {}) {
+      const status = String(rx.status || "").toLowerCase();
+      if (status === "expired") return true;
+      if (!rx.expirationDate) return false;
+      const exp = new Date(rx.expirationDate);
+      if (Number.isNaN(exp.getTime())) return false;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      exp.setHours(0, 0, 0, 0);
+      return exp < today;
     }
   });
 }
