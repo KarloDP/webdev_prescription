@@ -1,7 +1,7 @@
 <?php
 include(__DIR__ . '/../includes/db_connect.php');
 include(__DIR__ . '/../includes/auth.php');
-
+//backend\sql_handler\medication_table.php
 header('Content-Type: application/json; charset=utf-8');
 
 function respond($data, $statusCode = 200) {
@@ -12,73 +12,47 @@ function respond($data, $statusCode = 200) {
 
 $method = $_SERVER['REQUEST_METHOD'];
 $user   = require_user();
+$role   = $user['role'];
+$userID = (int)$user['id'];
 
-if ($method !== 'GET') {
-    respond(['error' => 'Method not allowed'], 405);
-}
+if ($method === 'GET') {
+    $patientID = isset($_GET['patientID']) ? (int) $_GET['patientID'] : 0;
 
-/*
-|--------------------------------------------------------------------------
-| MODE 1: NO patientID → return ALL medications (for dropdowns)
-|--------------------------------------------------------------------------
-*/
-if (!isset($_GET['patientID'])) {
+    if ($patientID <= 0) {
+        respond([]); // invalid patientID
+        exit;
+    }
 
     $sql = "
         SELECT
-            medicationID,
-            genericName,
-            brandName
-        FROM medication
-        ORDER BY genericName, brandName
+            p.prescriptionID,
+            m.genericName AS medicine,
+            m.brandName,
+            pi.dosage,
+            pi.frequency,
+            pi.duration
+        FROM prescriptionitem pi
+        JOIN prescription p ON pi.prescriptionID = p.prescriptionID
+        JOIN medication m ON pi.medicationID = m.medicationID
+        WHERE p.patientID = ?
+        ORDER BY p.prescriptionID DESC
     ";
 
-    $result = $conn->query($sql);
+    $stmt = $conn->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param("i", $patientID);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    if (!$result) {
-        respond(['error' => $conn->error], 500);
+        $rows = [];
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+
+        respond($rows);
+        $stmt->close();
+    } else {
+        respond(['error' => 'Query preparation failed: ' . $conn->error], 500);
     }
-
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
-    }
-
-    respond($rows);
 }
-
-/*
-|--------------------------------------------------------------------------
-| MODE 2: patientID provided → return prescription history
-|--------------------------------------------------------------------------
-*/
-$patientID = (int) $_GET['patientID'];
-
-$sql = "
-    SELECT
-        p.prescriptionID,
-        m.genericName AS medicine,
-        m.brandName,
-        pi.dosage,
-        pi.frequency,
-        pi.duration
-    FROM prescriptionitem pi
-    JOIN prescription p ON pi.prescriptionID = p.prescriptionID
-    JOIN medication m ON pi.medicationID = m.medicationID
-    WHERE p.patientID = ?
-    ORDER BY p.prescriptionID DESC
-";
-
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $patientID);
-$stmt->execute();
-
-$result = $stmt->get_result();
-$rows = [];
-
-while ($row = $result->fetch_assoc()) {
-    $rows[] = $row;
-}
-
-respond($rows);
 ?>
