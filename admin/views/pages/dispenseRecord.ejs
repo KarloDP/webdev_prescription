@@ -1,0 +1,14 @@
+<table>
+  <thead>
+    <tr><th>Table</th><th>Count</th><th>Action</th></tr>
+  </thead>
+  <tbody>
+    <% tables.forEach(t => { %>
+      <tr>
+        <td><%= t.name %></td>
+        <td><%= t.count %></td>
+        <td><a href="<%= t.link %>">View</a></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

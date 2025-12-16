@@ -1,0 +1,35 @@
+<h1>Prescriptions</h1>
+<form method="GET" action="/prescriptions">
+  <input type="text" name="name" placeholder="Search by Patient, Doctor, or Medication" value="<%= name || '' %>">
+  <button type="submit">Search</button>
+</form>
+<br>
+<table border="1" cellpadding="8" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Patient</th>
+      <th>Medications</th>
+      <th>ID</th>
+      <th>Doctor</th>
+      <th>Status</th>
+      <th>Issue Date</th>
+      <th>Expiration</th>
+      <th>History</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% prescriptions.forEach(pr => { %>
+      <tr>
+        <td><%= pr.patientName %></td>
+        <td><%= pr.medications %></td>
+        <td><%= pr.prescriptionID %></td>
+        <td><%= pr.doctorName %></td>
+        <td><%= pr.status %></td>
+        <td><%= pr.issueDate %></td>
+        <td><%= pr.expirationDate %></td>
+        <td><a href="/prescriptions/<%= pr.prescriptionID %>/history">View</a></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<br><a href="/dashboard">Back to Dashboard</a>

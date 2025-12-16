@@ -1,0 +1,45 @@
+<link rel="stylesheet" href="/css/admin.css">
+<h1><%= isPendingMode ? 'Pending Admins' : 'Admins' %></h1>
+
+<form method="get" action="/admins" style="margin-bottom: 16px;">
+  <% if (isPendingMode) { %>
+    <button type="submit" name="pending" value="0">Show Active Admins</button>
+  <% } else { %>
+    <button type="submit" name="pending" value="1">Show Pending Admins</button>
+  <% } %>
+</form>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <thead>
+    <tr>
+      <th>ID</th><th>Name</th><th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% admins.forEach(admin => { %>
+      <tr>
+        <td><%= admin.adminID %></td>
+        <td><%= admin.firstName %> <%= admin.lastName %></td>
+        <td>
+          <% if (isPendingMode) { %>
+            <form method="POST" action="/admins/accept" style="display:inline;">
+              <input type="hidden" name="adminID" value="<%= admin.adminID %>">
+              <button type="submit">Accept</button>
+            </form>
+            <form method="POST" action="/admins/reject" style="display:inline; margin-left: 8px;">
+              <input type="hidden" name="adminID" value="<%= admin.adminID %>">
+              <button type="submit" onclick="return confirm('Are you sure you want to reject this admin?');">Reject</button>
+            </form>
+          <% } else if (admin.adminID === currentAdminID) { %>
+            <form method="POST" action="/admins/delete" style="display:inline;">
+              <input type="hidden" name="adminID" value="<%= admin.adminID %>">
+              <button type="submit">Delete My Account</button>
+            </form>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<br><a href="/dashboard">Back to Dashboard</a>

@@ -1,0 +1,14 @@
+{
+  "name": "webapp-admin",
+  "version": "1.0",
+  "description": "prescription tracker admins end",
+  "author": "byte-busters",
+  "main": "index.js",
+  
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "mysql2": "^3.15.3"
+  }
+}

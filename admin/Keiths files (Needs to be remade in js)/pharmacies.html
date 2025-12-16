@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><?= htmlspecialchars($title) ?></title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h2><?= htmlspecialchars($title) ?></h2>
+
+  <form method="GET" action="pharmacies.php">
+    <input type="text" name="search" placeholder="Search Pharmacies" value="<?= htmlspecialchars($search) ?>">
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a href="pharmacies.php?add=1" class="btn btn-success">Add Pharmacy</a>
+  </form>
+
+  <?php renderPharmacyTable($result, $add_mode, $edit_id); ?>
+</body>
+</html>

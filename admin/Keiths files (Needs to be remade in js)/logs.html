@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><?= htmlspecialchars($title) ?></title>
+  <style>
+    table { border-collapse: collapse; width: 100%; margin-top:20px; }
+    th, td { border:1px solid #ddd; padding:8px; text-align:left; }
+    th { background:#f4f4f4; }
+  </style>
+</head>
+<body>
+  <h2><?= htmlspecialchars($title) ?></h2>
+
+  <?php if (!$hasLogs): ?>
+    <p><strong>No logs table found.</strong> Create it in your database to start tracking actions.</p>
+    <pre>
+CREATE TABLE logs (
+  logID INT AUTO_INCREMENT PRIMARY KEY,
+  user_type ENUM('student','driver','admin') NOT NULL,
+  userID INT NOT NULL,
+  action VARCHAR(255) NOT NULL,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+    </pre>
+  <?php else: ?>
+    <?php renderLogsTable($result); ?>
+  <?php endif; ?>
+</body>
+</html>

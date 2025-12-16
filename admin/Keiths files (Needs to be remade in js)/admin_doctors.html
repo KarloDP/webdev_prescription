@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><?= htmlspecialchars($title) ?></title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h2><?= htmlspecialchars($title) ?></h2>
+
+  <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+    <form method="GET" action="users.php" style="display:flex; gap:8px; align-items:center;">
+      <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
+      <input type="text" name="search" placeholder="Search for Doctor" value="<?= htmlspecialchars($search) ?>" style="padding:8px; width:260px;">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    <div>
+      <?php if ($filter === 'pending'): ?>
+        <a href="users.php?filter=active" class="btn btn-success">Active Doctors</a>
+      <?php else: ?>
+        <a href="users.php?filter=pending" class="btn btn-danger">Pending Requests</a>
+      <?php endif; ?>
+    </div>
+  </div>
+
+  <?php renderDoctorTable($result, $filter, $edit_id); ?>
+
+  <!-- Confirmation -->
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <div id="confirmText">Are you sure?</div>
+      <div class="modal-buttons">
+        <button class="btn btn-primary" id="confirmYes">Yes</button>
+        <button class="btn btn-danger" id="confirmNo">No</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

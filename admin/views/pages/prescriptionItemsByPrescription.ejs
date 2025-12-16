@@ -1,0 +1,36 @@
+<h1>Prescription Items for Prescription #<%= prescriptionID %></h1>
+<table border="1" cellpadding="8" cellspacing="0">
+  <thead>
+    <tr>
+      <th>doctorID</th>
+      <th>prescriptionItemID</th>
+      <th>prescriptionID</th>
+      <th>medicationID</th>
+      <th>dosage</th>
+      <th>frequency</th>
+      <th>duration</th>
+      <th>prescribed_amount</th>
+      <th>refill_count</th>
+      <th>refillInterval</th>
+      <th>instructions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% items.forEach(item => { %>
+      <tr>
+        <td><%= item.doctorID %></td>
+        <td><%= item.prescriptionItemID %></td>
+        <td><%= item.prescriptionID %></td>
+        <td><%= item.medicationID %></td>
+        <td><%= item.dosage %></td>
+        <td><%= item.frequency %></td>
+        <td><%= item.duration %></td>
+        <td><%= item.prescribed_amount %></td>
+        <td><%= item.refill_count %></td>
+        <td><%= item.refillInterval %></td>
+        <td><%= item.instructions %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<br><a href="/prescriptions">Back to Prescriptions</a>

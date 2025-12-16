@@ -1,0 +1,20 @@
+<h1>Dispense Records for Prescription #<%= prescriptionID %></h1>
+<table border="1" cellpadding="8" cellspacing="0">
+  <thead>
+    <tr>
+      <th>ID</th><th>Date Dispensed</th><th>Medication</th><th>Quantity</th><th>Pharmacy</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% records.forEach(r => { %>
+      <tr>
+        <td><%= r.dispenseID %></td>
+        <td><%= r.dispenseDate %></td>
+        <td><%= r.brandName %> / <%= r.genericName %></td>
+        <td><%= r.dispensedQuantity %></td>
+        <td><%= r.pharmacyName %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<br><a href="/prescriptions">Back to Prescriptions</a>
