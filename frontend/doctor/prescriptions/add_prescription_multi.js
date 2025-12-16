@@ -64,8 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <option value="">Select medication</option>
                 </select>
             </td>
-            <td><input type="text" class="dosage"></td>
-            <td><input type="text" class="frequency"></td>
+            <td><input type="text" class="dosage" placeholder="500 mg"></td>
+            <td><input type="text" class="frequency" placeholder="twice daily"></td>
+            <td><input type="text" class="duration" placeholder="7 days"></td>
+            <td><input type="number" class="prescribed_amount" min="0"></td>
+            <td><input type="date" class="refillInterval"></td>
+            <td><input type="text" class="instructions" placeholder="Take after meals"></td>
             <td><button type="button" class="remove">✕</button></td>
         `;
 
@@ -108,15 +112,31 @@ document.addEventListener('DOMContentLoaded', () => {
             mode: 'multi',
             patientID: Number(patientSelect.value),
             issueDate: document.getElementById('issue-date').value,
+            expirationDate: document.getElementById('expiration-date').value,
             notes: document.getElementById('notes').value,
-            medications: [...medsBody.children].map(row => ({
-                medicationID: Number(row.querySelector('.med-select').value),
-                dosage: row.querySelector('.dosage').value.trim(),
-                frequency: row.querySelector('.frequency').value.trim()
-            })).filter(m => m.medicationID && m.dosage && m.frequency)
+            medications: []
         };
 
-        if (!payload.patientID || !payload.issueDate || payload.medications.length === 0) {
+        [...medsBody.children].forEach(row => {
+            const medicationID = Number(row.querySelector('.med-select').value);
+            const dosage = row.querySelector('.dosage').value.trim();
+            const frequency = row.querySelector('.frequency').value.trim();
+            const duration = row.querySelector('.duration').value.trim();
+
+            if (!medicationID || !dosage || !frequency || !duration) return;
+
+            payload.medications.push({
+                medicationID,
+                dosage,
+                frequency,
+                duration,
+                prescribed_amount: Number(row.querySelector('.prescribed_amount').value || 0),
+                refillInterval: row.querySelector('.refillInterval').value || '0000-00-00',
+                instructions: row.querySelector('.instructions').value.trim()
+            });
+        });
+
+        if (!payload.patientID || !payload.issueDate || !payload.expirationDate || payload.medications.length === 0) {
             alert('Please complete all required fields.');
             return;
         }

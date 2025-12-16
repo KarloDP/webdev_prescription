@@ -267,3 +267,14 @@
     text-align: left;
   }
 }
+
+#patient-select {
+    width: 280px;
+    padding: 6px;
+}
+
+.section-container select,
+.section-container input,
+.section-container textarea {
+    min-width: 220px;
+}

@@ -1,5 +1,4 @@
 <?php
-// backend/sql_handler/prescription_table.php
 include(__DIR__ . '/../includes/db_connect.php');
 include(__DIR__ . '/../includes/auth.php');
 
@@ -15,9 +14,7 @@ $user   = require_user();
 $role   = $user['role'];
 $userID = (int)$user['id'];
 
-/* ======================================================
-   GET METHODS (UNCHANGED)
-====================================================== */
+/* ===================== GET ===================== */
 if ($method === 'GET') {
 
     if (isset($_GET['patientID']) && isset($_GET['grouped'])) {
@@ -35,14 +32,11 @@ if ($method === 'GET') {
                 p.issueDate,
                 p.expirationDate,
                 CONCAT('Dr ', d.firstName, ' ', d.lastName) AS doctorName,
-
                 pi.prescriptionItemID,
-
                 m.genericName AS medicine,
                 m.brandName   AS brand,
                 m.form,
                 m.strength,
-
                 pi.dosage,
                 pi.frequency,
                 pi.duration,
@@ -50,30 +44,22 @@ if ($method === 'GET') {
                 pi.refill_count,
                 pi.refillInterval,
                 pi.instructions
-
             FROM prescription p
             JOIN prescriptionitem pi ON p.prescriptionID = pi.prescriptionID
-            JOIN medication m        ON pi.medicationID   = m.medicationID
-            JOIN doctor d            ON p.doctorID        = d.doctorID
+            JOIN medication m ON pi.medicationID = m.medicationID
+            JOIN doctor d ON p.doctorID = d.doctorID
             WHERE p.patientID = ?
             ORDER BY p.prescriptionID DESC, pi.prescriptionItemID ASC
         ");
 
         $stmt->bind_param("i", $patientID);
         $stmt->execute();
-        $result = $stmt->get_result();
-
-        $data = [];
-        while ($row = $result->fetch_assoc()) {
-            $data[] = $row;
-        }
-
-        respond($data);
+        respond($stmt->get_result()->fetch_all(MYSQLI_ASSOC));
     }
 
     if (isset($_GET['prescriptionID'])) {
-        $id = (int)$_GET['prescriptionID'];
 
+        $id = (int)$_GET['prescriptionID'];
         $stmt = $conn->prepare("
             SELECT p.*, pat.firstName AS patientFirstName, pat.lastName AS patientLastName
             FROM prescription p
@@ -82,14 +68,9 @@ if ($method === 'GET') {
             LIMIT 1
         ");
 
-        if (!$stmt) {
-            respond(['error' => 'Prepare failed: '.$conn->error], 500);
-        }
-
         $stmt->bind_param('i', $id);
         $stmt->execute();
-        $rx = $stmt->get_result()->fetch_assoc();
-        respond($rx ?: []);
+        respond($stmt->get_result()->fetch_assoc() ?: []);
     }
 
     if ($role === 'patient') {
@@ -112,7 +93,6 @@ if ($method === 'GET') {
             GROUP BY p.prescriptionID
             ORDER BY p.prescriptionID
         ");
-
         $stmt->bind_param('i', $userID);
 
     } elseif ($role === 'doctor') {
@@ -124,55 +104,42 @@ if ($method === 'GET') {
 
     } elseif (in_array($role, ['admin', 'pharmacist'], true)) {
 
-        $stmt = $conn->prepare(
-            'SELECT * FROM prescription ORDER BY prescriptionID'
-        );
+        $stmt = $conn->prepare('SELECT * FROM prescription ORDER BY prescriptionID');
 
     } else {
         respond(['error' => 'Unknown role'], 403);
     }
 
     $stmt->execute();
-    $result = $stmt->get_result();
-
-    $data = [];
-    while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
-    }
-
-    respond($data);
+    respond($stmt->get_result()->fetch_all(MYSQLI_ASSOC));
 }
 
-/* ======================================================
-   POST METHODS (EXTENDED, NOT BROKEN)
-====================================================== */
+/* ===================== POST ===================== */
 else if ($method === 'POST') {
 
     if (!in_array($role, ['admin', 'doctor'], true)) {
         respond(['error' => 'Not allowed'], 403);
     }
 
-    $raw  = file_get_contents("php://input");
-    $data = json_decode($raw, true);
-
+    $data = json_decode(file_get_contents("php://input"), true);
     if (!is_array($data)) {
         respond(['error' => 'Invalid JSON'], 400);
     }
 
-    /* ---------- MULTI-PRESCRIPTION MODE (NEW) ---------- */
     if (($data['mode'] ?? '') === 'multi') {
 
-        $patientID = (int)($data['patientID'] ?? 0);
-        $issueDate = $data['issueDate'] ?? '';
+        $patientID = (int)$data['patientID'];
+        $issueDate = $data['issueDate'];
         $items     = $data['medications'] ?? [];
 
         if (!$patientID || !$issueDate || empty($items)) {
             respond(['error' => 'Missing required fields'], 400);
         }
 
-        $expirationDate = date('Y-m-d', strtotime($issueDate . ' +30 days'));
+        $expirationDate = $data['expirationDate']
+            ?? date('Y-m-d', strtotime($issueDate . ' +30 days'));
+
         $status = 'Active';
-        $doctorID = $userID;
 
         $conn->begin_transaction();
 
@@ -182,66 +149,77 @@ else if ($method === 'POST') {
                 (patientID, issueDate, expirationDate, status, doctorID)
                 VALUES (?, ?, ?, ?, ?)
             ");
-
-            $stmt->bind_param(
-                'isssi',
-                $patientID,
-                $issueDate,
-                $expirationDate,
-                $status,
-                $doctorID
-            );
-
+            $stmt->bind_param('isssi', $patientID, $issueDate, $expirationDate, $status, $userID);
             $stmt->execute();
-            $prescriptionID = $stmt->insert_id;
 
+            $prescriptionID = $stmt->insert_id;
             if (!$prescriptionID) {
                 throw new Exception('Prescription insert failed');
             }
 
             $stmtItem = $conn->prepare("
                 INSERT INTO prescriptionitem
-                (prescriptionID, medicationID, dosage, frequency)
-                VALUES (?, ?, ?, ?)
+                (
+                    doctorID,
+                    prescriptionID,
+                    medicationID,
+                    dosage,
+                    frequency,
+                    duration,
+                    prescribed_amount,
+                    refill_count,
+                    refillInterval,
+                    instructions
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
 
             foreach ($items as $m) {
-                $medID = (int)$m['medicationID'];
-                $dos   = trim($m['dosage']);
-                $freq  = trim($m['frequency']);
 
-                if (!$medID || !$dos || !$freq) {
+                $medID     = (int)($m['medicationID'] ?? 0);
+                $dosage    = trim($m['dosage'] ?? '');
+                $frequency = trim($m['frequency'] ?? '');
+                $duration  = trim($m['duration'] ?? '');
+                $qty       = (int)($m['prescribed_amount'] ?? 0);
+                $refills   = (int)($m['refill_count'] ?? 0);
+                $refill    = $m['refillInterval'] ?: '0000-00-00';
+                $instr     = trim($m['instructions'] ?? '');
+                $docID     = $userID;
+
+                if (!$medID || !$dosage || !$frequency) {
                     throw new Exception('Invalid medication entry');
                 }
 
                 $stmtItem->bind_param(
-                    'iiss',
+                    'iiisssiiss',
+                    $docID,
                     $prescriptionID,
                     $medID,
-                    $dos,
-                    $freq
+                    $dosage,
+                    $frequency,
+                    $duration,
+                    $qty,
+                    $refills,
+                    $refill,
+                    $instr
                 );
+
                 $stmtItem->execute();
             }
 
             $conn->commit();
-            respond(['success' => true], 201);
+            respond(['success' => true, 'insert_ID' => $prescriptionID], 201);
 
         } catch (Throwable $e) {
             $conn->rollback();
-            respond([
-                'error'   => 'Failed to save prescription',
-                'details'=> $e->getMessage()
-            ], 500);
+            respond(['error' => 'Insert failed', 'details' => $e->getMessage()], 500);
         }
     }
 
-    /* ---------- LEGACY SINGLE-PRESCRIPTION MODE ---------- */
     $patientID = trim($data['patientID'] ?? '');
     $issueDate = trim($data['issueDate'] ?? '');
     $expirationDate = trim($data['expirationDate'] ?? '');
     $status = trim($data['status'] ?? '');
-    $doctorID = $userID;
 
     if ($patientID === '') {
         respond(['error' => 'PatientID is required'], 400);
@@ -251,30 +229,16 @@ else if ($method === 'POST') {
         'INSERT INTO prescription (patientID, issueDate, expirationDate, status, doctorID)
          VALUES (?, ?, ?, ?, ?)'
     );
-
-    $stmt->bind_param(
-        'isssi',
-        $patientID,
-        $issueDate,
-        $expirationDate,
-        $status,
-        $doctorID
-    );
+    $stmt->bind_param('isssi', $patientID, $issueDate, $expirationDate, $status, $userID);
 
     if ($stmt->execute()) {
-        respond([
-            'status'    => 'success',
-            'message'   => 'New Prescription Added',
-            'insert_ID' => $stmt->insert_id
-        ], 201);
+        respond(['status' => 'success', 'insert_ID' => $stmt->insert_id], 201);
     }
 
-    respond(['error'=> 'Insert Failed: '.$stmt->error], 500);
+    respond(['error' => 'Insert failed'], 500);
 }
 
-/* ======================================================
-   DELETE METHOD (UNCHANGED)
-====================================================== */
+/* ===================== DELETE ===================== */
 else if ($method === 'DELETE') {
 
     if (!in_array($role, ['admin', 'doctor'], true)) {

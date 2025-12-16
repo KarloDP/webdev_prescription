@@ -24,6 +24,9 @@ ob_start();
         <label>Issue Date</label>
         <input type="date" id="issue-date">
 
+        <label>Expiration Date</label>
+        <input type="date" id="expiration-date">
+
         <label>Notes</label>
         <textarea id="notes" rows="3"></textarea>
     </div>
@@ -31,6 +34,9 @@ ob_start();
     <!-- Medications -->
     <div class="section-container">
         <h2>Medications</h2>
+        <p style="font-size:0.9em;color:#555;margin-bottom:8px;">
+            Each row represents a single medication entry.
+        </p>
 
         <table class="table-base">
             <thead>
@@ -38,6 +44,10 @@ ob_start();
                     <th>Medication</th>
                     <th>Dosage</th>
                     <th>Frequency</th>
+                    <th>Duration</th>
+                    <th>Qty</th>
+                    <th>Refill Date</th>
+                    <th>Instructions</th>
                     <th></th>
                 </tr>
             </thead>
