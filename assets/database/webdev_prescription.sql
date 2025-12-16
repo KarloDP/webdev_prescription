@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Dec 16, 2025 at 01:02 PM
+-- Generation Time: Dec 16, 2025 at 01:51 PM
 -- Server version: 11.8.5-MariaDB-ubu2404
 -- PHP Version: 8.3.26
 
@@ -41,10 +41,9 @@ CREATE TABLE `admins` (
 
 INSERT INTO `admins` (`adminID`, `firstName`, `lastName`, `password`, `status`) VALUES
 (1, 'Alice', 'Johnson', 'alice', 'active'),
-(2, 'Benjamin', 'Lopez', 'benjamin', 'pending'),
-(3, 'Clara', 'Hughes', 'clara', 'pending'),
-(4, 'Daniel', 'Parker', 'daniel', 'pending'),
-(5, 'Elena', 'Mitchell', 'elena', 'pending'),
+(2, 'Benjamin', 'Lopez', 'benjamin', 'active'),
+(4, 'Daniel', 'Parker', 'daniel', 'active'),
+(5, 'Elena', 'Mitchell', 'elena', 'active'),
 (6, 'Clara', 'Hughes', 'clara', 'pending');
 
 -- --------------------------------------------------------
@@ -76,7 +75,8 @@ INSERT INTO `auditlog` (`logID`, `userID`, `role`, `action`, `details`, `created
 (7, 1, 'pharmacist', 'Login', 'User logged in successfully', '2025-12-16 12:56:30'),
 (8, 1, 'pharmacist', 'Dispense Medication', 'Dispensed 5 units for prescription item #112', '2025-12-16 12:56:48'),
 (9, 1, 'pharmacist', 'Dispense Medication', 'Dispensed 6 units for prescription item #113', '2025-12-16 12:56:48'),
-(10, 1, 'pharmacist', 'Dispense Medication', 'Dispensed 7 units for prescription item #114', '2025-12-16 12:56:48');
+(10, 1, 'pharmacist', 'Dispense Medication', 'Dispensed 7 units for prescription item #114', '2025-12-16 12:56:48'),
+(11, 2, 'patient', 'Login', 'User logged in successfully', '2025-12-16 13:10:12');
 
 -- --------------------------------------------------------
 
@@ -137,7 +137,8 @@ INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `password`, `speciali
 (7, 'Mark', 'De Guzman', 'doctor', 'Ophthalmology', 78901, 'mark.deguzman@visioncare.com', 'Manila Doctors Hospital, Manila', 'active'),
 (8, 'Patricia', 'Lopez', 'doctor', 'Obstetrics', 89012, 'patricia.lopez@womenhealth.com', 'UERM Medical Center, Sta. Mesa', 'active'),
 (9, 'David', 'Chua', 'doctor', 'ENT', 90123, 'david.chua@earnoseph.com', 'Chinese General Hospital, Manila', 'active'),
-(10, 'Sophia', 'Del Rosario', 'doctor', 'Psychiatry', 10123, 'sophia.delrosario@mindhealth.com', 'National Center for Mental Health, Mandaluyong', 'active');
+(10, 'Sophia', 'Del Rosario', 'doctor', 'Psychiatry', 10123, 'sophia.delrosario@mindhealth.com', 'National Center for Mental Health, Mandaluyong', 'active'),
+(11, 'Emanuel', 'Reyes', '12345', 'surgery', 54321, 'EmRey@doctor.com', '#1 Medical Street', 'pending');
 
 -- --------------------------------------------------------
 
@@ -461,7 +462,7 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `auditlog`
 --
 ALTER TABLE `auditlog`
-  MODIFY `logID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `logID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `dispenserecord`
@@ -473,7 +474,7 @@ ALTER TABLE `dispenserecord`
 -- AUTO_INCREMENT for table `doctor`
 --
 ALTER TABLE `doctor`
-  MODIFY `doctorID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `doctorID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `medication`
@@ -486,6 +487,12 @@ ALTER TABLE `medication`
 --
 ALTER TABLE `patient`
   MODIFY `patientID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `pharmacy`
+--
+ALTER TABLE `pharmacy`
+  MODIFY `pharmacyID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `prescription`
