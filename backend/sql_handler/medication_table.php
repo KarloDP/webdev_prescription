@@ -57,7 +57,7 @@ $patientID = (int) $_GET['patientID'];
 $sql = "
     SELECT
         p.prescriptionID,
-        m.genericName,
+        m.genericName AS medicine,
         m.brandName,
         pi.dosage,
         pi.frequency,
