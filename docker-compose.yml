@@ -6,8 +6,16 @@ services:
       - "80:80"   # serve on host port 80
     volumes:
       - .:/var/www/html
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASS: ""
+      DB_NAME: webdev_prescription
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: unless-stopped
 
   db:
     image: mariadb:11
@@ -19,7 +27,12 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./assets/database/webdev_prescription.sql:/docker-entrypoint-initdb.d/webdev_prescription.sql:ro
-
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping --socket=/run/mysqld/mysqld.sock || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: webdev_prescription_phpmyadmin
