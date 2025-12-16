@@ -13,14 +13,23 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ============================
        LOAD PATIENTS
     ============================ */
-    fetch('../../../../backend/sql_handler/patient_table.php', {
+    fetch('/WebDev_Prescription/backend/sql_handler/patient_table.php', {
         credentials: 'include'
     })
-    .then(res => res.json())
-    .then(data => {
-        patients = Array.isArray(data) ? data : [];
-        renderPatients(patients);
-    });
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            }
+            return res.json();
+        })
+        .then(data => {
+            patients = Array.isArray(data) ? data : [];
+            renderPatients(patients);
+        })
+        .catch(err => {
+            console.error('Error loading patients:', err);
+            alert('Failed to load patients. Please refresh the page.');
+        });
 
     function renderPatients(list) {
         patientSelect.innerHTML = '<option value="">Select patient</option>';
@@ -45,14 +54,23 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ============================
        LOAD MEDICATIONS
     ============================ */
-    fetch('../../../../backend/sql_handler/medication_table.php', {
+    fetch('/WebDev_Prescription/backend/sql_handler/medication_table.php', {
         credentials: 'include'
     })
-    .then(res => res.json())
-    .then(data => {
-        medications = Array.isArray(data) ? data : [];
-        addMedicationRow();
-    });
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            }
+            return res.json();
+        })
+        .then(data => {
+            medications = Array.isArray(data) ? data : [];
+            addMedicationRow();
+        })
+        .catch(err => {
+            console.error('Error loading medications:', err);
+            alert('Failed to load medications. Please refresh the page.');
+        });
 
     function addMedicationRow() {
         const tr = document.createElement('tr');
@@ -125,13 +143,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!medicationID || !dosage || !frequency || !duration) return;
 
+            const refillDate = row.querySelector('.refillInterval').value.trim();
             payload.medications.push({
                 medicationID,
                 dosage,
                 frequency,
                 duration,
                 prescribed_amount: Number(row.querySelector('.prescribed_amount').value || 0),
-                refillInterval: row.querySelector('.refillInterval').value || '0000-00-00',
+                refillInterval: refillDate || null, // Send null if empty, backend will handle default
                 instructions: row.querySelector('.instructions').value.trim()
             });
         });
@@ -142,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const res = await fetch(
-            '../../../../backend/sql_handler/prescription_table.php',
+            '/WebDev_Prescription/backend/sql_handler/prescription_table.php',
             {
                 method: 'POST',
                 credentials: 'include',
@@ -150,6 +169,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(payload)
             }
         );
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error('Prescription save failed:', errorText);
+            let errorMsg = `HTTP ${res.status}: Failed to save prescription`;
+            try {
+                const errorJson = JSON.parse(errorText);
+                errorMsg = errorJson.details || errorJson.error || errorMsg;
+            } catch (e) {
+                // Not JSON, use default message
+            }
+            alert(errorMsg);
+            return;
+        }
 
         const data = await res.json();
 
