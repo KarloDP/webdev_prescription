@@ -140,6 +140,9 @@ else if ($method === 'POST') {
             ?? date('Y-m-d', strtotime($issueDate . ' +30 days'));
 
         $status = 'Active';
+        
+        // Get prescription-level notes (will be added to first medication's instructions)
+        $prescriptionNotes = trim($data['notes'] ?? '');
 
         $conn->begin_transaction();
 
@@ -174,6 +177,7 @@ else if ($method === 'POST') {
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
 
+            $isFirstItem = true;
             foreach ($items as $m) {
 
                 $medID     = (int)($m['medicationID'] ?? 0);
@@ -182,9 +186,36 @@ else if ($method === 'POST') {
                 $duration  = trim($m['duration'] ?? '');
                 $qty       = (int)($m['prescribed_amount'] ?? 0);
                 $refills   = (int)($m['refill_count'] ?? 0);
-                $refill    = $m['refillInterval'] ?: '0000-00-00';
-                $instr     = trim($m['instructions'] ?? '');
+
+                // Handle refillInterval: use provided date, or default to expirationDate if empty/invalid
+                $refillInput = trim($m['refillInterval'] ?? '');
+                if (empty($refillInput) || $refillInput === '0000-00-00' || $refillInput === 'null') {
+                    $refill = $expirationDate; // Use prescription expiration date as default
+                } else {
+                    // Validate the date format
+                    $refillTimestamp = strtotime($refillInput);
+                    if ($refillTimestamp === false) {
+                        $refill = $expirationDate; // Fallback to expiration date if invalid
+                    } else {
+                        $refill = date('Y-m-d', $refillTimestamp);
+                    }
+                }
+
+                // Combine prescription-level notes with medication instructions
+                $medInstructions = trim($m['instructions'] ?? '');
+                if ($isFirstItem && !empty($prescriptionNotes)) {
+                    // Prepend prescription notes to first medication's instructions
+                    if (!empty($medInstructions)) {
+                        $instr = $prescriptionNotes . "\n\n" . $medInstructions;
+                    } else {
+                        $instr = $prescriptionNotes;
+                    }
+                } else {
+                    $instr = $medInstructions;
+                }
+                
                 $docID     = $userID;
+                $isFirstItem = false; // Mark that we've processed the first item
 
                 if (!$medID || !$dosage || !$frequency) {
                     throw new Exception('Invalid medication entry');
