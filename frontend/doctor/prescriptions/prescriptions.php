@@ -1,15 +1,20 @@
 <?php
 require_once(__DIR__ . '/../../../backend/includes/auth.php');
-require_login('/webdev_prescription/login.php', ['doctor']);
+require_login('../login.php', ['doctor']);
 
 $activePage = 'prescriptions';
-ob_start(); // Start capturing HTML output
+ob_start();
 ?>
 
 <div class="prescriptions-page">
     <div class="page-header">
         <h1 class="page-title">Prescriptions</h1>
-        <button id="add-prescription-btn" class="btn btn-primary">+ Add Prescription</button>
+
+        <!-- Docker-safe relative link -->
+        <a href="add_prescription_multi.php"
+           class="btn btn-primary">
+            + Add Prescription
+        </a>
     </div>
 
     <!-- Section 1: Patient Information -->
@@ -26,7 +31,11 @@ ob_start(); // Start capturing HTML output
                     </tr>
                 </thead>
                 <tbody id="patients-table-body">
-                    <tr><td colspan="4" class="loading-cell">Loading patients...</td></tr>
+                    <tr>
+                        <td colspan="4" class="loading-cell">
+                            Loading patients...
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -48,7 +57,11 @@ ob_start(); // Start capturing HTML output
                     </tr>
                 </thead>
                 <tbody id="active-prescriptions-body">
-                    <tr><td colspan="6" class="loading-cell">Loading active prescriptions...</td></tr>
+                    <tr>
+                        <td colspan="6" class="loading-cell">
+                            Loading active prescriptions...
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -69,12 +82,20 @@ ob_start(); // Start capturing HTML output
                     </tr>
                 </thead>
                 <tbody id="history-prescriptions-body">
-                    <tr><td colspan="5" class="loading-cell">Loading history...</td></tr>
+                    <tr>
+                        <td colspan="5" class="loading-cell">
+                            Loading history...
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+<!-- Docker-safe relative script -->
+<script src="prescriptions.js" defer></script>
+
 <?php
 $content = ob_get_clean();
 include(__DIR__ . '/../doctor_standard.php');

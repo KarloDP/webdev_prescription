@@ -1,11 +1,12 @@
 // prescriptions.js
-
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOMContentLoaded fired: prescriptions.js is running.');
 
     // --- Data Fetching and Table Rendering ---
     const refreshTables = () => {
-        fetch('/../../../backend/sql_handler/get_prescriptions_data.php')
+        fetch('../../../backend/sql_handler/get_prescriptions_data.php', {
+            credentials: 'include'
+        })
             .then(res => res.text())
             .then(text => {
                 try {
