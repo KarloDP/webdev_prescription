@@ -7,9 +7,18 @@ include(__DIR__ . '/../includes/db_connect.php');
 include(__DIR__ . '/../includes/auth.php');
 require_once __DIR__ . '/../includes/functions.php';
 
+// Start output buffering immediately to catch any unwanted whitespace or includes output
+ob_start();
+
+// Disable display of errors in output (logs them instead) to prevent breaking JSON
+ini_set('display_errors', '0');
+error_reporting(E_ALL);
+
 header('Content-Type: application/json; charset=utf-8');
 
 function respond($data, $statusCode = 200) {
+    // Clear the buffer of any previous output (like PHP warnings or whitespace)
+    ob_clean();
     http_response_code($statusCode);
     echo json_encode($data);
     exit;
@@ -83,13 +92,19 @@ try {
     // POST: Insert dispense record (pharmacist only)
     elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = require_role(['pharmacist']);
-        $doctorID = (int)$user['id'];
+        $userID = (int)$user['id'];
 
-        $input = json_decode(file_get_contents('php://input'), true);
-        if (!is_array($input)) throw new Exception('Invalid JSON', 400);
+        // Read raw input
+        $rawInput = file_get_contents('php://input');
+        $input = json_decode($rawInput, true);
+        
+        if (!is_array($input)) {
+            throw new Exception('Invalid JSON input', 400);
+        }
 
         $prescriptionItemID = filter_var($input['prescriptionItemID'] ?? null, FILTER_VALIDATE_INT);
         $dispensedQuantity  = filter_var($input['dispensedQuantity'] ?? null, FILTER_VALIDATE_INT);
+        
         if (!$prescriptionItemID || !$dispensedQuantity || $dispensedQuantity <= 0) {
             throw new Exception('prescriptionItemID and positive dispensedQuantity are required', 400);
         }
@@ -131,7 +146,7 @@ try {
 
         // Insert dispense record
         $stmt = $conn->prepare(
-            "INSERT INTO dispenserecord (prescriptionItemID, pharmacyID, dispensedQuantity) VALUES (?, ?, ?)"
+            "INSERT INTO dispenserecord (prescriptionItemID, pharmacyID, dispensedQuantity, dispenseDate) VALUES (?, ?, ?, NOW())"
         );
         if (!$stmt) throw new Exception('Prepare failed: ' . $conn->error, 500);
         $stmt->bind_param('iii', $prescriptionItemID, $pharmacyID, $dispensedQuantity);
@@ -139,12 +154,13 @@ try {
         $insertId = $stmt->insert_id;
         $stmt->close();
 
-        // Check if fully dispensed
+        // Check if fully dispensed (check all items in this prescription)
         $stmt = $conn->prepare("SELECT SUM(prescribed_amount) AS total_remaining FROM prescriptionitem WHERE prescriptionID = ?");
         if (!$stmt) throw new Exception('Prepare failed: ' . $conn->error, 500);
         $stmt->bind_param('i', $prescriptionID);
         $stmt->execute();
-        $totalRemaining = (int)($stmt->get_result()->fetch_assoc()['total_remaining'] ?? 0);
+        $res = $stmt->get_result()->fetch_assoc();
+        $totalRemaining = (int)($res['total_remaining'] ?? 0);
         $stmt->close();
 
         if ($totalRemaining <= 0) {
@@ -158,8 +174,11 @@ try {
         $conn->commit();
         $txActive = false;
         
-        log_audit($conn, $userID, 'pharmacist', 'Dispense Medication', 
-            "Dispensed $dispensedQuantity units for prescription item #$prescriptionItemID");
+        // Log audit if function exists
+        if (function_exists('log_audit')) {
+            log_audit($conn, $userID, 'pharmacist', 'Dispense Medication', 
+                "Dispensed $dispensedQuantity units for prescription item #$prescriptionItemID");
+        }
         
         respond(['success' => true, 'insert_id' => $insertId], 201);
 

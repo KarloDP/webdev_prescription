@@ -163,14 +163,18 @@ if (window.__dispenseInit) {
 
       const itemInputs = document.querySelectorAll('.item-quantity-input');
       const dispensesToProcess = [];
+      
+      // 1. Gather all valid inputs
       itemInputs.forEach(input => {
         const qty = parseInt(input.value, 10);
         const max = parseInt(input.getAttribute('max'), 10) || Infinity;
-        if (Number.isFinite(qty) && qty > 0 && qty <= max) {
-          dispensesToProcess.push({
-            prescriptionItemID: parseInt(input.dataset.itemId, 10),
-            dispensedQuantity: qty
-          });
+        const itemId = input.getAttribute('data-item-id');
+
+        if (Number.isFinite(qty) && qty > 0 && qty <= max && itemId) {
+            dispensesToProcess.push({
+                prescriptionItemID: itemId,
+                dispensedQuantity: qty
+            });
         }
       });
 
@@ -180,43 +184,55 @@ if (window.__dispenseInit) {
       }
 
       showMessage('Dispensing...', 'info');
+      const btn = document.getElementById('dispense-all-btn');
+      if(btn) btn.disabled = true;
+
+      let successCount = 0;
+      let errors = [];
 
       try {
+        // 2. Process sequentially
         for (const payload of dispensesToProcess) {
-          const res = await fetch('/WebDev_Prescription/backend/sql_handler/dispenserecord_table.php', {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-
-          const raw = await res.text();
-          if (!res.ok) {
-            console.error('Dispense API error body:', raw);
-            let errMsg = `HTTP ${res.status}`;
             try {
-              const errJson = JSON.parse(raw);
-              if (errJson?.details) errMsg = errJson.details;
-              else if (errJson?.error) errMsg = errJson.error;
-            } catch {}
-            throw new Error(errMsg);
-          }
+                const res = await fetch('../../backend/sql_handler/dispenserecord_table.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-          let result;
-          try {
-            result = JSON.parse(raw);
-          } catch {
-            console.error('Invalid JSON from server:', raw);
-            throw new Error('Server returned invalid JSON');
-          }
+                // Get text first to debug "Unexpected token" issues
+                const text = await res.text();
+                let data;
+                
+                try {
+                    data = JSON.parse(text);
+                } catch (parseErr) {
+                    console.error("Server returned invalid JSON:", text);
+                    throw new Error("Server Error: Invalid response format.");
+                }
 
-          if (result.error) {
-            throw new Error(result.details || 'Server error');
-          }
+                if (!res.ok || data.error) {
+                    throw new Error(data.details || data.message || 'Unknown error');
+                }
+                
+                successCount++;
+            } catch (innerErr) {
+                console.error("Failed to dispense item:", payload, innerErr);
+                errors.push(`Item #${payload.prescriptionItemID}: ${innerErr.message}`);
+            }
         }
 
-        showMessage(`Successfully dispensed ${dispensesToProcess.length} item(s).`, 'success');
-        setTimeout(() => selectRx(selectedId), 800);
+        // 3. Final Status
+        if (errors.length > 0) {
+            showMessage(`Dispensed ${successCount} items. Errors: ${errors.join('; ')}`, 'error');
+        } else {
+            showMessage(`Successfully dispensed ${successCount} item(s).`, 'success');
+        }
+
+        // Refresh details after a short delay
+        setTimeout(() => {
+            if (selectedId) selectRx(selectedId);
+        }, 1000);
 
       } catch (err) {
         console.error('Dispense error:', err);
