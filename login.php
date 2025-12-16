@@ -9,7 +9,11 @@ $error = "";
 $selectedRole = $_POST['role'] ?? 'patient'; // Default to patient for the dropdown
 
 // If any user is already logged in, redirect them to their dashboard
-if (!empty($_SESSION['user']['role'])) {
+if (
+    isset($_SESSION['user']) &&
+    isset($_SESSION['user']['role']) &&
+    isset($_SESSION['user']['id'])
+) {
     redirect_based_on_role($_SESSION['user']['role']);
 }
 
@@ -31,8 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             set_user_session($role, $user);
             
             // Log the login
-            log_audit($conn, $user['id'], $role, 'Login', 'User logged in successfully');
-            
+            log_audit($conn, $_SESSION['user']['id'], $role, 'Login', 'User logged in successfully');
+
             redirect_based_on_role($role);
         } else {
             // Authentication failed
@@ -71,7 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <option value="patient" <?= $selectedRole === 'patient' ? 'selected' : '' ?>>Patient</option>
                 <option value="doctor" <?= $selectedRole === 'doctor' ? 'selected' : '' ?>>Doctor</option>
                 <option value="pharmacist" <?= $selectedRole === 'pharmacist' ? 'selected' : '' ?>>Pharmacist</option>
-                <option value="admin" <?= $selectedRole === 'admin' ? 'selected' : '' ?>>Admin</option>
             </select>
         </div>
         <div class="form-group">

@@ -2,9 +2,9 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3306
--- Generation Time: Dec 11, 2025 at 03:10 AM
--- Server version: 9.1.0
+-- Host: 127.0.0.1:3307
+-- Generation Time: Dec 15, 2025 at 12:01 PM
+-- Server version: 11.5.2-MariaDB
 -- PHP Version: 8.3.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -29,10 +29,11 @@ SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `admins`;
 CREATE TABLE IF NOT EXISTS `admins` (
-  `adminID` int NOT NULL AUTO_INCREMENT,
-  `firstName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `lastName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `adminID` int(11) NOT NULL AUTO_INCREMENT,
+  `firstName` text NOT NULL,
+  `lastName` text NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `status` enum('active','pending') DEFAULT 'pending',
   PRIMARY KEY (`adminID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -40,13 +41,13 @@ CREATE TABLE IF NOT EXISTS `admins` (
 -- Dumping data for table `admins`
 --
 
-INSERT INTO `admins` (`adminID`, `firstName`, `lastName`, `password`) VALUES
-(1, 'Alice', 'Johnson', 'alice'),
-(2, 'Benjamin', 'Lopez', 'benjamin'),
-(3, 'Clara', 'Hughes', 'clara'),
-(4, 'Daniel', 'Parker', 'daniel'),
-(5, 'Elena', 'Mitchell', 'elena'),
-(6, 'Clara', 'Hughes', 'clara');
+INSERT INTO `admins` (`adminID`, `firstName`, `lastName`, `password`, `status`) VALUES
+(1, 'Alice', 'Johnson', 'alice', 'pending'),
+(2, 'Benjamin', 'Lopez', 'benjamin', 'pending'),
+(3, 'Clara', 'Hughes', 'clara', 'pending'),
+(4, 'Daniel', 'Parker', 'daniel', 'pending'),
+(5, 'Elena', 'Mitchell', 'elena', 'pending'),
+(6, 'Clara', 'Hughes', 'clara', 'pending');
 
 -- --------------------------------------------------------
 
@@ -56,14 +57,14 @@ INSERT INTO `admins` (`adminID`, `firstName`, `lastName`, `password`) VALUES
 
 DROP TABLE IF EXISTS `auditlog`;
 CREATE TABLE IF NOT EXISTS `auditlog` (
-  `logID` int NOT NULL AUTO_INCREMENT,
-  `userID` int NOT NULL,
+  `logID` int(11) NOT NULL AUTO_INCREMENT,
+  `userID` int(11) NOT NULL,
   `role` varchar(20) NOT NULL,
   `action` varchar(255) NOT NULL,
-  `details` text,
-  `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `details` text DEFAULT NULL,
+  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`logID`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `auditlog`
@@ -83,11 +84,11 @@ INSERT INTO `auditlog` (`logID`, `userID`, `role`, `action`, `details`, `created
 
 DROP TABLE IF EXISTS `dispenserecord`;
 CREATE TABLE IF NOT EXISTS `dispenserecord` (
-  `dispenseID` int NOT NULL AUTO_INCREMENT,
-  `prescriptionItemID` int NOT NULL,
-  `pharmacyID` int NOT NULL,
-  `dispensedQuantity` int NOT NULL,
-  `dispenseDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `dispenseID` int(11) NOT NULL AUTO_INCREMENT,
+  `prescriptionItemID` int(11) NOT NULL,
+  `pharmacyID` int(11) NOT NULL,
+  `dispensedQuantity` int(11) NOT NULL,
+  `dispenseDate` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`dispenseID`),
   KEY `prescriptionItemID` (`prescriptionItemID`),
   KEY `pharmacyID` (`pharmacyID`)
@@ -111,15 +112,15 @@ INSERT INTO `dispenserecord` (`dispenseID`, `prescriptionItemID`, `pharmacyID`, 
 
 DROP TABLE IF EXISTS `doctor`;
 CREATE TABLE IF NOT EXISTS `doctor` (
-  `doctorID` int NOT NULL AUTO_INCREMENT,
-  `firstName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `lastName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `specialization` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `licenseNumber` int NOT NULL,
-  `email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `clinicAddress` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `status` enum('active','pending') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pending',
+  `doctorID` int(11) NOT NULL AUTO_INCREMENT,
+  `firstName` text NOT NULL,
+  `lastName` text NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `specialization` text NOT NULL,
+  `licenseNumber` int(11) NOT NULL,
+  `email` text NOT NULL,
+  `clinicAddress` text NOT NULL,
+  `status` enum('active','pending') NOT NULL DEFAULT 'pending',
   PRIMARY KEY (`doctorID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -147,13 +148,13 @@ INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `password`, `speciali
 
 DROP TABLE IF EXISTS `medication`;
 CREATE TABLE IF NOT EXISTS `medication` (
-  `medicationID` int UNSIGNED NOT NULL,
-  `genericName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `brandName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `form` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `strength` int NOT NULL,
-  `manufacturer` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `stock` int DEFAULT NULL,
+  `medicationID` int(10) UNSIGNED NOT NULL,
+  `genericName` text NOT NULL,
+  `brandName` text NOT NULL,
+  `form` text NOT NULL,
+  `strength` int(11) NOT NULL,
+  `manufacturer` text NOT NULL,
+  `stock` int(11) DEFAULT NULL,
   PRIMARY KEY (`medicationID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -180,20 +181,20 @@ INSERT INTO `medication` (`medicationID`, `genericName`, `brandName`, `form`, `s
 
 DROP TABLE IF EXISTS `patient`;
 CREATE TABLE IF NOT EXISTS `patient` (
-  `patientID` int NOT NULL AUTO_INCREMENT,
-  `firstName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `lastName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `patientID` int(11) NOT NULL AUTO_INCREMENT,
+  `firstName` text NOT NULL,
+  `lastName` text NOT NULL,
+  `password` varchar(255) NOT NULL,
   `birthDate` date NOT NULL,
-  `gender` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `contactNumber` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `doctorID` int DEFAULT NULL,
-  `healthCondition` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `allergies` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `currentMedication` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `knownDiseases` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `gender` text NOT NULL,
+  `contactNumber` varchar(10) DEFAULT NULL,
+  `address` text NOT NULL,
+  `email` text NOT NULL,
+  `doctorID` int(11) DEFAULT NULL,
+  `healthCondition` text DEFAULT NULL,
+  `allergies` text DEFAULT NULL,
+  `currentMedication` text DEFAULT NULL,
+  `knownDiseases` text DEFAULT NULL,
   PRIMARY KEY (`patientID`),
   KEY `fk_patient_doctor` (`doctorID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -223,14 +224,14 @@ INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `password`, `birthD
 
 DROP TABLE IF EXISTS `pharmacy`;
 CREATE TABLE IF NOT EXISTS `pharmacy` (
-  `pharmacyID` int NOT NULL,
-  `name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `contactNumber` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `clinicAddress` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `status` enum('active','inactive','pending') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pending',
+  `pharmacyID` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `address` text NOT NULL,
+  `contactNumber` varchar(20) NOT NULL,
+  `email` text NOT NULL,
+  `clinicAddress` text NOT NULL,
+  `status` enum('active','inactive','pending') NOT NULL DEFAULT 'pending',
   PRIMARY KEY (`pharmacyID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -249,17 +250,62 @@ INSERT INTO `pharmacy` (`pharmacyID`, `name`, `password`, `address`, `contactNum
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `pharmacy_medication`
+--
+
+DROP TABLE IF EXISTS `pharmacy_medication`;
+CREATE TABLE IF NOT EXISTS `pharmacy_medication` (
+  `pharmacyID` int(11) NOT NULL,
+  `medicationID` int(11) NOT NULL,
+  `stock` int(11) DEFAULT 0,
+  PRIMARY KEY (`pharmacyID`,`medicationID`),
+  KEY `medicationID` (`medicationID`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `pharmacy_medication`
+--
+
+INSERT INTO `pharmacy_medication` (`pharmacyID`, `medicationID`, `stock`) VALUES
+(1, 1, 100),
+(1, 2, 100),
+(1, 3, 100),
+(1, 4, 100),
+(2, 2, 90),
+(2, 3, 90),
+(2, 4, 90),
+(2, 5, 90),
+(3, 3, 80),
+(3, 4, 80),
+(3, 5, 80),
+(3, 6, 80),
+(4, 4, 70),
+(4, 5, 70),
+(4, 6, 70),
+(4, 7, 70),
+(5, 5, 60),
+(5, 6, 60),
+(5, 7, 60),
+(5, 8, 60),
+(6, 6, 50),
+(6, 7, 50),
+(6, 8, 50),
+(6, 9, 50);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `prescription`
 --
 
 DROP TABLE IF EXISTS `prescription`;
 CREATE TABLE IF NOT EXISTS `prescription` (
-  `prescriptionID` int NOT NULL AUTO_INCREMENT,
-  `patientID` int NOT NULL,
+  `prescriptionID` int(11) NOT NULL AUTO_INCREMENT,
+  `patientID` int(11) NOT NULL,
   `issueDate` date NOT NULL,
   `expirationDate` date NOT NULL,
-  `status` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `doctorID` int NOT NULL,
+  `status` text NOT NULL,
+  `doctorID` int(11) NOT NULL,
   PRIMARY KEY (`prescriptionID`),
   KEY `patientID` (`patientID`),
   KEY `fk_prescription_doctor` (`doctorID`)
@@ -290,17 +336,17 @@ INSERT INTO `prescription` (`prescriptionID`, `patientID`, `issueDate`, `expirat
 
 DROP TABLE IF EXISTS `prescriptionitem`;
 CREATE TABLE IF NOT EXISTS `prescriptionitem` (
-  `doctorID` int NOT NULL,
-  `prescriptionItemID` int NOT NULL AUTO_INCREMENT,
-  `prescriptionID` int NOT NULL,
-  `medicationID` int UNSIGNED NOT NULL,
-  `dosage` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `frequency` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `duration` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `prescribed_amount` int NOT NULL,
-  `refill_count` int NOT NULL,
+  `doctorID` int(11) NOT NULL,
+  `prescriptionItemID` int(11) NOT NULL AUTO_INCREMENT,
+  `prescriptionID` int(11) NOT NULL,
+  `medicationID` int(10) UNSIGNED NOT NULL,
+  `dosage` text NOT NULL,
+  `frequency` text NOT NULL,
+  `duration` text NOT NULL,
+  `prescribed_amount` int(11) NOT NULL,
+  `refill_count` int(11) NOT NULL,
   `refillInterval` date NOT NULL,
-  `instructions` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `instructions` text NOT NULL,
   PRIMARY KEY (`prescriptionItemID`),
   KEY `fk_medicationID` (`medicationID`),
   KEY `fk_prescriptionID` (`prescriptionID`),
@@ -358,13 +404,13 @@ ALTER TABLE `patient`
 -- Constraints for table `prescription`
 --
 ALTER TABLE `prescription`
-  ADD CONSTRAINT `fk_prescription_doctor` FOREIGN KEY (`doctorID`) REFERENCES `doctor` (`doctorID`) ON DELETE RESTRICT ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_prescription_doctor` FOREIGN KEY (`doctorID`) REFERENCES `doctor` (`doctorID`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `prescriptionitem`
 --
 ALTER TABLE `prescriptionitem`
-  ADD CONSTRAINT `fk_doctorID` FOREIGN KEY (`doctorID`) REFERENCES `doctor` (`doctorID`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_doctorID` FOREIGN KEY (`doctorID`) REFERENCES `doctor` (`doctorID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_medicationID` FOREIGN KEY (`medicationID`) REFERENCES `medication` (`medicationID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_prescriptionID` FOREIGN KEY (`prescriptionID`) REFERENCES `prescription` (`prescriptionID`) ON UPDATE CASCADE;
 COMMIT;
