@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3307
--- Generation Time: Dec 15, 2025 at 12:01 PM
--- Server version: 11.5.2-MariaDB
--- PHP Version: 8.3.14
+-- Host: db
+-- Generation Time: Dec 16, 2025 at 01:02 PM
+-- Server version: 11.8.5-MariaDB-ubu2404
+-- PHP Version: 8.3.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -27,22 +27,20 @@ SET time_zone = "+00:00";
 -- Table structure for table `admins`
 --
 
-DROP TABLE IF EXISTS `admins`;
-CREATE TABLE IF NOT EXISTS `admins` (
-  `adminID` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `admins` (
+  `adminID` int(11) NOT NULL,
   `firstName` text NOT NULL,
   `lastName` text NOT NULL,
   `password` varchar(255) NOT NULL,
-  `status` enum('active','pending') DEFAULT 'pending',
-  PRIMARY KEY (`adminID`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `status` enum('active','pending') DEFAULT 'pending'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `admins`
 --
 
 INSERT INTO `admins` (`adminID`, `firstName`, `lastName`, `password`, `status`) VALUES
-(1, 'Alice', 'Johnson', 'alice', 'pending'),
+(1, 'Alice', 'Johnson', 'alice', 'active'),
 (2, 'Benjamin', 'Lopez', 'benjamin', 'pending'),
 (3, 'Clara', 'Hughes', 'clara', 'pending'),
 (4, 'Daniel', 'Parker', 'daniel', 'pending'),
@@ -55,16 +53,14 @@ INSERT INTO `admins` (`adminID`, `firstName`, `lastName`, `password`, `status`) 
 -- Table structure for table `auditlog`
 --
 
-DROP TABLE IF EXISTS `auditlog`;
-CREATE TABLE IF NOT EXISTS `auditlog` (
-  `logID` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `auditlog` (
+  `logID` int(11) NOT NULL,
   `userID` int(11) NOT NULL,
   `role` varchar(20) NOT NULL,
   `action` varchar(255) NOT NULL,
   `details` text DEFAULT NULL,
-  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`logID`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `createdAt` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `auditlog`
@@ -74,7 +70,13 @@ INSERT INTO `auditlog` (`logID`, `userID`, `role`, `action`, `details`, `created
 (1, 1, 'pharmacist', 'Login', 'User logged in successfully', '2025-12-11 10:35:33'),
 (2, 1, 'pharmacist', 'Dispense Medication', 'Dispensed 30 units for prescription item #5', '2025-12-11 10:35:33'),
 (3, 2, 'doctor', 'Add Prescription', 'Created prescription #12 for patient #45', '2025-12-11 10:35:33'),
-(4, 0, 'pharmacist', 'Login', 'User logged in successfully', '2025-12-11 10:49:08');
+(4, 0, 'pharmacist', 'Login', 'User logged in successfully', '2025-12-11 10:49:08'),
+(5, 2, 'patient', 'Login', 'User logged in successfully', '2025-12-16 12:53:05'),
+(6, 1, 'doctor', 'Login', 'User logged in successfully', '2025-12-16 12:54:03'),
+(7, 1, 'pharmacist', 'Login', 'User logged in successfully', '2025-12-16 12:56:30'),
+(8, 1, 'pharmacist', 'Dispense Medication', 'Dispensed 5 units for prescription item #112', '2025-12-16 12:56:48'),
+(9, 1, 'pharmacist', 'Dispense Medication', 'Dispensed 6 units for prescription item #113', '2025-12-16 12:56:48'),
+(10, 1, 'pharmacist', 'Dispense Medication', 'Dispensed 7 units for prescription item #114', '2025-12-16 12:56:48');
 
 -- --------------------------------------------------------
 
@@ -82,17 +84,13 @@ INSERT INTO `auditlog` (`logID`, `userID`, `role`, `action`, `details`, `created
 -- Table structure for table `dispenserecord`
 --
 
-DROP TABLE IF EXISTS `dispenserecord`;
-CREATE TABLE IF NOT EXISTS `dispenserecord` (
-  `dispenseID` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `dispenserecord` (
+  `dispenseID` int(11) NOT NULL,
   `prescriptionItemID` int(11) NOT NULL,
   `pharmacyID` int(11) NOT NULL,
   `dispensedQuantity` int(11) NOT NULL,
-  `dispenseDate` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`dispenseID`),
-  KEY `prescriptionItemID` (`prescriptionItemID`),
-  KEY `pharmacyID` (`pharmacyID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `dispenseDate` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `dispenserecord`
@@ -102,7 +100,10 @@ INSERT INTO `dispenserecord` (`dispenseID`, `prescriptionItemID`, `pharmacyID`, 
 (1, 96, 2, 5, '2025-12-07 16:44:49'),
 (2, 1, 2, 5, '2025-12-07 21:35:45'),
 (3, 82, 2, 5, '2025-12-07 21:35:53'),
-(4, 1, 2, 5, '2025-12-07 21:35:59');
+(4, 1, 2, 5, '2025-12-07 21:35:59'),
+(5, 112, 1, 5, '2025-12-16 12:56:48'),
+(6, 113, 1, 6, '2025-12-16 12:56:48'),
+(7, 114, 1, 7, '2025-12-16 12:56:48');
 
 -- --------------------------------------------------------
 
@@ -110,9 +111,8 @@ INSERT INTO `dispenserecord` (`dispenseID`, `prescriptionItemID`, `pharmacyID`, 
 -- Table structure for table `doctor`
 --
 
-DROP TABLE IF EXISTS `doctor`;
-CREATE TABLE IF NOT EXISTS `doctor` (
-  `doctorID` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `doctor` (
+  `doctorID` int(11) NOT NULL,
   `firstName` text NOT NULL,
   `lastName` text NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -120,9 +120,8 @@ CREATE TABLE IF NOT EXISTS `doctor` (
   `licenseNumber` int(11) NOT NULL,
   `email` text NOT NULL,
   `clinicAddress` text NOT NULL,
-  `status` enum('active','pending') NOT NULL DEFAULT 'pending',
-  PRIMARY KEY (`doctorID`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `status` enum('active','pending') NOT NULL DEFAULT 'pending'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `doctor`
@@ -146,16 +145,14 @@ INSERT INTO `doctor` (`doctorID`, `firstName`, `lastName`, `password`, `speciali
 -- Table structure for table `medication`
 --
 
-DROP TABLE IF EXISTS `medication`;
-CREATE TABLE IF NOT EXISTS `medication` (
+CREATE TABLE `medication` (
   `medicationID` int(10) UNSIGNED NOT NULL,
   `genericName` text NOT NULL,
   `brandName` text NOT NULL,
   `form` text NOT NULL,
   `strength` int(11) NOT NULL,
   `manufacturer` text NOT NULL,
-  `stock` int(11) DEFAULT NULL,
-  PRIMARY KEY (`medicationID`)
+  `stock` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -171,7 +168,7 @@ INSERT INTO `medication` (`medicationID`, `genericName`, `brandName`, `form`, `s
 (6, 'Simvastatin', 'Zocor', 'Tablet', 20, 'MSD', 100),
 (7, 'Omeprazole', 'Losec', 'Capsule', 40, 'AstraZeneca', 100),
 (8, 'Cetirizine', 'Virlix', 'Tablet', 10, 'Unilab', 100),
-(9, 'Amlodipine', 'Norvasc', 'Tablet', 5, 'Pfizer', 100);
+(9, 'Amlodipine', 'Norvasc', 'Tablet', 5, 'Pfizer', 95);
 
 -- --------------------------------------------------------
 
@@ -179,9 +176,8 @@ INSERT INTO `medication` (`medicationID`, `genericName`, `brandName`, `form`, `s
 -- Table structure for table `patient`
 --
 
-DROP TABLE IF EXISTS `patient`;
-CREATE TABLE IF NOT EXISTS `patient` (
-  `patientID` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `patient` (
+  `patientID` int(11) NOT NULL,
   `firstName` text NOT NULL,
   `lastName` text NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -194,10 +190,8 @@ CREATE TABLE IF NOT EXISTS `patient` (
   `healthCondition` text DEFAULT NULL,
   `allergies` text DEFAULT NULL,
   `currentMedication` text DEFAULT NULL,
-  `knownDiseases` text DEFAULT NULL,
-  PRIMARY KEY (`patientID`),
-  KEY `fk_patient_doctor` (`doctorID`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `knownDiseases` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `patient`
@@ -205,7 +199,7 @@ CREATE TABLE IF NOT EXISTS `patient` (
 
 INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `password`, `birthDate`, `gender`, `contactNumber`, `address`, `email`, `doctorID`, `healthCondition`, `allergies`, `currentMedication`, `knownDiseases`) VALUES
 (1, 'Juan', 'Dela Cruz', 'patient', '1990-05-12', 'Male', '912345678', 'Batangas City', 'juan.delacruz@example.com', 1, NULL, NULL, NULL, NULL),
-(2, 'Maria', 'Santos', 'patient', '1988-09-23', 'Female', '923456789', 'Quezon City', 'maria.santos@example.com', 2, NULL, NULL, NULL, NULL),
+(2, 'Maria', 'Santos', 'patient', '1988-09-23', 'Female', '0923456789', 'Quezon City proper', 'maria.santos@example.com', 2, NULL, NULL, NULL, NULL),
 (3, 'Jose', 'Reyes', 'patient', '1975-02-10', 'Male', '934567890', 'Cebu City', 'jose.reyes@example.com', 3, NULL, NULL, NULL, NULL),
 (4, 'Ana', 'Ramos', 'patient', '1995-11-30', 'Female', '945678901', 'Davao City', 'ana.ramos@example.com', 4, NULL, NULL, NULL, NULL),
 (5, 'Carlos', 'Garcia', 'patient', '1982-03-15', 'Male', '956789012', 'Pasig City', 'carlos.garcia@example.com', 5, NULL, NULL, NULL, NULL),
@@ -222,8 +216,7 @@ INSERT INTO `patient` (`patientID`, `firstName`, `lastName`, `password`, `birthD
 -- Table structure for table `pharmacy`
 --
 
-DROP TABLE IF EXISTS `pharmacy`;
-CREATE TABLE IF NOT EXISTS `pharmacy` (
+CREATE TABLE `pharmacy` (
   `pharmacyID` int(11) NOT NULL,
   `name` text NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -231,8 +224,7 @@ CREATE TABLE IF NOT EXISTS `pharmacy` (
   `contactNumber` varchar(20) NOT NULL,
   `email` text NOT NULL,
   `clinicAddress` text NOT NULL,
-  `status` enum('active','inactive','pending') NOT NULL DEFAULT 'pending',
-  PRIMARY KEY (`pharmacyID`)
+  `status` enum('active','inactive','pending') NOT NULL DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -253,13 +245,10 @@ INSERT INTO `pharmacy` (`pharmacyID`, `name`, `password`, `address`, `contactNum
 -- Table structure for table `pharmacy_medication`
 --
 
-DROP TABLE IF EXISTS `pharmacy_medication`;
-CREATE TABLE IF NOT EXISTS `pharmacy_medication` (
+CREATE TABLE `pharmacy_medication` (
   `pharmacyID` int(11) NOT NULL,
   `medicationID` int(11) NOT NULL,
-  `stock` int(11) DEFAULT 0,
-  PRIMARY KEY (`pharmacyID`,`medicationID`),
-  KEY `medicationID` (`medicationID`)
+  `stock` int(11) DEFAULT 0
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -298,18 +287,14 @@ INSERT INTO `pharmacy_medication` (`pharmacyID`, `medicationID`, `stock`) VALUES
 -- Table structure for table `prescription`
 --
 
-DROP TABLE IF EXISTS `prescription`;
-CREATE TABLE IF NOT EXISTS `prescription` (
-  `prescriptionID` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `prescription` (
+  `prescriptionID` int(11) NOT NULL,
   `patientID` int(11) NOT NULL,
   `issueDate` date NOT NULL,
   `expirationDate` date NOT NULL,
   `status` text NOT NULL,
-  `doctorID` int(11) NOT NULL,
-  PRIMARY KEY (`prescriptionID`),
-  KEY `patientID` (`patientID`),
-  KEY `fk_prescription_doctor` (`doctorID`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `doctorID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `prescription`
@@ -326,7 +311,8 @@ INSERT INTO `prescription` (`prescriptionID`, `patientID`, `issueDate`, `expirat
 (8, 8, '2025-03-01', '2025-06-01', 'Active', 8),
 (9, 9, '2025-03-05', '2025-06-05', 'Active', 9),
 (10, 1, '2025-12-10', '2026-01-09', 'Active', 1),
-(11, 11, '2025-12-10', '2026-01-09', 'Active', 1);
+(11, 11, '2025-12-10', '2026-01-09', 'Active', 1),
+(12, 1, '2025-12-16', '2025-12-31', 'Active', 1);
 
 -- --------------------------------------------------------
 
@@ -334,10 +320,9 @@ INSERT INTO `prescription` (`prescriptionID`, `patientID`, `issueDate`, `expirat
 -- Table structure for table `prescriptionitem`
 --
 
-DROP TABLE IF EXISTS `prescriptionitem`;
-CREATE TABLE IF NOT EXISTS `prescriptionitem` (
+CREATE TABLE `prescriptionitem` (
   `doctorID` int(11) NOT NULL,
-  `prescriptionItemID` int(11) NOT NULL AUTO_INCREMENT,
+  `prescriptionItemID` int(11) NOT NULL,
   `prescriptionID` int(11) NOT NULL,
   `medicationID` int(10) UNSIGNED NOT NULL,
   `dosage` text NOT NULL,
@@ -346,12 +331,8 @@ CREATE TABLE IF NOT EXISTS `prescriptionitem` (
   `prescribed_amount` int(11) NOT NULL,
   `refill_count` int(11) NOT NULL,
   `refillInterval` date NOT NULL,
-  `instructions` text NOT NULL,
-  PRIMARY KEY (`prescriptionItemID`),
-  KEY `fk_medicationID` (`medicationID`),
-  KEY `fk_prescriptionID` (`prescriptionID`),
-  KEY `fk_doctorID` (`doctorID`)
-) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `instructions` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `prescriptionitem`
@@ -388,7 +369,135 @@ INSERT INTO `prescriptionitem` (`doctorID`, `prescriptionItemID`, `prescriptionI
 (2, 108, 2, 6, '20 mg', 'Once daily', '14 days', 14, 0, '0000-00-00', 'Morning dose recommended'),
 (3, 109, 3, 4, '10 mg', 'Once daily', '14 days', 14, 1, '0000-00-00', 'Avoid alcohol'),
 (1, 110, 10, 1, '500mg', 'every 1 hr', '', 30, 0, '0000-00-00', 'test'),
-(1, 111, 11, 2, '500mg', 'thrice daily', '', 30, 0, '0000-00-00', 'test');
+(1, 111, 11, 2, '500mg', 'thrice daily', '', 30, 0, '0000-00-00', 'test'),
+(1, 112, 12, 9, '100', 'tad', '2 days', 5, 0, '2025-12-16', 'after meals'),
+(1, 113, 12, 8, '200 mg', 'three times a day', '4 fays', 14, 0, '2025-12-17', 'before meals'),
+(1, 114, 12, 7, '400 ml', 'once a day', '8 days', 23, 0, '2025-12-18', 'before bed');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `admins`
+--
+ALTER TABLE `admins`
+  ADD PRIMARY KEY (`adminID`);
+
+--
+-- Indexes for table `auditlog`
+--
+ALTER TABLE `auditlog`
+  ADD PRIMARY KEY (`logID`);
+
+--
+-- Indexes for table `dispenserecord`
+--
+ALTER TABLE `dispenserecord`
+  ADD PRIMARY KEY (`dispenseID`),
+  ADD KEY `prescriptionItemID` (`prescriptionItemID`),
+  ADD KEY `pharmacyID` (`pharmacyID`);
+
+--
+-- Indexes for table `doctor`
+--
+ALTER TABLE `doctor`
+  ADD PRIMARY KEY (`doctorID`);
+
+--
+-- Indexes for table `medication`
+--
+ALTER TABLE `medication`
+  ADD PRIMARY KEY (`medicationID`);
+
+--
+-- Indexes for table `patient`
+--
+ALTER TABLE `patient`
+  ADD PRIMARY KEY (`patientID`),
+  ADD KEY `fk_patient_doctor` (`doctorID`);
+
+--
+-- Indexes for table `pharmacy`
+--
+ALTER TABLE `pharmacy`
+  ADD PRIMARY KEY (`pharmacyID`);
+
+--
+-- Indexes for table `pharmacy_medication`
+--
+ALTER TABLE `pharmacy_medication`
+  ADD PRIMARY KEY (`pharmacyID`,`medicationID`),
+  ADD KEY `medicationID` (`medicationID`);
+
+--
+-- Indexes for table `prescription`
+--
+ALTER TABLE `prescription`
+  ADD PRIMARY KEY (`prescriptionID`),
+  ADD KEY `patientID` (`patientID`),
+  ADD KEY `fk_prescription_doctor` (`doctorID`);
+
+--
+-- Indexes for table `prescriptionitem`
+--
+ALTER TABLE `prescriptionitem`
+  ADD PRIMARY KEY (`prescriptionItemID`),
+  ADD KEY `fk_medicationID` (`medicationID`),
+  ADD KEY `fk_prescriptionID` (`prescriptionID`),
+  ADD KEY `fk_doctorID` (`doctorID`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `admins`
+--
+ALTER TABLE `admins`
+  MODIFY `adminID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `auditlog`
+--
+ALTER TABLE `auditlog`
+  MODIFY `logID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `dispenserecord`
+--
+ALTER TABLE `dispenserecord`
+  MODIFY `dispenseID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `doctor`
+--
+ALTER TABLE `doctor`
+  MODIFY `doctorID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `medication`
+--
+ALTER TABLE `medication`
+  MODIFY `medicationID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `patient`
+--
+ALTER TABLE `patient`
+  MODIFY `patientID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `prescription`
+--
+ALTER TABLE `prescription`
+  MODIFY `prescriptionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `prescriptionitem`
+--
+ALTER TABLE `prescriptionitem`
+  MODIFY `prescriptionItemID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
 
 --
 -- Constraints for dumped tables
