@@ -72,11 +72,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const select = tr.querySelector('.med-select');
 
         medications.forEach(m => {
+            const brand = m.brandName?.trim() || '';
+            const generic = m.medicine?.trim() || '';   // backend sends "medicine"
+            const label = brand && generic
+                ? `${brand} (${generic})`
+                : (brand || generic || 'Unnamed medication');
+
             const opt = document.createElement('option');
             opt.value = m.medicationID;
-            opt.textContent = m.brandName
-                ? `${m.brandName} (${m.genericName})`
-                : m.genericName;
+            opt.textContent = label;
             select.appendChild(opt);
         });
 
