@@ -1,4 +1,3 @@
-<!--dispense.php-->
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/backend/includes/auth.php';
 $user = require_role(['pharmacist']);
