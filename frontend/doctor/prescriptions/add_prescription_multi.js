@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ============================
        LOAD PATIENTS
     ============================ */
-    fetch('/WebDev_Prescription/backend/sql_handler/patient_table.php', {
+    const baseUrl = window.APP_BASE_URL || '';
+    fetch(`${baseUrl}/backend/sql_handler/patient_table.php`, {
         credentials: 'include'
     })
         .then(res => {
@@ -54,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ============================
        LOAD MEDICATIONS
     ============================ */
-    fetch('/WebDev_Prescription/backend/sql_handler/medication_table.php', {
+    fetch(`${baseUrl}/backend/sql_handler/medication_table.php`, {
         credentials: 'include'
     })
         .then(res => {
@@ -161,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const res = await fetch(
-            '/WebDev_Prescription/backend/sql_handler/prescription_table.php',
+            `${baseUrl}/backend/sql_handler/prescription_table.php`,
             {
                 method: 'POST',
                 credentials: 'include',
