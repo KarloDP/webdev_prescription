@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . '/../../../backend/includes/auth.php');
-require_login('../login.php', ['doctor']);
+require_login('/../../../login.php', ['doctor']);
 
 $activePage = 'prescriptions';
 ob_start();
@@ -16,8 +16,7 @@ ob_start();
     <!-- Prescription Info -->
     <div class="section-container">
         <label>Patient</label>
-        <input type="text" id="patient-search" placeholder="Search patient...">
-        <select id="patient-select">
+        <select id="patient-select" style="width:100%;">
             <option value="">Select patient</option>
         </select>
 
@@ -26,19 +25,16 @@ ob_start();
 
         <label>Expiration Date</label>
         <input type="date" id="expiration-date">
-
-        <label>Notes</label>
-        <textarea id="notes" rows="3"></textarea>
     </div>
 
     <!-- Medications -->
     <div class="section-container">
         <h2>Medications</h2>
         <p style="font-size:0.9em;color:#555;margin-bottom:8px;">
-            Each row represents a single medication entry.
+            Each row represents one medication entry.
         </p>
 
-        <table class="table-base">
+        <table class="table-base" style="width:100%;">
             <thead>
                 <tr>
                     <th>Medication</th>
