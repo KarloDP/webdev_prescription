@@ -96,7 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn-primary">Sign in</button>
             </form>
 
-
+            <div class="auth-links">
+                <a href="/frontend/register.php">Create an account</a>
+            </div>
             
             <div class="copyright">
                 &copy; Integrative Medicine <?= date("Y"); ?>
