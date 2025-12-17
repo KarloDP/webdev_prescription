@@ -1,4 +1,4 @@
-  // frontend/patient/prescription/prescription_medication.js
+// frontend/patient/prescription/prescription_medication.js
 
 // From the point of view of prescription_medication.php:
 //   /frontend/patient/prescription/prescription_medication.php
@@ -26,7 +26,11 @@ async function loadDispenseHistory(itemID) {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     
     const allRecords = await res.json();
-    const filtered = allRecords.filter(r => Number(r.prescriptionItemID) === Number(itemID));
+
+    // Filter records for the selected prescription item
+    const filtered = allRecords.filter(
+      r => Number(r.prescriptionItemID) === Number(itemID)
+    );
     
     if (filtered.length === 0) {
       container.innerHTML = '<p>No dispense history for this medication.</p>';
@@ -38,7 +42,7 @@ async function loadDispenseHistory(itemID) {
         <thead>
           <tr>
             <th>Dispense ID</th>
-            <th>Pharmacy ID</th>
+            <th>Pharmacy</th>
             <th>Quantity Dispensed</th>
             <th>Date Dispensed</th>
           </tr>
@@ -47,7 +51,7 @@ async function loadDispenseHistory(itemID) {
           ${filtered.map(r => `
             <tr>
               <td>${escapeHtml(r.dispenseID ?? '-')}</td>
-              <td>${escapeHtml(r.pharmacyID ?? '-')}</td>
+              <td>${escapeHtml(r.pharmacyName ?? '-')}</td>
               <td>${escapeHtml(r.dispensedQuantity ?? '-')}</td>
               <td>${formatDate(r.dispenseDate ?? '-')}</td>
             </tr>
@@ -55,10 +59,13 @@ async function loadDispenseHistory(itemID) {
         </tbody>
       </table>
     `;
+
     container.innerHTML = html;
+
   } catch (err) {
     console.error('Failed to load dispense history:', err);
-    container.innerHTML = '<p class="error">Failed to load dispense history. Please try again later.</p>';
+    container.innerHTML =
+      '<p class="error">Failed to load dispense history. Please try again later.</p>';
   }
 }
 
