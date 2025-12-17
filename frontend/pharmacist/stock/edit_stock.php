@@ -1,12 +1,10 @@
 <?php
-session_start();
-require_once __DIR__ . '/../../../backend/includes/auth.php';
-require_login('/WebDev_Prescription/login.php', ['pharmacist']);
+// Start session for data loading (pharmacy_standard.php will handle authentication)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $activePage = 'stock';
-
-// DB CONNECTION
-require_once __DIR__ . '/../../../backend/includes/db_connect.php';
 
 // Validate medicationID
 $medicationID = $_GET['medicationID'] ?? null;
@@ -14,45 +12,32 @@ if (!$medicationID || !is_numeric($medicationID)) {
     die("Invalid medication ID.");
 }
 
-// Fetch Medication Details
-$query = "
-    SELECT medicationID, genericName, brandName, form, strength, manufacturer, stock
-    FROM medication
-    WHERE medicationID = ?
-    LIMIT 1
-";
+// Fetch Medication Details via backend handler
+$_GET['medicationID'] = $medicationID; // Set for handler
+$med = include __DIR__ . '/../../../backend/pharmacist/stock/get_medication.php';
 
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $medicationID);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows !== 1) {
+if (!$med || !is_array($med)) {
     die("Medication not found.");
 }
 
-$med = $result->fetch_assoc();
-
-// Handle Form Submission
+// Handle Form Submission via backend handler
 $successMsg = "";
 $errorMsg = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $updatedStock = $_POST['stock'] ?? null;
-
-    if ($updatedStock === null || !is_numeric($updatedStock) || $updatedStock < 0) {
-        $errorMsg = "Invalid stock value.";
-    } else {
-        $updateSQL = "UPDATE medication SET stock = ? WHERE medicationID = ?";
-        $updateStmt = $conn->prepare($updateSQL);
-        $updateStmt->bind_param("ii", $updatedStock, $medicationID);
-
-        if ($updateStmt->execute()) {
-            $successMsg = "Stock updated successfully.";
-            $med['stock'] = $updatedStock; // Refresh display
+    $_POST['medicationID'] = $medicationID; // Ensure medicationID is in POST
+    $result = include __DIR__ . '/../../../backend/pharmacist/stock/update_stock.php';
+    
+    if (is_array($result) && isset($result['success'])) {
+        if ($result['success']) {
+            $successMsg = $result['message'] ?? "Stock updated successfully.";
+            // Refresh medication data
+            $med = include __DIR__ . '/../../../backend/pharmacist/stock/get_medication.php';
         } else {
-            $errorMsg = "Failed to update stock.";
+            $errorMsg = $result['message'] ?? "Failed to update stock.";
         }
+    } else {
+        $errorMsg = "An error occurred while processing your request.";
     }
 }
 

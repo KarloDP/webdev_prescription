@@ -1,10 +1,9 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/backend/includes/auth.php';
-$user = require_role(['pharmacist']);
+// Note: auth.php is included by pharmacy_standard.php, so we don't need to include it here
 
 $activePage = 'dispense';
-$pageStyles = '<link rel="stylesheet" href="/frontend/css/pharmacist/dispense.css">';
-$pageScripts = '<script src="/frontend/pharmacist/js/dispense.js" defer></script>';
+$pageStyles = '<link rel="stylesheet" href="../css/pharmacist/dispense.css">';
+$pageScripts = '<script src="js/dispense.js" defer></script>';
 
 ob_start();
 ?>

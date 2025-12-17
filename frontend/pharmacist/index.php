@@ -1,16 +1,15 @@
 <?php
-require_once __DIR__ . '/../../backend/includes/auth.php';
-$user = require_role(['pharmacist']);
-$pharmacyName = htmlspecialchars($user['name'] ?? 'Pharmacist', ENT_QUOTES, 'UTF-8');
+// Note: auth.php is included by pharmacy_standard.php, so we don't need to include it here
+// We'll get the user info after including the standard file
 
 $activePage = 'dashboard';
+$pageStyles = '<link rel="stylesheet" href="../css/pharmacist/dashboard.css">';
+
 ob_start();
 ?>
 
-<link rel="stylesheet" href="../css/pharmacist/dashboard.css">
-
 <header class="dashboard-header">
-    <h1>Welcome <?= $pharmacyName ?></h1>
+    <h1>Welcome <?= htmlspecialchars($_SESSION['user']['name'] ?? 'Pharmacist', ENT_QUOTES, 'UTF-8') ?></h1>
 </header>
 
 <section class="summary-cards">

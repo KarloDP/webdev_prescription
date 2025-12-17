@@ -1,8 +1,8 @@
 <?php
-session_start();
-
-require_once __DIR__ . '/../../../backend/includes/auth.php';
-require_login('/WebDev_Prescription/login.php', ['pharmacist']);
+// Start session for data loading (pharmacy_standard.php will handle authentication)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Sidebar highlight
 $activePage = 'stock';

@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/../../backend/includes/auth.php';
-$user = require_role(['pharmacist']);
+// Note: auth.php is included by pharmacy_standard.php, so we don't need to include it here
 
 $activePage = 'patients';
 $pageStyles = '<link rel="stylesheet" href="../css/pharmacist/patients.css">';

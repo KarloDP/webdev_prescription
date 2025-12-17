@@ -2,7 +2,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     console.log("add_stock.js loaded");
 
-    const form = document.querySelector(".edit-stock-form");
+    const form = document.querySelector(".add-stock-form");
     const submitBtn = form.querySelector(".btn-save");
     const cancelBtn = document.querySelector(".btn-cancel");
     const backBtn = document.querySelector(".btn-back-outline");

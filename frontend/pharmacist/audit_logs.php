@@ -1,8 +1,8 @@
 <?php
 // filepath: c:\wamp64\www\WebDev_Prescription\frontend\pharmacist\audit_logs.php
 $activePage = 'logs';
-$pageStyles  = '<link rel="stylesheet" href="/frontend/css/pharmacist/audit_logs.css">';
-$pageScripts = '<script src="/frontend/pharmacist/js/audit_logs.js" defer></script>';
+$pageStyles  = '<link rel="stylesheet" href="../css/pharmacist/audit_logs.css">';
+$pageScripts = '<script src="js/audit_logs.js" defer></script>';
 
 ob_start();
 ?>

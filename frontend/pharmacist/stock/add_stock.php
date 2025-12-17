@@ -1,61 +1,41 @@
 <?php
-session_start();
-
-// 1. MATCHING AUTHENTICATION
-// Replaced manual check with the standard require_login used in stock.php
-require_once __DIR__ . '/../../../backend/includes/auth.php';
-require_login('/WebDev_Prescription/login.php', ['pharmacist']);
-
-require_once __DIR__ . '/../../../backend/includes/db_connect.php';
+// Start session for data loading (pharmacy_standard.php will handle authentication)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $activePage = 'stock';
 $successMsg = "";
 $errorMsg = "";
 
-// Handle form submission
+// Handle form submission via backend handler
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $genericName  = trim($_POST['genericName'] ?? '');
-    $brandName    = trim($_POST['brandName'] ?? '');
-    $form         = trim($_POST['form'] ?? '');
-    $strength     = trim($_POST['strength'] ?? '');
-    $manufacturer = trim($_POST['manufacturer'] ?? '');
-    $stock        = trim($_POST['stock'] ?? '');
-
-    if ($genericName === '' || $brandName === '' || $form === '' ||
-        $strength === '' || $manufacturer === '' || $stock === '' || !is_numeric($stock) || $stock < 0) {
-
-        $errorMsg = "Please fill in all fields correctly.";
-
-    } else {
-
-        $sql = "INSERT INTO medication 
-                (genericName, brandName, form, strength, manufacturer, stock)
-                VALUES (?, ?, ?, ?, ?, ?)";
-
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssi",
-            $genericName, $brandName, $form, $strength, $manufacturer, $stock
-        );
-
-        if ($stmt->execute()) {
-            $successMsg = "Medication added successfully!";
+    $result = include __DIR__ . '/../../../backend/pharmacist/stock/add_stock_handler.php';
+    
+    if (is_array($result) && isset($result['success'])) {
+        if ($result['success']) {
+            $successMsg = $result['message'] ?? "Medication added successfully!";
         } else {
-            $errorMsg = "Failed to add medication.";
+            $errorMsg = $result['message'] ?? "Failed to add medication.";
         }
+    } else {
+        $errorMsg = "An error occurred while processing your request.";
     }
 }
+
+// Page-specific CSS
+$pageStyles = '
+    <link rel="stylesheet" href="../../assets/css/role-pharmacist.css">
+    <link rel="stylesheet" href="../../assets/css/table.css">
+    <link rel="stylesheet" href="stock.css">
+    <link rel="stylesheet" href="add_stock.css">
+';
 
 // -----------------------------
 // BEGIN PAGE CONTENT
 // -----------------------------
 ob_start();
 ?>
-
-    <link rel="stylesheet" href="../../assets/css/role-pharmacist.css">
-    <link rel="stylesheet" href="../../assets/css/table.css">
-    <link rel="stylesheet" href="stock.css">
-    <link rel="stylesheet" href="add_stock.css">
 
     <div class="add-stock-page">
 
@@ -97,7 +77,7 @@ ob_start();
 
                 <div class="form-group">
                     <label>Strength</label>
-                    <input type="text" name="strength" required>
+                    <input type="number" name="strength" min="1" required>
                 </div>
 
                 <div class="form-group">
