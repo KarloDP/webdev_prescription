@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Integrative Medicine</title>
+    <title>Login -Integrative Medicines</title>
     <link rel="stylesheet" href="frontend/css/login.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form method="POST" action="">
                 <div class="form-group">
-                    <label for="role">Login as</label>
+                    <label for="role">Login as </label>
                     <select name="role" id="role" class="input-field" required>
                         <option value="patient" <?= $selectedRole === 'patient' ? 'selected' : '' ?>>Patient</option>
                         <option value="doctor" <?= $selectedRole === 'doctor' ? 'selected' : '' ?>>Doctor</option>
@@ -96,8 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn-primary">Sign in</button>
             </form>
 
-
-            
             <div class="copyright">
                 &copy; Integrative Medicine <?= date("Y"); ?>
             </div>
