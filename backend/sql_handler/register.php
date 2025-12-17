@@ -98,18 +98,3 @@ try {
 } catch (mysqli_sql_exception $e) {
     respond(['error' => 'Registration failed.', 'details' => $e->getMessage()], 500);
 }
-
-// ...existing code...
-      } else {
-        input = document.createElement("input");
-        input.type = field.type;
-        if (field.type === "number") input.min = "0";
-      }
-      if (field.name === "contactNumber") {
-        input.inputMode = "numeric";
-        input.pattern = "\\d+";
-      }
-      if (field.name === "email") {
-        input.type = "email";
-      }
-// ...existing code...
