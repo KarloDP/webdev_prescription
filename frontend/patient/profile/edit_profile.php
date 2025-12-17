@@ -2,14 +2,15 @@
 // frontend/patient/profile/edit_profile.php
 ob_start();
 session_start();
+
 include(__DIR__ . '/../../../backend/includes/auth.php');
 include(__DIR__ . '/../../../backend/includes/db_connect.php');
 
-require_login('/../../../login.php', ['patient']);
+require_login('/WebDev_Prescription/login.php', ['patient']);
 
 $patientID = $_SESSION['patientID'];
 $stmt = $conn->prepare("SELECT firstName, lastName, birthDate, contactNumber, email, address
-                       FROM patient WHERE patientID = ?");
+                        FROM patient WHERE patientID = ?");
 $stmt->bind_param("i", $patientID);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -25,10 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $error = "Invalid email format.";
   } elseif (!ctype_digit($contactNumber)) {
-    // ensures only numeric characters
     $error = "Contact number must contain digits only.";
   } elseif (strlen($contactNumber) !== 10) {
-    // ensures exactly 10 digits
     $error = "Contact number must be exactly 10 digits.";
   } elseif (
     $contactNumber === $patient['contactNumber'] &&
@@ -65,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <title>Edit Profile</title>
-  <link rel="stylesheet" href="../assets/css/role-patient.css">
+  <link rel="stylesheet" href="/frontend/css/edit_profile.css">
 </head>
 <body>
 <div class="main-content">
