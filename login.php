@@ -6,14 +6,9 @@ require_once __DIR__ . '/backend/includes/auth.php';
 require_once __DIR__ . '/backend/includes/functions.php';
 
 $error = "";
-$selectedRole = $_POST['role'] ?? 'patient'; // Default to patient for the dropdown
+$selectedRole = $_POST['role'] ?? 'patient'; 
 
-// If any user is already logged in, redirect them to their dashboard
-if (
-    isset($_SESSION['user']) &&
-    isset($_SESSION['user']['role']) &&
-    isset($_SESSION['user']['id'])
-) {
+if (isset($_SESSION['user']) && isset($_SESSION['user']['role']) && isset($_SESSION['user']['id'])) {
     redirect_based_on_role($_SESSION['user']['role']);
 }
 
@@ -29,64 +24,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!in_array($role, $allowedRoles)) {
         $error = "Invalid role selected.";
     } else {
-        // Authenticate using the generic function from auth.php
         if ($user = authenticate_user($conn, $role, $email, $password)) {
-            // Login is successful, set the session for the correct role
             set_user_session($role, $user);
-            
-            // Log the login
             log_audit($conn, $_SESSION['user']['id'], $role, 'Login', 'User logged in successfully');
-
             redirect_based_on_role($role);
         } else {
-            // Authentication failed
             $error = "Invalid credentials for the selected role.";
         }
     }
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - Integrative Medicine</title>
     <link rel="stylesheet" href="frontend/css/login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<div class="login-container">
-    <div class="logo">
-        <!-- Assuming you have a logo image, replace 'path/to/your/logo.png' with the actual path -->
-        <img src="assets/images/Integrative-Medicine-Logo.png" alt="Integrative Medicine Logo">
+<div class="split-screen">
+    <div class="left-pane">
+        <div class="photo-credit"></div>
     </div>
-    <h2>Login</h2>
 
-    <?php if ($error): ?>
-        <p class="error-message"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></p>
-    <?php endif; ?>
+    <div class="right-pane">
+        <div class="login-container">
+            <div class="logo">
+                <img src="assets\images\LOGO.png" alt="Integrative Medicine Logo">
+            </div>
 
-    <form method="POST" action="">
-        <div class="form-group">
-            <label for="role">Login as:</label>
-            <select name="role" id="role" required>
-                <option value="patient" <?= $selectedRole === 'patient' ? 'selected' : '' ?>>Patient</option>
-                <option value="doctor" <?= $selectedRole === 'doctor' ? 'selected' : '' ?>>Doctor</option>
-                <option value="pharmacist" <?= $selectedRole === 'pharmacist' ? 'selected' : '' ?>>Pharmacist</option>
-            </select>
+            <h1>Nice to see you again</h1>
+            
+            <?php if ($error): ?>
+                <div class="alert error">
+                    <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" action="">
+                <div class="form-group">
+                    <label for="role">Login as</label>
+                    <select name="role" id="role" class="input-field" required>
+                        <option value="patient" <?= $selectedRole === 'patient' ? 'selected' : '' ?>>Patient</option>
+                        <option value="doctor" <?= $selectedRole === 'doctor' ? 'selected' : '' ?>>Doctor</option>
+                        <option value="pharmacist" <?= $selectedRole === 'pharmacist' ? 'selected' : '' ?>>Pharmacist</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="input-field" 
+                           placeholder="Email or phone number" 
+                           value="<?= htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES) ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" name="password" class="input-field" 
+                               placeholder="Enter password" required>
+                    </div>
+                </div>
+
+                <div class="form-extras">
+                </div>
+
+                <button type="submit" class="btn-primary">Sign in</button>
+            </form>
+
+
+            
+            <div class="copyright">
+                &copy; Integrative Medicine <?= date("Y"); ?>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required placeholder="Enter your email" value="<?= htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES) ?>">
-        </div>
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required placeholder="Enter your password">
-        </div>
-        <button type="submit">Continue</button>
-    </form>
+    </div>
 </div>
 
 </body>

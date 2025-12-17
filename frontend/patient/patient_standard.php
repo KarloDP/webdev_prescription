@@ -20,7 +20,6 @@ $sidebarItems = $sidebarItems ?? [
     'dashboard'     => 'Dashboard',
     'patient'       => 'History',
     'prescription'    => 'Prescription',
-
     'pharmacies'    => 'Pharmacies',
 ];
 
