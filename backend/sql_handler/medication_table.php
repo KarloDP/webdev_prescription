@@ -1,7 +1,8 @@
 <?php
+// backend/sql_handler/medication_table.php
 include(__DIR__ . '/../includes/db_connect.php');
 include(__DIR__ . '/../includes/auth.php');
-//backend\sql_handler\medication_table.php
+
 header('Content-Type: application/json; charset=utf-8');
 
 function respond($data, $statusCode = 200) {
@@ -16,43 +17,30 @@ $role   = $user['role'];
 $userID = (int)$user['id'];
 
 if ($method === 'GET') {
-    $patientID = isset($_GET['patientID']) ? (int) $_GET['patientID'] : 0;
-
-    if ($patientID <= 0) {
-        respond([]); // invalid patientID
-        exit;
-    }
-
+    // Return full medication list for dropdown/search
     $sql = "
-        SELECT
-            p.prescriptionID,
-            m.genericName AS medicine,
-            m.brandName,
-            pi.dosage,
-            pi.frequency,
-            pi.duration
-        FROM prescriptionitem pi
-        JOIN prescription p ON pi.prescriptionID = p.prescriptionID
-        JOIN medication m ON pi.medicationID = m.medicationID
-        WHERE p.patientID = ?
-        ORDER BY p.prescriptionID DESC
+        SELECT 
+            medicationID,
+            genericName,
+            brandName,
+            strength,
+            form,
+            manufacturer,
+            stock
+        FROM medication
+        ORDER BY genericName ASC
     ";
 
-    $stmt = $conn->prepare($sql);
-    if ($stmt) {
-        $stmt->bind_param("i", $patientID);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
+    $result = $conn->query($sql);
+    if ($result) {
         $rows = [];
         while ($row = $result->fetch_assoc()) {
             $rows[] = $row;
         }
-
         respond($rows);
-        $stmt->close();
     } else {
-        respond(['error' => 'Query preparation failed: ' . $conn->error], 500);
+        respond(['error' => 'Query failed: ' . $conn->error], 500);
     }
+} else {
+    respond(['error' => 'Unsupported request method'], 405);
 }
-?>
