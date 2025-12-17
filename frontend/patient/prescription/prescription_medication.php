@@ -19,7 +19,8 @@ if ($role === 'patient') {
 }
 
 if ($patientID <= 0) {
-    header("Location: ../TestLoginPatient.php");
+    // Redirect to patient profile page instead of test login
+    header("Location: ../patient/patient.php");
     exit;
 }
 
@@ -152,7 +153,7 @@ ob_start();
                             <td><?= htmlspecialchars($m['instructions']) ?></td>
                             <td><?= htmlspecialchars($m['refillInterval']) ?></td>
                             <td>
-                                <a href="prescription_medication.php?prescriptionItemID=<?= $m['prescriptionItemID'] ?>&patientID=<?= $patientID ?>"
+                                <a href="../patient/patient.php?patientID=<?= $patientID ?>&prescriptionItemID=<?= $m['prescriptionItemID'] ?>"
                                    class="btn-view">View History</a>
                             </td>
                         </tr>
