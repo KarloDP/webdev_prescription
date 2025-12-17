@@ -175,7 +175,7 @@
     font-style: italic;
 }
 
-.status-badge { display:inline-block; padding:0.25rem 0.5rem; border-radius:12px; font-weight:700; color:#fff; font-size:0.82rem; text-transform:capitalize; }
+.status-badge { display:inline-block; padding:0.25rem 0.5rem; border-radius:12px; font-weight:700; color:#b42d2d; font-size:0.82rem; text-transform:capitalize; }
 .status-completed { background:#2e7d32; } .status-discontinued { background:#c0392b; } .status-pending { background:#f39c12; }
 
 .prescriptions-page .table-frame {
